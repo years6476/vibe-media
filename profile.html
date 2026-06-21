@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — Insight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary:       #8A4FF7;
+      --primary-grad:  linear-gradient(135deg, #6C3EF4, #A65CF8);
+      --primary-light: #f3eefe;
+      --bg:            #ffffff;
+      --surface:       #f7f7f7;
+      --border:        #f0f0f0;
+      --text:          #1a1a1a;
+      --text-2:        #555;
+      --text-muted:    #aaa;
+      --topbar-h:      54px;
+      --pad:           15px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ══════════════════════════════════════
+       LOADING SCREEN
+    ══════════════════════════════════════ */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 9999;
+    }
+
+    #loadingScreen img { width: 110px; object-fit: contain; }
+
+    .load-spin {
+      width: 30px; height: 30px;
+      border: 3px solid rgba(138,79,247,.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══════════════════════════════════════
+       TOP BAR
+    ══════════════════════════════════════ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topbar-inner {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .icon-btn {
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text);
+      transition: background .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .icon-btn:hover { background: var(--surface); }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* ── 3-dot dropdown ── */
+    .more-wrap { position: relative; }
+
+    .dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+      min-width: 160px;
+      padding: 6px;
+      z-index: 300;
+      animation: fadeIn .15s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 13px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      color: #e63950;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .dropdown-item:hover { background: #fff5f5; }
+
+    /* ══════════════════════════════════════
+       MAIN
+    ══════════════════════════════════════ */
+    .main {
+      padding-top: var(--topbar-h);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .page-body {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 var(--pad);
+    }
+
+    /* ══════════════════════════════════════
+       COVER PHOTO
+       Extends 15px beyond each side → calc(100% + 30px)
+    ══════════════════════════════════════ */
+    .cover-wrap {
+      margin: 14px calc(-1 * var(--pad)) 0;
+    }
+
+    .cover-photo {
+      width: 100%;
+      height: 145px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #c5b3fa 0%, #8A4FF7 60%, #6C3EF4 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cover-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Cover placeholder pattern */
+    .cover-photo.empty::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 60%, rgba(255,255,255,.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(255,255,255,.1) 0%, transparent 50%);
+    }
+
+    /* ══════════════════════════════════════
+       PROFILE CARD (rounded, overlaps cover)
+    ══════════════════════════════════════ */
+    .profile-card {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      margin-top: -18px;
+      padding: 0 0 20px;
+      position: relative;
+    }
+
+    /* ── Profile Picture ── */
+    .profile-pic-row {
+      padding: 0 18px;
+      margin-top: -50px;      /* half of 100px → overlaps cover */
+      margin-bottom: 10px;
+    }
+
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid #ffffff;
+      overflow: hidden;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+
+    .profile-pic img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .pic-letter {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    /* ── Profile Info ── */
+    .profile-info {
+      padding: 6px 18px 0;
+    }
+
+    .profile-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .profile-username {
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .profile-bio {
+      font-size: 11.5px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-2);
+      margin-top: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .profile-address {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .profile-address svg { flex-shrink: 0; }
+
+    /* ══════════════════════════════════════
+       DIVIDER
+    ══════════════════════════════════════ */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 18px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Loading ══ -->
+  <div id="loadingScreen">
+    <img
+      src="https://i.ibb.co.com/1fKZGC7X/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png"
+      alt="Insight"
+      draggable="false"
+    />
+    <div class="load-spin"></div>
+  </div>
+
+
+  <!-- ══ App ══ -->
+  <div id="app" class="hidden">
+
+    <!-- ── Top Navbar ── -->
+    <header class="topbar">
+      <div class="topbar-inner">
+
+        <!-- Back arrow -->
+        <button class="icon-btn" id="backBtn" aria-label="Go back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+
+        <!-- Right actions -->
+        <div class="topbar-right">
+
+          <!-- Notification -->
+          <button class="icon-btn" aria-label="Notifications"
+                  onclick="window.location.href='/notifications'">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
+
+          <!-- 3-dot -->
+          <div class="more-wrap">
+            <button class="icon-btn" id="moreBtn" aria-label="More options">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="5"  cy="12" r="1.6"/>
+                <circle cx="12" cy="12" r="1.6"/>
+                <circle cx="19" cy="12" r="1.6"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown -->
+            <div class="dropdown hidden" id="dropdown">
+              <button class="dropdown-item" id="logoutBtn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Log Out
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+
+    <!-- ── Main ── -->
+    <main class="main">
+      <div class="page-body">
+
+        <!-- Cover Photo -->
+        <div class="cover-wrap">
+          <div class="cover-photo empty" id="coverPhoto">
+            <!-- cover image injected by JS -->
+          </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+
+          <!-- Profile Pic -->
+          <div class="profile-pic-row">
+            <div class="profile-pic" id="profilePic">
+              <span class="pic-letter" id="picLetter">?</span>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="profile-info">
+            <h1 class="profile-name"    id="profileName"></h1>
+            <p  class="profile-username" id="profileUsername"></p>
+            <p  class="profile-bio"      id="profileBio"></p>
+            <p  class="profile-address hidden" id="profileAddress">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span id="addressText"></span>
+            </p>
+          </div>
+
+          <div class="section-divider"></div>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div><!-- #app -->
+
+
+  <!-- ══ Firebase Logic ══ -->
+  <script type="module">
+    import { auth, db } from "./config.js";
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import {
+      ref, onValue
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+    const loadingScreen  = document.getElementById("loadingScreen");
+    const app            = document.getElementById("app");
+    const moreBtn        = document.getElementById("moreBtn");
+    const dropdown       = document.getElementById("dropdown");
+    const logoutBtn      = document.getElementById("logoutBtn");
+    const backBtn        = document.getElementById("backBtn");
+
+    // Profile elements
+    const coverPhoto     = document.getElementById("coverPhoto");
+    const profilePic     = document.getElementById("profilePic");
+    const picLetter      = document.getElementById("picLetter");
+    const profileName    = document.getElementById("profileName");
+    const profileUsername= document.getElementById("profileUsername");
+    const profileBio     = document.getElementById("profileBio");
+    const profileAddress = document.getElementById("profileAddress");
+    const addressText    = document.getElementById("addressText");
+
+    // ── Back button ──────────────────────────────────────────
+    backBtn.addEventListener("click", () => {
+      if (history.length > 1) history.back();
+      else window.location.href = "/";
+    });
+
+    // ── 3-dot dropdown ───────────────────────────────────────
+    moreBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", () => {
+      dropdown.classList.add("hidden");
+    });
+
+    dropdown.addEventListener("click", (e) => e.stopPropagation());
+
+    // ── Logout ───────────────────────────────────────────────
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "/login";
+      } catch (err) {
+        console.error("Logout error:", err);
+      }
+    });
+
+    // ── Auth check ───────────────────────────────────────────
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      loadingScreen.classList.add("hidden");
+      app.classList.remove("hidden");
+
+      loadProfile(user);
+    });
+
+    // ── Load profile from Firebase ───────────────────────────
+    function loadProfile(user) {
+      const userRef = ref(db, `users/${user.uid}`);
+
+      onValue(userRef, (snapshot) => {
+        const data = snapshot.val() || {};
+
+        const name     = data.name     || user.displayName || "";
+        const username = data.username || "";
+        const bio      = data.bio      || "";
+        const address  = data.address  || "";
+        const coverUrl = data.coverPhotoUrl  || "";
+        const photoUrl = data.profilePhotoUrl || user.photoURL || "";
+
+        // ── Cover photo ──────────────────────────────────────
+        if (coverUrl) {
+          coverPhoto.classList.remove("empty");
+          coverPhoto.innerHTML =
+            `<img src="${escHtml(coverUrl)}" alt="Cover photo">`;
+        }
+
+        // ── Profile pic ──────────────────────────────────────
+        if (photoUrl) {
+          profilePic.innerHTML =
+            `<img src="${escHtml(photoUrl)}" alt="${escHtml(name)}">`;
+        } else {
+          const letter = (name || user.email || "?")[0].toUpperCase();
+          picLetter.textContent = letter;
+        }
+
+        // ── Name ─────────────────────────────────────────────
+        profileName.textContent = name;
+
+        // ── Username ─────────────────────────────────────────
+        if (username) {
+          profileUsername.textContent = username.startsWith("@")
+            ? username
+            : "@" + username;
+        }
+
+        // ── Bio ──────────────────────────────────────────────
+        profileBio.textContent = bio;
+
+        // ── Address ──────────────────────────────────────────
+        if (address) {
+          addressText.textContent = address;
+          profileAddress.classList.remove("hidden");
+        }
+      });
+    }
+
+    // ── Helper ───────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+  </script>
+
+</body>
+</html>
