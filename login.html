@@ -28,7 +28,7 @@
     .wrapper {
       width: 100%;
       max-width: 420px;
-      padding: 48px 28px 0;
+      padding: 44px 28px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,28 +36,28 @@
 
     /* ── Logo ── */
     .logo {
-      margin-bottom: 30px;
+      margin-bottom: 26px;
     }
     .logo img {
-      width: 165px;
+      width: 130px;
       object-fit: contain;
       display: block;
     }
 
     /* ── Heading ── */
     .welcome {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 700;
       color: #1a1a1a;
       text-align: center;
       margin-bottom: 6px;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.2px;
     }
     .subtitle {
-      font-size: 14px;
-      color: #888;
+      font-size: 13px;
+      color: #999;
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 26px;
       font-weight: 400;
     }
 
@@ -69,14 +69,24 @@
       gap: 14px;
     }
 
+    /* ── Input group (label + field) ── */
     .input-group {
-      position: relative;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #444;
+      padding-left: 2px;
     }
 
     .input-group input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 13px 16px;
       border: 1.5px solid #e8e8e8;
       border-radius: 12px;
       font-size: 15px;
@@ -94,32 +104,38 @@
     }
 
     .input-group input::placeholder {
-      color: #c0c0c0;
+      color: #c8c8c8;
     }
 
-    /* Password field right-padding for eye icon */
-    #passwordInput {
+    /* ── Password wrapper (for eye icon positioning) ── */
+    .pw-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .pw-wrap input {
       padding-right: 48px;
     }
 
-    /* ── Password toggle ── */
+    /* ── Password toggle (SVG) ── */
     .toggle-pw {
       position: absolute;
-      right: 14px;
+      right: 13px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       cursor: pointer;
       color: #c0c0c0;
-      font-size: 19px;
-      line-height: 1;
       padding: 0;
       display: flex;
       align-items: center;
+      justify-content: center;
       transition: color 0.2s;
+      line-height: 0;
     }
     .toggle-pw:hover { color: #8A4FF7; }
+    .toggle-pw svg   { display: block; }
 
     /* ── Error message ── */
     .error-msg {
@@ -137,16 +153,16 @@
     /* ── Login button ── */
     .login-btn {
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       background: linear-gradient(to right, #6C3EF4, #8A4FF7, #A65CF8);
       border: none;
       border-radius: 12px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       font-family: 'Poppins', sans-serif;
       cursor: pointer;
-      transition: opacity 0.2s ease, transform 0.15s ease;
+      transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
       margin-top: 2px;
       position: relative;
       letter-spacing: 0.2px;
@@ -155,7 +171,7 @@
     .login-btn:hover:not(:disabled) {
       opacity: 0.91;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(108, 62, 244, 0.3);
+      box-shadow: 0 6px 20px rgba(108, 62, 244, 0.28);
     }
 
     .login-btn:active:not(:disabled) {
@@ -176,9 +192,9 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 22px;
-      height: 22px;
-      border: 3px solid rgba(255, 255, 255, 0.35);
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
       border-top-color: #ffffff;
       border-radius: 50%;
       animation: spin 0.65s linear infinite;
@@ -190,10 +206,10 @@
 
     /* ── Sign up link ── */
     .signup-text {
-      font-size: 14px;
-      color: #888;
+      font-size: 13px;
+      color: #999;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
     .signup-text a {
@@ -202,22 +218,18 @@
       text-decoration: none;
       transition: opacity 0.15s;
     }
-
     .signup-text a:hover { opacity: 0.8; text-decoration: underline; }
 
-    /* ── Illustration ── */
+    /* ── Illustration — full width ── */
     .illustration {
       width: 100%;
-      max-width: 420px;
-      display: flex;
-      justify-content: center;
-      margin-top: 18px;
+      margin-top: 16px;
+      line-height: 0;
     }
 
     .illustration img {
-      width: 270px;
-      max-width: 85%;
-      object-fit: contain;
+      width: 100%;
+      height: auto;
       display: block;
       user-select: none;
       pointer-events: none;
@@ -225,10 +237,9 @@
 
     /* ── Mobile ── */
     @media (max-width: 480px) {
-      .wrapper       { padding: 36px 20px 0; }
-      .welcome       { font-size: 23px; }
-      .logo img      { width: 145px; }
-      .illustration img { width: 220px; }
+      .wrapper  { padding: 34px 20px 0; }
+      .welcome  { font-size: 20px; }
+      .logo img { width: 115px; }
     }
   </style>
 </head>
@@ -253,26 +264,38 @@
     <!-- Form -->
     <div class="form">
 
+      <!-- Email -->
       <div class="input-group">
+        <label class="input-label" for="emailInput">Email</label>
         <input
           type="email"
           id="emailInput"
-          placeholder="Email"
+          placeholder="Enter your email"
           autocomplete="email"
           inputmode="email"
         />
       </div>
 
+      <!-- Password -->
       <div class="input-group">
-        <input
-          type="password"
-          id="passwordInput"
-          placeholder="Password"
-          autocomplete="current-password"
-        />
-        <button class="toggle-pw" id="togglePw" type="button" aria-label="Toggle password visibility">
-          👁
-        </button>
+        <label class="input-label" for="passwordInput">Password</label>
+        <div class="pw-wrap">
+          <input
+            type="password"
+            id="passwordInput"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <button class="toggle-pw" id="togglePw" type="button" aria-label="Show password">
+            <!-- Eye icon (default: password hidden) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Error -->
@@ -285,12 +308,12 @@
 
     <!-- Sign up -->
     <p class="signup-text">
-      Don't have an account? <a href="signup.html">Sign up</a>
+      Don't have an account? <a href="/signup">Sign up</a>
     </p>
 
   </div>
 
-  <!-- Illustration -->
+  <!-- Illustration — full width -->
   <div class="illustration">
     <img
       src="https://i.ibb.co.com/DyV9tDW/file-00000000dfb871faa658852ecbb02a4b-1-removebg-preview.png"
@@ -314,29 +337,49 @@
     const errorMsg      = document.getElementById("errorMsg");
     const togglePw      = document.getElementById("togglePw");
 
+    // ── SVG icons ────────────────────────────────────────────
+    const EYE_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>`;
+
+    const EYE_OFF_ICON = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                 a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1
+                 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19
+                 m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+      </svg>`;
+
     // ── Already logged in → redirect ────────────────────────
     onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "index.html";
+      if (user) window.location.href = "/feed";
     });
 
     // ── Password show / hide ─────────────────────────────────
     togglePw.addEventListener("click", () => {
       const hidden = passwordInput.type === "password";
-      passwordInput.type  = hidden ? "text" : "password";
-      togglePw.textContent = hidden ? "🙈" : "👁";
+      passwordInput.type   = hidden ? "text" : "password";
+      togglePw.innerHTML   = hidden ? EYE_OFF_ICON : EYE_ICON;
+      togglePw.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
     });
 
     // ── Error helpers ────────────────────────────────────────
     function showError(msg) {
-      errorMsg.textContent  = msg;
+      errorMsg.textContent   = msg;
       errorMsg.style.display = "block";
     }
     function clearError() {
-      errorMsg.textContent  = "";
+      errorMsg.textContent   = "";
       errorMsg.style.display = "none";
     }
 
-    // Firebase error code → readable message
     function friendlyError(code) {
       const map = {
         "auth/invalid-email":          "Please enter a valid email address.",
@@ -360,13 +403,12 @@
       if (!email)    { showError("Please enter your email.");    return; }
       if (!password) { showError("Please enter your password."); return; }
 
-      // Loading state
       loginBtn.classList.add("loading");
       loginBtn.disabled = true;
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "index.html";
+        window.location.href = "/feed";
       } catch (err) {
         showError(friendlyError(err.code));
         loginBtn.classList.remove("loading");
@@ -374,19 +416,11 @@
       }
     }
 
-    // ── Button click ─────────────────────────────────────────
     loginBtn.addEventListener("click", handleLogin);
 
-    // ── Enter key ────────────────────────────────────────────
     [emailInput, passwordInput].forEach((el) => {
-      el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") handleLogin();
-      });
-    });
-
-    // ── Clear error on input ─────────────────────────────────
-    [emailInput, passwordInput].forEach((el) => {
-      el.addEventListener("input", clearError);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter") handleLogin(); });
+      el.addEventListener("input",   clearError);
     });
   </script>
 
