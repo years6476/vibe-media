@@ -86,10 +86,10 @@
 
     .input-group input {
       width: 100%;
-      padding: 13px 16px;
+      padding: 9px 13px;
       border: 1.5px solid #e8e8e8;
-      border-radius: 12px;
-      font-size: 15px;
+      border-radius: 10px;
+      font-size: 14px;
       font-family: 'Poppins', sans-serif;
       color: #1a1a1a;
       background: #fafafa;
@@ -137,6 +137,22 @@
     .toggle-pw:hover { color: #8A4FF7; }
     .toggle-pw svg   { display: block; }
 
+    /* ── Forgot password ── */
+    .forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -2px;
+    }
+
+    .forgot-link {
+      font-size: 12.5px;
+      color: #8A4FF7;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .forgot-link:hover { opacity: 0.75; text-decoration: underline; }
+
     /* ── Error message ── */
     .error-msg {
       display: none;
@@ -153,7 +169,7 @@
     /* ── Login button ── */
     .login-btn {
       width: 100%;
-      padding: 14px;
+      padding: 10px;
       background: linear-gradient(to right, #6C3EF4, #8A4FF7, #A65CF8);
       border: none;
       border-radius: 12px;
@@ -223,7 +239,7 @@
     /* ── Illustration — full width ── */
     .illustration {
       width: 100%;
-      margin-top: 16px;
+      margin-top: 80px;
       line-height: 0;
     }
 
@@ -300,6 +316,11 @@
 
       <!-- Error -->
       <div class="error-msg" id="errorMsg"></div>
+
+      <!-- Forgot password -->
+      <div class="forgot-row">
+        <a href="/forgot-password" class="forgot-link">Forgot Password?</a>
+      </div>
 
       <!-- Login button -->
       <button class="login-btn" id="loginBtn">Log In</button>
