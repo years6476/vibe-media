@@ -36,35 +36,6 @@
 
     .hidden { display: none !important; }
 
-    /* ══════════════════════════════════════
-       LOADING SCREEN
-    ══════════════════════════════════════ */
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      z-index: 9999;
-    }
-
-    #loadingScreen img {
-      width: 120px;
-      object-fit: contain;
-    }
-
-    .loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(138, 79, 247, 0.2);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ══════════════════════════════════════
@@ -519,19 +490,8 @@
 </head>
 <body>
 
-  <!-- ══ Loading Screen ══ -->
-  <div id="loadingScreen">
-    <img
-      src="https://i.ibb.co.com/1fKZGC7X/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png"
-      alt="Insight"
-      draggable="false"
-    />
-    <div class="loading-spinner"></div>
-  </div>
-
-
   <!-- ══ App Shell ══ -->
-  <div id="app" class="hidden">
+  <div id="app">
 
     <!-- Top Bar -->
     <header class="topbar">
@@ -756,10 +716,6 @@
       }
 
       currentUser = user;
-
-      // Show app
-      loadingScreen.classList.add("hidden");
-      app.classList.remove("hidden");
 
       // Profile avatar in bottom nav
       if (user.photoURL) {
