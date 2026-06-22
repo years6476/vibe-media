@@ -33,23 +33,6 @@
 
     .hidden { display: none !important; }
 
-    /* ══════════════════════════════════════
-       LOADING
-    ══════════════════════════════════════ */
-    #loadingScreen {
-      position: fixed; inset: 0; background: #fff;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 20px; z-index: 9999;
-    }
-    #loadingScreen img { width: 110px; object-fit: contain; }
-    .load-spin {
-      width: 30px; height: 30px;
-      border: 3px solid rgba(138,79,247,.2);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ══════════════════════════════════════
@@ -219,18 +202,8 @@
 </head>
 <body>
 
-  <!-- ══ Loading ══ -->
-  <div id="loadingScreen">
-    <img
-      src="https://i.ibb.co.com/1fKZGC7X/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png"
-      alt="Insight" draggable="false"
-    />
-    <div class="load-spin"></div>
-  </div>
-
-
   <!-- ══ App ══ -->
-  <div id="app" class="hidden">
+  <div id="app">
 
     <!-- Top Navbar -->
     <header class="topbar">
@@ -339,7 +312,6 @@
 
     const $ = (id) => document.getElementById(id);
 
-    const loadingScreen   = $("loadingScreen");
     const app             = $("app");
     const backBtn         = $("backBtn");
     const moreBtn         = $("moreBtn");
@@ -376,8 +348,6 @@
     // ── Auth check ───────────────────────────────────────────
     onAuthStateChanged(auth, (user) => {
       if (!user) { window.location.href = "/login"; return; }
-      loadingScreen.classList.add("hidden");
-      app.classList.remove("hidden");
       loadProfile(user);
     });
 
