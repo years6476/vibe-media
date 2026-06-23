@@ -192,7 +192,9 @@
       line-height: 1.5;
       color: var(--text-2);
       white-space: pre-wrap;
-      word-break: break-word;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      max-width: 27ch;
       margin-bottom: 8px;
     }
 
@@ -318,6 +320,69 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════════
+       HIGHLIGHT FULL-SCREEN VIEWER
+    ══════════════════════════════════════ */
+    .hl-viewer {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .hl-viewer-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 14px;
+      background: linear-gradient(rgba(0,0,0,.55), transparent);
+      z-index: 10;
+    }
+
+    .hl-vbtn {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: #fff; border-radius: 50%;
+    }
+
+    .hl-more-wrap { position: relative; }
+
+    .hl-viewer-dd {
+      position: absolute; right: 0; top: calc(100% + 4px);
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.22);
+      min-width: 130px; padding: 6px; z-index: 20;
+    }
+
+    .hl-delete-btn {
+      width: 100%; padding: 10px 12px;
+      border: none; background: none; cursor: pointer;
+      font-size: 14px; font-family: 'Poppins', sans-serif;
+      font-weight: 500; color: #e63950;
+      text-align: left; border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hl-delete-btn:hover { background: #fff5f5; }
+
+    .hl-viewer-media {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 56px 0 50px;
+    }
+    .hl-viewer-media img,
+    .hl-viewer-media video {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+    }
+
+    .hl-viewer-title {
+      position: absolute; bottom: 20px; left: 0; right: 0;
+      text-align: center; color: #fff;
+      font-size: 14px; font-weight: 600;
+      text-shadow: 0 1px 6px rgba(0,0,0,.6);
     }
 
     /* ══════════════════════════════════════
@@ -558,11 +623,10 @@
       <div class="modal-handle"></div>
       <p class="modal-title">New Highlight</p>
 
-      <div class="modal-preview" id="modalPreview" style="position:relative;">
+      <div class="modal-preview" id="modalPreview" style="cursor:pointer;">
         <span id="previewHint">Tap to add photo / video</span>
-        <input type="file" id="mediaInput" accept="image/*,video/*"
-               style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" />
       </div>
+      <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none"/>
 
       <input class="modal-input" type="text" id="hlTitleInput"
              placeholder="Title (max 8 chars)" maxlength="8" autocomplete="off" />
@@ -574,6 +638,43 @@
   </div>
 
 
+  <!-- ══ Highlight Viewer ══ -->
+  <div class="hl-viewer hidden" id="hlViewer">
+    <div class="hl-viewer-bar">
+      <button class="hl-vbtn" id="hlViewerClose">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="hl-more-wrap">
+        <button class="hl-vbtn" id="hlViewerMore">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="5"  cy="12" r="1.6"/>
+            <circle cx="12" cy="12" r="1.6"/>
+            <circle cx="19" cy="12" r="1.6"/>
+          </svg>
+        </button>
+        <div class="hl-viewer-dd hidden" id="hlViewerDd">
+          <button class="hl-delete-btn" id="hlDeleteBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="hl-viewer-media" id="hlViewerMedia"></div>
+    <div class="hl-viewer-title" id="hlViewerTitle"></div>
+  </div>
+
+
   <!-- ══ Firebase ══ -->
   <script type="module">
     import { auth, db, uploadToCloudinary } from "./config.js";
@@ -581,7 +682,7 @@
       onAuthStateChanged, signOut
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
     import {
-      ref, onValue, push, set
+      ref, onValue, push, set, remove
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
     const $ = (id) => document.getElementById(id);
@@ -611,6 +712,7 @@
 
     let currentUser  = null;
     let selectedFile = null;
+    let currentHlId  = null;
 
     // ── Back ────────────────────────────────────────────────
     backBtn.addEventListener("click", () => {
@@ -704,8 +806,8 @@
         : `<img src="${esc(item.mediaUrl)}" alt="${esc(item.title)}">`;
       wrap.innerHTML = `
         <div class="hl-media">${mediaTag}</div>
-        <span class="hl-title">${esc(item.title)}</span>
-      `;
+        <span class="hl-title">${esc(item.title)}</span>`;
+      wrap.addEventListener("click", () => openViewer(item));
       return wrap;
     }
 
@@ -720,6 +822,9 @@
       if (old) old.remove();
       uploadModal.classList.remove("hidden");
     });
+
+    // Fix: click preview → trigger file input
+    modalPreview.addEventListener("click", () => mediaInput.click());
 
     modalCancel.addEventListener("click", () => uploadModal.classList.add("hidden"));
     uploadModal.addEventListener("click", (e) => {
@@ -738,12 +843,12 @@
       if (file.type.startsWith("video")) {
         const v = document.createElement("video");
         v.src = url; v.muted = true; v.autoplay = true;
-        v.style.cssText = "width:100%;height:100%;object-fit:cover;";
+        v.style.cssText = "width:100%;height:100%;object-fit:cover;pointer-events:none;";
         modalPreview.prepend(v);
       } else {
         const img = document.createElement("img");
         img.src = url;
-        img.style.cssText = "width:100%;height:100%;object-fit:cover;";
+        img.style.cssText = "width:100%;height:100%;object-fit:cover;pointer-events:none;";
         modalPreview.prepend(img);
       }
     });
@@ -756,8 +861,8 @@
     // ── Post highlight ────────────────────────────────────────
     modalPostBtn.addEventListener("click", async () => {
       const title = hlTitleInput.value.trim();
-      if (!selectedFile)  { alert("Please select a photo or video."); return; }
-      if (!title)         { alert("Please enter a title."); return; }
+      if (!selectedFile) { alert("Please select a photo or video."); return; }
+      if (!title)        { alert("Please enter a title."); return; }
 
       modalPostBtn.classList.add("loading");
       modalPostBtn.disabled = true;
@@ -766,18 +871,67 @@
         const { url, resourceType } = await uploadToCloudinary(selectedFile, "highlights");
         const hlRef = push(ref(db, `users/${currentUser.uid}/highlights`));
         await set(hlRef, {
-          mediaUrl:   url,
-          mediaType:  resourceType === "video" ? "video" : "image",
-          title:      title,
-          timestamp:  Date.now()
+          mediaUrl:  url,
+          mediaType: resourceType === "video" ? "video" : "image",
+          title:     title,
+          timestamp: Date.now()
         });
         uploadModal.classList.add("hidden");
+        selectedFile = null;
       } catch (err) {
         console.error("Upload error:", err);
         alert("Upload failed. Please try again.");
       } finally {
         modalPostBtn.classList.remove("loading");
         modalPostBtn.disabled = false;
+      }
+    });
+
+    // ── Highlight viewer ──────────────────────────────────────
+    const hlViewer    = $("hlViewer");
+    const hlViewerMedia = $("hlViewerMedia");
+    const hlViewerTitle = $("hlViewerTitle");
+    const hlViewerDd  = $("hlViewerDd");
+
+    function openViewer(item) {
+      currentHlId = item.id;
+      hlViewerMedia.innerHTML = item.mediaType === "video"
+        ? `<video src="${esc(item.mediaUrl)}" controls autoplay playsinline
+               style="max-width:100%;max-height:100%;object-fit:contain;"></video>`
+        : `<img src="${esc(item.mediaUrl)}" alt="${esc(item.title)}"
+               style="max-width:100%;max-height:100%;object-fit:contain;">`;
+      hlViewerTitle.textContent = item.title;
+      hlViewerDd.classList.add("hidden");
+      hlViewer.classList.remove("hidden");
+    }
+
+    $("hlViewerClose").addEventListener("click", () => {
+      hlViewer.classList.add("hidden");
+      hlViewerMedia.innerHTML = "";
+      currentHlId = null;
+    });
+
+    $("hlViewerMore").addEventListener("click", (e) => {
+      e.stopPropagation();
+      hlViewerDd.classList.toggle("hidden");
+    });
+
+    hlViewer.addEventListener("click", (e) => {
+      if (!e.target.closest(".hl-more-wrap")) {
+        hlViewerDd.classList.add("hidden");
+      }
+    });
+
+    $("hlDeleteBtn").addEventListener("click", async () => {
+      if (!currentHlId) return;
+      try {
+        await remove(ref(db, `users/${currentUser.uid}/highlights/${currentHlId}`));
+        hlViewer.classList.add("hidden");
+        hlViewerMedia.innerHTML = "";
+        currentHlId = null;
+      } catch (err) {
+        console.error("Delete error:", err);
+        alert("Delete failed. Please try again.");
       }
     });
 
