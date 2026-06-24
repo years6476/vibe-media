@@ -424,12 +424,15 @@
     async function fetchMyProfile() {
       if (!me) { myProfile = null; return; }
       const snap = await get(ref(db, `profiles/${me.uid}`));
+      console.log('[Profile] DB snap exists:', snap.exists(), '| data:', snap.val());
+      console.log('[Auth] me.photoURL:', me.photoURL, '| me.displayName:', me.displayName);
       if (snap.exists()) {
         myProfile = snap.val();
         /* DB-তে avatar_url না থাকলে Firebase Auth photoURL দিয়ে fill করো */
         if (!myProfile.avatar_url && me.photoURL) {
           myProfile.avatar_url = me.photoURL;
         }
+        console.log('[Profile] final myProfile:', myProfile);
         return;
       }
       /* Profile নেই → তৈরি করো */
@@ -443,6 +446,7 @@
       };
       await set(ref(db, `profiles/${me.uid}`), profilePayload);
       myProfile = profilePayload;
+      console.log('[Profile] created new profile:', myProfile);
     }
 
     /* ── REALTIME PROFILE SUBSCRIPTION (Firebase) ── */
