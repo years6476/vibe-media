@@ -423,30 +423,21 @@
     /* ── FETCH PROFILE (Firebase Realtime DB) ── */
     async function fetchMyProfile() {
       if (!me) { myProfile = null; return; }
-      const snap = await get(ref(db, `profiles/${me.uid}`));
-      console.log('[Profile] DB snap exists:', snap.exists(), '| data:', snap.val());
-      console.log('[Auth] me.photoURL:', me.photoURL, '| me.displayName:', me.displayName);
+      const snap = await get(ref(db, `users/${me.uid}`));
       if (snap.exists()) {
         myProfile = snap.val();
-        /* DB-তে avatar_url না থাকলে Firebase Auth photoURL দিয়ে fill করো */
-        if (!myProfile.avatar_url && me.photoURL) {
-          myProfile.avatar_url = me.photoURL;
-        }
-        console.log('[Profile] final myProfile:', myProfile);
         return;
       }
       /* Profile নেই → তৈরি করো */
       const profilePayload = {
-        id:         me.uid,
-        full_name:  me.displayName || null,
-        username:   me.email ? me.email.split('@')[0] : null,
-        bio:        null,
-        avatar_url: me.photoURL || null,
-        cover_url:  null
+        name:            me.displayName || null,
+        userName:        me.email ? me.email.split('@')[0] : null,
+        profilePhotoUrl: me.photoURL || null,
+        coverPhotoUrl:   null,
+        bio:             null
       };
-      await set(ref(db, `profiles/${me.uid}`), profilePayload);
+      await set(ref(db, `users/${me.uid}`), profilePayload);
       myProfile = profilePayload;
-      console.log('[Profile] created new profile:', myProfile);
     }
 
     /* ── REALTIME PROFILE SUBSCRIPTION (Firebase) ── */
@@ -454,21 +445,21 @@
     function setupProfileRealtime() {
       if (_profileUnsub) { _profileUnsub(); _profileUnsub = null; }
       if (!me) return;
-      _profileUnsub = onValue(ref(db, `profiles/${me.uid}`), snap => {
+      _profileUnsub = onValue(ref(db, `users/${me.uid}`), snap => {
         if (snap.exists()) { myProfile = snap.val(); renderAvatars(); }
       });
     }
 
     /* ── AVATAR HELPERS ── */
     function avatarHtmlFor(profile, size = 34) {
-      const name = profile?.full_name || profile?.username || me?.displayName || '?';
-      const url  = profile?.avatar_url || me?.photoURL || null;
+      const name = profile?.name || profile?.displayName || profile?.fullName || profile?.userName || me?.displayName || '?';
+      const url  = profile?.profilePhotoUrl || profile?.photoURL || me?.photoURL || null;
       if (url) return `<img src="${url}" alt="${esc(name)}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;">`;
       return `<span style="font-size:${Math.round(size*0.42)}px;font-weight:700;color:#374151;">${name.charAt(0).toUpperCase()}</span>`;
     }
 
     function renderAvatars() {
-      const hasImg = !!(myProfile?.avatar_url || me?.photoURL);
+      const hasImg = !!(myProfile?.profilePhotoUrl || myProfile?.photoURL || me?.photoURL);
       const navAv = document.getElementById('navAv');
       navAv.innerHTML = avatarHtmlFor(myProfile, 26);
       navAv.style.background = hasImg ? 'transparent' : '#e0f2fe';
@@ -560,7 +551,7 @@
         /* প্রতিটি পোস্টের profile ও likes fetch করো */
         const enriched = await Promise.all(posts.map(async p => {
           const [profSnap, likesSnap] = await Promise.all([
-            get(ref(db, `profiles/${p.user_id}`)),
+            get(ref(db, `users/${p.user_id}`)),
             get(ref(db, `likes/${p.id}`))
           ]);
           p.profile = profSnap.exists() ? profSnap.val() : {};
@@ -577,8 +568,10 @@
     const TYPE_COLORS = { thought:['#ede9fe','#7c3aed'], photo:['#d1fae5','#059669'], video:['#fee2e2','#dc2626'], audio:['#fef3c7','#d97706'], poll:['#dbeafe','#2563eb'] };
 
     function renderCard(post) {
-      const prof=post.profile||{}; const name=prof.full_name||prof.username||'Anonymous';
-      const url=prof.avatar_url; const initial=name.charAt(0).toUpperCase();
+      const prof=post.profile||{};
+      const name=prof.name||prof.displayName||prof.fullName||prof.userName||'Anonymous';
+      const url=prof.profilePhotoUrl||prof.photoURL||null;
+      const initial=name.charAt(0).toUpperCase();
       const likesMap=post.likesMap||{}; const likesCnt=Object.keys(likesMap).length;
       const isLiked=me?!!likesMap[me.uid]:false;
       const isOwner=me&&me.uid===post.user_id;
@@ -823,7 +816,7 @@
       const body = document.getElementById('searchBody');
       body.innerHTML = `<div class="search-spinner"><div class="spinner"></div></div>`;
       try {
-        const snap = await get(ref(db, 'profiles'));
+        const snap = await get(ref(db, 'users'));
         if (!snap.exists()) {
           body.innerHTML = `<div class="search-empty"><span>😕</span>"${esc(queryStr)}" নামে কোনো আইডি পাওয়া যায়নি</div>`;
           return;
@@ -832,8 +825,8 @@
         const results = [];
         snap.forEach(c => {
           const p = { id: c.key, ...c.val() };
-          const nameMatch = (p.full_name||'').toLowerCase().includes(q);
-          const userMatch = (p.username||'').toLowerCase().includes(q);
+          const nameMatch = (p.name||p.fullName||p.displayName||'').toLowerCase().includes(q);
+          const userMatch = (p.username||p.userName||'').toLowerCase().includes(q);
           if (nameMatch || userMatch) results.push(p);
         });
         if (!results.length) {
@@ -844,10 +837,10 @@
           <div class="search-section-title">${results.length}টি ফলাফল</div>
           <div class="search-results-list">
             ${results.slice(0,20).map(p => {
-              const name = p.full_name || p.username || 'Unknown';
-              const uname = p.username ? '@' + p.username : '';
-              const avHtml = p.avatar_url
-                ? `<img src="${p.avatar_url}" alt="${esc(name)}">`
+              const name = p.name||p.displayName||p.fullName||p.userName||'Unknown';
+              const uname = (p.username||p.userName) ? '@'+(p.username||p.userName) : '';
+              const avHtml = (p.profilePhotoUrl||p.photoURL)
+                ? `<img src="${p.profilePhotoUrl||p.photoURL}" alt="${esc(name)}">`
                 : `<span>${name.charAt(0).toUpperCase()}</span>`;
               return `<div class="search-result-item" onclick="openVisitorProfile('${p.id}');closeSearchPage();">
                 <div class="search-result-av">${avHtml}</div>
