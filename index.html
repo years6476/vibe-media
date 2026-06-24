@@ -1,859 +1,872 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Insight</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <style>
-    :root {
-      --primary:       #8A4FF7;
-      --primary-grad:  linear-gradient(135deg, #6C3EF4, #A65CF8);
-      --primary-light: #f3eefe;
-      --bg:            #ffffff;
-      --surface:       #f9f9f9;
-      --border:        #f0f0f0;
-      --text:          #1a1a1a;
-      --text-2:        #555;
-      --text-muted:    #aaa;
-      --topbar-h:      54px;
-      --bottomnav-h:   62px;
-      --max-w:         640px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #ffffff; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+    /* === TOP NAVBAR === */
+    .navbar {
+      background: #ffffff; padding: 5px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
     }
+    .navbar-logo img { height: 22px; object-fit: contain; }
+    .navbar-icons { display: flex; align-items: center; gap: 16px; }
+    .icon-btn { display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; padding: 4px; }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+    .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    /* === MAIN CONTENT === */
+    .main-content { width: 96%; max-width: 580px; margin: 0 auto; padding: 0 0 72px; }
+    /* === POST BOX === */
+    .post-box { background: #ffffff; border-radius: 10px; border: 1px solid #efefef; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .post-row-1 { display: flex; align-items: flex-start; gap: 12px; }
+    .profile-icon-wrap { position: relative; flex-shrink: 0; margin-left: -10px; margin-top: -8px; }
+    .profile-icon { width: 46px; height: 46px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .profile-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .profile-icon-badge { position: absolute; bottom: 1px; right: 1px; width: 14px; height: 14px; border-radius: 50%; background: #A855F7; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .placeholder-text { flex: 1; font-size: 12px; color: #9ca3af; margin-top: 2px; cursor: pointer; }
+    .feather-btn { display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; border: none; background: none; padding: 0; margin-right: -10px; margin-top: -8px; }
+    .post-row-2 { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; }
+    .media-btn { display: flex; align-items: center; gap: 3px; cursor: pointer; padding: 3px 4px; border-radius: 6px; border: none; background: none; flex: 1; justify-content: center; transition: background 0.15s; }
+    .media-btn:hover { background: #f9fafb; }
+    .media-btn img { width: 12px; height: 12px; object-fit: contain; flex-shrink: 0; }
+    .media-btn span { font-size: 10px; font-weight: 500; color: #374151; }
+    /* === HOME STORIES BAR === */
+    .home-stories-bar { display: flex; gap: 14px; overflow-x: auto; padding: 14px 2px 4px; margin-top: 10px; scrollbar-width: none; }
+    .home-stories-bar::-webkit-scrollbar { display: none; }
+    .hs-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex-shrink: 0; width: 78px; }
+    .hs-ring { width: 78px; height: 100px; border-radius: 12px; padding: 0; background: none !important; position: relative; }
+    .hs-ring-inner { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #f3f4f6; border: 1px solid #eaeaea; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: #374151; position: relative; }
+    .hs-ring-inner img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+    .hs-label { font-size: 11px; font-weight: 500; color: #374151; text-align: center; max-width: 78px; overflow: hidden; line-height: 1.3; word-break: break-word; }
+    .hs-more-circle { width: 78px; height: 100px; border-radius: 12px; background: #f3f4f6; border: 1px solid #eaeaea; display: flex; align-items: center; justify-content: center; }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .hidden { display: none !important; }
-
+    .hs-av-badge { position: absolute; top: 5px; left: 5px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; overflow: hidden; box-shadow: 0 1px 5px rgba(0,0,0,0.18); z-index: 2; }
+    .hs-av-badge img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* === POSTS FEED === */
+    .feed { margin-top: 12px; display: flex; flex-direction: column; gap: 14px; }
+    .post-card { background: #fff; border-radius: 8px; border: 1px solid #efefef; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); animation: fadeIn 0.25s ease; max-height: 500px; overflow: hidden; width: 100%; position: relative; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .post-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .post-av { width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; font-size: 15px; font-weight: 700; color: #374151; }
+    .post-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .post-user-info { flex: 1; min-width: 0; }
+    .post-username { font-size: 13px; font-weight: 600; color: #111; }
+    .post-time { font-size: 11px; color: #9ca3af; }
+    .post-content { font-size: 13.5px; color: #1f2937; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+    .post-actions { display: flex; gap: 4px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f3f4f6; }
+    .action-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; cursor: pointer; font-size: 13px; color: #6b7280; padding: 7px 12px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; }
+    .action-btn:hover { background: #f3f4f6; }
+    .action-btn.liked { color: #ef4444; }
+    .action-btn.liked:hover { background: #fef2f2; }
+    .post-delete-btn { margin-left: auto; background: none; border: none; cursor: pointer; color: #d1d5db; padding: 5px 8px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+    .post-delete-btn:hover { color: #ef4444; background: #fef2f2; }
+    /* === AUTH MODAL === */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
+    .overlay.active { display: flex; }
+    .auth-modal { background: #fff; border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.18); position: relative; animation: popIn 0.22s ease; }
+    @keyframes popIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:none; } }
+    .auth-modal h2 { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 3px; }
+    .auth-modal .sub { font-size: 12px; color: #6b7280; margin-bottom: 22px; }
+    .auth-tabs { display: flex; border-bottom: 2px solid #f3f4f6; margin-bottom: 22px; }
+    .auth-tab { flex: 1; padding: 9px; border: none; background: none; font-size: 13px; font-weight: 600; color: #9ca3af; cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; }
+    .auth-tab.active { color: #111; border-bottom-color: #111; }
+    .auth-fields { display: flex; flex-direction: column; gap: 11px; }
+    .auth-input { width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb; border-radius: 11px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: 'Segoe UI', sans-serif; }
+    .auth-input:focus { border-color: #374151; }
+    .auth-btn { width: 100%; padding: 12px; background: #111; color: #fff; border: none; border-radius: 11px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; font-family: 'Segoe UI', sans-serif; }
+    .auth-btn:hover { opacity: 0.85; }
+    .auth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .auth-err { font-size: 12px; color: #ef4444; min-height: 14px; text-align: center; }
+    .modal-x { position: absolute; top: 14px; right: 16px; background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 18px; line-height: 1; }
+    .modal-x:hover { color: #374151; }
+    /* === UTILITY === */
+    .loading-wrap { display: flex; justify-content: center; padding: 30px 0; }
+    .spinner { width: 22px; height: 22px; border: 2.5px solid #e5e7eb; border-top-color: #374151; border-radius: 50%; animation: spin 0.75s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 32px 20px; color: #9ca3af; font-size: 13px; }
+    .empty-state span { font-size: 28px; display: block; margin-bottom: 8px; }
+    .toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: #111; color: #fff; padding: 10px 20px; border-radius: 22px; font-size: 12px; font-weight: 500; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    .toast.show { opacity: 1; }
+    .story-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex-shrink: 0; }
+    .story-circle { width: 62px; height: 62px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .story-new-circle { background: #f3f4f6; border: 2px dashed #9ca3af; }
+    .story-thumb-circle { background: linear-gradient(135deg,#6C63FF,#A855F7); padding: 4.5px; }
+    .story-thumb-inner { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; padding: 3px; display: flex; align-items: center; justify-content: center; }
+    .story-thumb-inner img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .story-label { font-size: 11px; font-weight: 500; color: #374151; text-align: center; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Story upload modal */
+    .story-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 1100; backdrop-filter: blur(4px); }
+    .story-overlay.active { display: flex; }
+    .story-modal { background: #fff; border-radius: 22px 22px 0 0; padding: 20px 20px 36px; width: 100%; max-width: 540px; animation: slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+    .story-modal-header { display: flex; align-items: center; margin-bottom: 18px; }
+    .story-modal-title { font-size: 15px; font-weight: 700; flex: 1; text-align: center; }
+    .story-back-btn { background: none; border: none; cursor: pointer; color: #6b7280; display: flex; align-items: center; padding: 4px; }
+    .story-upload-zone { border: 2px dashed #e5e7eb; border-radius: 16px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 8px; background: #fafafa; overflow: hidden; }
+    .story-upload-zone p { font-size: 13px; color: #9ca3af; }
+    .story-preview-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .story-preview-wrap img,.story-preview-wrap video { max-width: 100%; max-height: 100%; object-fit: contain; }
+    /* Story viewer */
+    .story-viewer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 1200; }
+    .story-viewer-overlay.active { display: flex; }
+    .story-viewer { position: relative; max-width: 420px; width: 100%; padding: 0 16px; }
+    .story-viewer-close { position: absolute; top: -52px; right: 16px; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
+    .story-viewer-media img,.story-viewer-media video { width: 100%; border-radius: 16px; max-height: 80vh; object-fit: contain; }
+    .story-viewer-title { text-align: center; color: #fff; font-size: 14px; font-weight: 600; margin-top: 12px; }
 
-    /* ══════════════════════════════════════
-       TOP BAR
-    ══════════════════════════════════════ */
-    .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--topbar-h);
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    /* === BOTTOM NAVBAR === */
+    .bottom-navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-around; padding: 0 6px; z-index: 900; }
+    .bottom-plus-btn { width: 44px; height: 44px; border-radius: 50%; background: #6C63FF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(108,99,255,0.45); transition: transform 0.15s; }
+    .bottom-plus-btn:active { transform: scale(0.93); }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; cursor: pointer; color: #6b7280; padding: 4px 8px; }
+    .bottom-nav-item span { font-size: 10px; font-weight: 500; line-height: 1; }
 
-    .topbar-inner {
-      width: 100%;
-      max-width: var(--max-w);
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .post-card.clipped::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 48px; background: linear-gradient(transparent, #fff); pointer-events: none; border-radius: 0 0 16px 16px; }
 
-    .topbar-logo {
-      height: 28px;
-      object-fit: contain;
-    }
+    .post-media { margin: 10px -16px 0; overflow: hidden; }
+    .post-media img { width: 100%; max-height: 340px; object-fit: cover; display: block; border-radius: 0 0 5px 5px; }
+    .post-media-video { position: relative; background: #000; }
+    .post-media-video video { width: 100%; max-height: 300px; display: block; object-fit: cover; }
+    .post-media-video .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .post-audio-card { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-radius: 12px; padding: 14px 16px; margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+    .post-audio-icon { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#A855F7,#EC4899); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .post-audio-info { flex: 1; min-width: 0; }
+    .post-audio-title { font-size: 12px; font-weight: 600; color: #111; }
+    .post-audio-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .post-audio-wave { display: flex; align-items: flex-end; gap: 2.5px; height: 20px; }
+    .post-audio-wave span { display: block; width: 3px; border-radius: 2px; background: #A855F7; }
+    .post-video-thumb { position: relative; margin: 10px -16px 0; cursor: pointer; }
+    .post-video-thumb img { width: 100%; max-height: 300px; object-fit: cover; display: block; filter: brightness(0.82); }
+    .post-video-thumb .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.93); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
+    .post-video-thumb .vid-duration { position: absolute; bottom: 8px; right: 12px; background: rgba(0,0,0,0.72); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      color: var(--text);
-      position: relative;
-      transition: background 0.15s;
-    }
-
-    .icon-btn:hover { background: var(--surface); }
-
-    .notif-dot {
-      position: absolute;
-      top: 6px; right: 6px;
-      width: 8px; height: 8px;
-      background: #f04;
-      border-radius: 50%;
-      border: 2px solid #fff;
-    }
-
-    /* ══════════════════════════════════════
-       MAIN SCROLL AREA
-    ══════════════════════════════════════ */
-    .main {
-      padding-top: var(--topbar-h);
-      padding-bottom: var(--bottomnav-h);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .main-content {
-      width: 100%;
-      max-width: var(--max-w);
-    }
-
-    /* ══════════════════════════════════════
-       STORIES
-    ══════════════════════════════════════ */
-    .stories-section {
-      padding: 14px 0 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stories-scroll {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      padding: 0 16px;
-      scrollbar-width: none;
-    }
-    .stories-scroll::-webkit-scrollbar { display: none; }
-
-    .story-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-
-    .story-ring {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      padding: 2.5px;
-      background: var(--primary-grad);
-    }
-
-    .story-ring-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 2.5px solid #fff;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface);
-    }
-
-    .story-ring-inner img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-
-    /* Add story item */
-    .story-add .story-ring {
-      background: var(--border);
-      padding: 0;
-    }
-
-    .story-add .story-ring-inner {
-      border: none;
-      background: var(--surface);
-      position: relative;
-    }
-
-    .story-add-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--primary-grad);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
-
-    .story-name {
-      font-size: 11px;
-      color: var(--text-2);
-      font-weight: 500;
-      max-width: 60px;
-      text-align: center;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    /* ══════════════════════════════════════
-       FEED
-    ══════════════════════════════════════ */
-    #feedContainer {
-      padding-top: 6px;
-    }
-
-    /* Loading posts spinner */
-    .feed-loading {
-      display: flex;
-      justify-content: center;
-      padding: 48px 0;
-    }
-
-    .feed-spinner {
-      width: 28px;
-      height: 28px;
-      border: 2.5px solid rgba(138, 79, 247, 0.2);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    /* Empty state */
-    .empty-feed {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 24px 40px;
-      gap: 10px;
-      text-align: center;
-    }
-
-    .empty-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--primary-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary);
-      margin-bottom: 6px;
-    }
-
-    .empty-feed h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .empty-feed p {
-      font-size: 13px;
-      color: var(--text-muted);
-      max-width: 220px;
-      line-height: 1.6;
-    }
-
-    .empty-cta {
-      margin-top: 8px;
-      padding: 11px 26px;
-      background: var(--primary-grad);
-      color: #fff;
-      border: none;
-      border-radius: 24px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-    .empty-cta:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* ══════════════════════════════════════
-       POST CARD
-    ══════════════════════════════════════ */
-    .post-card {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 4px;
-    }
-
-    .post-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px 10px;
-    }
-
-    .post-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .post-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: var(--surface);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .post-avatar img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-
-    .post-meta { display: flex; flex-direction: column; gap: 1px; }
-
-    .post-username {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
-    .post-time {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .post-more {
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      background: none; border: none; cursor: pointer;
-      border-radius: 50%;
-      color: var(--text-2);
-      transition: background 0.15s;
-    }
-    .post-more:hover { background: var(--surface); }
-
-    .post-content {
-      padding: 0 16px 12px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .post-media {
-      width: 100%;
-      background: #000;
-      max-height: 480px;
-      overflow: hidden;
-    }
-
-    .post-media img,
-    .post-media video {
-      width: 100%;
-      height: auto;
-      max-height: 480px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .post-actions {
-      display: flex;
-      align-items: center;
-      padding: 8px 12px;
-      gap: 4px;
-    }
-
-    .action-btn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-2);
-      font-size: 13px;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      padding: 6px 8px;
-      border-radius: 8px;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    .action-btn:hover { background: var(--surface); }
-
-    .action-btn.liked { color: #e63950; }
-    .action-btn.liked svg { fill: #e63950; stroke: #e63950; }
-
-    .action-count { font-size: 13px; }
-
-    .action-btn.bookmark-btn { margin-left: auto; }
-
-    /* ══════════════════════════════════════
-       BOTTOM NAVIGATION
-    ══════════════════════════════════════ */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--bottomnav-h);
-      background: #fff;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    .bottom-nav-inner {
-      width: 100%;
-      max-width: var(--max-w);
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 0 8px;
-      height: 100%;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      flex: 1;
-      height: 100%;
-      cursor: pointer;
-      border: none;
-      background: none;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-family: 'Poppins', sans-serif;
-      font-size: 10px;
-      font-weight: 500;
-      transition: color 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .nav-item:hover,
-    .nav-item.active { color: var(--primary); }
-
-    .nav-item.active svg { stroke: var(--primary); }
-
-    /* Create post button (center) */
-    .nav-create {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      cursor: pointer;
-      background: none;
-      border: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .nav-create-circle {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      background: var(--primary-grad);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 4px 14px rgba(138, 79, 247, 0.35);
-    }
-
-    .nav-create:hover .nav-create-circle {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(138, 79, 247, 0.4);
-    }
-
-    /* ══════════════════════════════════════
-       RESPONSIVE
-    ══════════════════════════════════════ */
-    @media (min-width: 640px) {
-      .topbar-inner { padding: 0 24px; }
-      .main-content { padding: 0; }
-      .post-content { font-size: 15px; }
-    }
+    /* === SEARCH PAGE === */
+    .search-page { position: fixed; inset: 0; background: #fff; z-index: 500; display: none; flex-direction: column; }
+    .search-page.active { display: flex; }
+    .search-page-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f0f0f0; background: #fff; position: sticky; top: 0; z-index: 10; }
+    .search-back-btn { background: none; border: none; cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.15s; flex-shrink: 0; }
+    .search-back-btn:hover { background: #f3f4f6; }
+    .search-input-wrap { flex: 1; position: relative; display: flex; align-items: center; }
+    .search-input-wrap svg { position: absolute; left: 11px; pointer-events: none; }
+    .search-main-input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #e5e7eb; border-radius: 22px; font-size: 14px; outline: none; background: #f9fafb; font-family: 'Segoe UI', sans-serif; transition: border-color 0.2s, background 0.2s; }
+    .search-main-input:focus { border-color: #6C63FF; background: #fff; }
+    .search-body { flex: 1; overflow-y: auto; padding: 12px 16px 80px; }
+    .search-section-title { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; margin-top: 6px; }
+    .search-history-list { display: flex; flex-direction: column; gap: 2px; }
+    .search-history-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; cursor: pointer; transition: background 0.13s; }
+    .search-history-item:hover { background: #f9fafb; }
+    .search-history-icon { width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .search-history-text { font-size: 13px; color: #374151; font-weight: 500; }
+    .search-history-del { margin-left: auto; background: none; border: none; cursor: pointer; color: #d1d5db; padding: 4px; font-size: 16px; line-height: 1; border-radius: 50%; transition: color 0.15s, background 0.15s; }
+    .search-history-del:hover { color: #ef4444; background: #fef2f2; }
+    .search-results-list { display: flex; flex-direction: column; gap: 6px; }
+    .search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px 10px; border-radius: 12px; cursor: pointer; transition: background 0.13s; }
+    .search-result-item:hover { background: #f9fafb; }
+    .search-result-av { width: 42px; height: 42px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #374151; overflow: hidden; flex-shrink: 0; }
+    .search-result-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .search-result-info { flex: 1; min-width: 0; }
+    .search-result-name { font-size: 14px; font-weight: 600; color: #111; }
+    .search-result-username { font-size: 12px; color: #6b7280; margin-top: 1px; }
+    .search-empty { text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 13px; }
+    .search-empty span { font-size: 28px; display: block; margin-bottom: 8px; }
+    .search-spinner { display: flex; justify-content: center; padding: 24px 0; }
   </style>
 </head>
 <body>
 
-  <!-- ══ App Shell ══ -->
-  <div id="app">
+  <!-- ===== APP LOADER (shows while auth is being checked) ===== -->
+  <div id="appLoader" style="position:fixed;inset:0;z-index:99999;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+    <div style="width:38px;height:38px;border:3.5px solid #ede9fe;border-top-color:#6C63FF;border-radius:50%;animation:spin 0.75s linear infinite;"></div>
+  </div>
 
-    <!-- Top Bar -->
-    <header class="topbar">
-      <div class="topbar-inner">
-        <img
-          src="https://i.ibb.co.com/1fKZGC7X/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png"
-          alt="Insight"
-          class="topbar-logo"
-          draggable="false"
-        />
-
-        <div class="topbar-actions">
-          <!-- Search -->
-          <button class="icon-btn" id="searchBtn" aria-label="Search" onclick="window.location.href='/explore'">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </button>
-
-          <!-- Notifications -->
-          <button class="icon-btn" id="notifBtn" aria-label="Notifications" onclick="window.location.href='/notifications'">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <span class="notif-dot hidden" id="notifDot"></span>
-          </button>
-
-          <!-- Messages -->
-          <button class="icon-btn" aria-label="Messages" onclick="window.location.href='/messages'">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
-
-
-    <!-- Main scroll area -->
-    <main class="main">
-      <div class="main-content">
-
-        <!-- Stories -->
-        <div class="stories-section">
-          <div class="stories-scroll" id="storiesRow">
-
-            <!-- Add Story (always first) -->
-            <div class="story-item story-add" id="addStoryBtn">
-              <div class="story-ring">
-                <div class="story-ring-inner">
-                  <div class="story-add-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <span class="story-name">Your Story</span>
-            </div>
-
-            <!-- Other stories injected here by JS -->
-
-          </div>
-        </div>
-
-
-        <!-- Feed -->
-        <div id="feedContainer">
-
-          <!-- Loading -->
-          <div class="feed-loading" id="feedLoading">
-            <div class="feed-spinner"></div>
-          </div>
-
-          <!-- Empty state -->
-          <div class="empty-feed hidden" id="emptyFeed">
-            <div class="empty-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </div>
-            <h3>No posts yet</h3>
-            <p>Follow people or be the first to share something!</p>
-            <button class="empty-cta" id="createFromEmpty">Create Post</button>
-          </div>
-
-          <!-- Post cards injected here by JS -->
-
-        </div>
-
-      </div>
-    </main>
-
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <div class="bottom-nav-inner">
-
-        <!-- Home -->
-        <a href="/" class="nav-item active" aria-label="Home">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-          <span>Home</span>
-        </a>
-
-        <!-- Explore -->
-        <a href="/explore" class="nav-item" aria-label="Explore">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <span>Explore</span>
-        </a>
-
-        <!-- Create (center) -->
-        <button class="nav-create" id="createPostBtn" aria-label="Create Post">
-          <div class="nav-create-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </div>
+    <!-- ===== STORY UPLOAD MODAL ===== -->
+  <div class="story-overlay" id="storyOverlay">
+    <div class="story-modal">
+      <div class="story-modal-header">
+        <button class="story-back-btn" onclick="closeStoryModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         </button>
-
-        <!-- Notifications -->
-        <a href="/notifications" class="nav-item" aria-label="Notifications">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span>Activity</span>
-        </a>
-
-        <!-- Profile -->
-        <a href="/profile" class="nav-item" id="profileNavBtn" aria-label="Profile">
-          <div id="navAvatar" style="
-            width:26px; height:26px; border-radius:50%;
-            background: var(--surface); overflow:hidden;
-            display:flex; align-items:center; justify-content:center;
-            border: 1.5px solid var(--border); flex-shrink:0;
-          ">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </div>
-          <span>Profile</span>
-        </a>
-
+        <span class="story-modal-title">New</span>
+        <div style="width:28px;"></div>
       </div>
-    </nav>
+      <div class="story-upload-zone" id="storyUploadZone" onclick="document.getElementById('storyFileInput').click()">
+        <input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;" onchange="onStoryFileSelect(event)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>Tap to select photo / video</p>
+      </div>
+      <p class="auth-err" id="storyErr"></p>
+      <button class="login-btn" id="storySubmitBtn" onclick="submitStory()">Add</button>
+    </div>
+  </div>
 
-  </div><!-- #app -->
+  <!-- ===== STORY VIEWER ===== -->
+  <div class="story-viewer-overlay" id="storyViewerOverlay" onclick="closeStoryViewer()">
+    <div class="story-viewer" onclick="event.stopPropagation()">
+      <button class="story-viewer-close" onclick="closeStoryViewer()">✕</button>
+      <div class="story-viewer-media" id="storyViewerMedia"></div>
+      <div class="story-viewer-title" id="storyViewerTitle"></div>
+    </div>
+  </div>
 
+  <!-- ===== SEARCH PAGE ===== -->
+  <div class="search-page" id="searchPage">
+    <div class="search-page-header">
+      <button class="search-back-btn" onclick="closeSearchPage()" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-main-input" id="searchInput" type="text" placeholder="নাম বা username দিয়ে সার্চ করুন..." autocomplete="off" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
+      </div>
+    </div>
+    <div class="search-body" id="searchBody">
+      <!-- dynamically filled -->
+    </div>
+  </div>
 
-  <!-- ══ Firebase Logic ══ -->
+  <!-- ===== TOAST ===== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="modal-x" onclick="closeAuth()">✕</button>
+      <h2>স্বাগতম 👋</h2>
+      <p class="sub">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">লগইন</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">সাইনআপ</button>
+      </div>
+      <div id="loginFields" class="auth-fields">
+        <input class="auth-input" type="email" id="liEmail" placeholder="ইমেইল অ্যাড্রেস">
+        <input class="auth-input" type="password" id="liPass" placeholder="পাসওয়ার্ড">
+        <p class="auth-err" id="liErr"></p>
+        <button class="auth-btn" id="liBtn" onclick="doLogin()">লগইন করুন</button>
+      </div>
+      <div id="signupFields" class="auth-fields" style="display:none;">
+        <input class="auth-input" type="text" id="suName" placeholder="আপনার নাম">
+        <input class="auth-input" type="email" id="suEmail" placeholder="ইমেইল অ্যাড্রেস">
+        <input class="auth-input" type="password" id="suPass" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)">
+        <p class="auth-err" id="suErr"></p>
+        <button class="auth-btn" id="suBtn" onclick="doSignup()">অ্যাকাউন্ট তৈরি করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOP NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="https://i.ibb.co.com/VWzTFZXq/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png" alt="Logo">
+    </div>
+    <div class="navbar-icons">
+      <button class="icon-btn" aria-label="Search" onclick="openSearchPage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+      <button class="icon-btn" id="navProfileBtn" aria-label="Profile" onclick="onNavProfile()">
+        <div class="nav-avatar" id="navAv">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main-content">
+    <div class="post-box">
+      <div class="post-row-1">
+        <div class="profile-icon-wrap">
+          <div class="profile-icon" id="boxAvatar">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="profile-icon-badge" onclick="openNewStory()" aria-label="Add story">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <span class="placeholder-text" onclick="onPostBox()">What's on your mind?</span>
+        <button class="feather-btn" aria-label="Write" onclick="onPostBox()">
+          <img src="https://i.ibb.co.com/dJgwYmtr/file-00000000a9bc71faafb1a54efda8247b-1-removebg-preview.png" width="42" height="42" style="object-fit:contain;" alt="feather">
+        </button>
+      </div>
+      <div class="post-row-2">
+        <button class="media-btn" onclick="onMediaBtn('thought')"><img src="https://i.ibb.co.com/1f8xc7pj/file-00000000e59471faacaa2cd1b3a17805-1-removebg-preview.png" alt="Thought"><span>Thought</span></button>
+        <button class="media-btn" onclick="onMediaBtn('photo')"><img src="https://i.ibb.co.com/JjnPSvfX/file-00000000380871fabb3a7bf2fa6a1c78-1-removebg-preview.png" alt="Photo"><span>Photo</span></button>
+        <button class="media-btn" onclick="onMediaBtn('video')"><img src="https://i.ibb.co.com/cK1fgt4T/file-00000000527c71fa8767d24ba15cf56b-1-removebg-preview.png" alt="Video"><span>Video</span></button>
+        <button class="media-btn" onclick="onMediaBtn('audio')"><img src="https://i.ibb.co.com/Ld0J7bpR/file-00000000648071faabc58e28cbf9110b-1-removebg-preview.png" alt="Audio"><span>Audio</span></button>
+        <button class="media-btn" onclick="onMediaBtn('poll')"><img src="https://i.ibb.co.com/rf1Ks2R4/file-00000000d35472079f4f8facfcaa02d3-1-removebg-preview.png" alt="Poll"><span>Poll</span></button>
+      </div>
+    </div>
+    <div class="home-stories-bar" id="homeStoriesBar">
+      <div class="hs-item" onclick="openNewStory()">
+        <div class="hs-ring">
+          <div class="hs-ring-inner">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <span class="hs-label" style="font-size:11px;font-weight:600;color:#2563EB;text-align:center;">Create Story</span>
+      </div>
+      <div class="hs-item" onclick="toast('এই ফিচারটি খুব দ্রুত আসছে ✨')">
+        <div class="hs-more-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.55 3.43 17 5.69 18.61L5 22L8.53 20.08C9.64 20.39 10.8 20.6 12 20.6C17.52 20.6 22 16.66 22 11.8C22 6.94 17.52 3 12 3Z" fill="#A855F7"/><circle cx="9" cy="11" r="1" fill="white"/><circle cx="15" cy="11" r="1" fill="white"/><path d="M9 14C10 15 14 15 15 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        
+      </div>
+    </div>
+    <div class="feed" id="feed">
+    </div>
+
+  <!-- ===== BOTTOM NAVBAR ===== -->
+  <div class="bottom-navbar">
+    <button class="bottom-nav-item" aria-label="Home">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="bottom-nav-item" aria-label="Friends" onclick="window.location.href='/friend'">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span>Friend</span>
+    </button>
+    <button class="bottom-plus-btn" onclick="window.location.href='/create'" aria-label="Create post">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+    <button class="bottom-nav-item" aria-label="Inbox" onclick="window.location.href='/messages'">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Inbox</span>
+    </button>
+    <button class="bottom-nav-item" aria-label="Me" onclick="window.location.href='/profile'">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Me</span>
+    </button>
+  </div>
+
   <script type="module">
-    import { auth, db } from "./config.js";
+    import { auth, db, CLOUDINARY, uploadToCloudinary } from "./config.js";
     import {
-      onAuthStateChanged
+      onAuthStateChanged, signInWithEmailAndPassword,
+      createUserWithEmailAndPassword, signOut, updateProfile
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
     import {
-      ref, query, orderByChild, limitToLast, onValue
+      ref, push, set, get, remove, query,
+      orderByChild, limitToLast, onChildAdded, onChildRemoved, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
-    const loadingScreen  = document.getElementById("loadingScreen");
-    const app            = document.getElementById("app");
-    const feedContainer  = document.getElementById("feedContainer");
-    const feedLoading    = document.getElementById("feedLoading");
-    const emptyFeed      = document.getElementById("emptyFeed");
-    const navAvatar      = document.getElementById("navAvatar");
-    const createPostBtn  = document.getElementById("createPostBtn");
-    const createFromEmpty= document.getElementById("createFromEmpty");
+    let me = null;
+    let myProfile = null;
+    let storyFile = null;
+    let homeStorySlots = [];
 
-    let currentUser = null;
+    /* ── AUTH INITIALIZATION ──
+       getSession() is the reliable way to get current session on page load.
+       It auto-refreshes expired tokens and always returns the true current state.
+       onAuthStateChange handles ONLY runtime events (login/logout/token refresh). */
 
-    // ── SVG icon strings for post actions ───────────────────
-    const HEART_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78
-               l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>`;
+    let _uiReady = false;
 
-    const COMMENT_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>`;
-
-    const SHARE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13"/>
-      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-    </svg>`;
-
-    const BOOKMARK_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-    </svg>`;
-
-    const MORE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
-    </svg>`;
-
-    // ── Auth check ───────────────────────────────────────────
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "/login";
-        return;
+    /* Safety net: loader সর্বোচ্চ ৪ সেকেন্ড থাকবে */
+    const _loaderTimer = setTimeout(() => {
+      const l = document.getElementById('appLoader');
+      if (l) l.style.display = 'none';
+      if (!_uiReady) {
+            loadFeed();
+        loadHomeStories();
       }
+    }, 4000);
 
-      currentUser = user;
+    function _hideLoader() {
+      clearTimeout(_loaderTimer);
+      const l = document.getElementById('appLoader');
+      if (l) l.style.display = 'none';
+    }
 
-      // Profile avatar in bottom nav
-      if (user.photoURL) {
-        navAvatar.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;" alt="Profile">`;
-      } else {
-        const letter = (user.displayName || user.email || "?")[0].toUpperCase();
-        navAvatar.innerHTML = `<span style="font-size:13px;font-weight:600;color:var(--primary)">${letter}</span>`;
-      }
-
+    async function _onAuth(me_user) {
+      /* logged in — init everything */
+      _uiReady = true;
+      me = me_user;
+      _hideLoader();
+      try { await fetchMyProfile(); renderAvatars(); setupProfileRealtime(); } catch(e) { console.error(e); }
       loadFeed();
+      loadHomeStories();
+    }
+
+    function _onNoAuth() {
+      /* not logged in */
+      _hideLoader();
+      me = null;
+        loadFeed();
+      loadHomeStories();
+    }
+
+    /* ── SINGLE AUTH LISTENER — Firebase ── */
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if (!_uiReady) await _onAuth(user);
+        else me = user;
+      } else {
+        _uiReady = false; me = null; myProfile = null;
+        clearAvatars();
+        _hideLoader();
+        loadFeed(); loadHomeStories();
+      }
     });
 
-    // ── Create post button ───────────────────────────────────
-    createPostBtn.addEventListener("click",  () => window.location.href = "/create");
-    createFromEmpty.addEventListener("click", () => window.location.href = "/create");
+    /* ── FETCH PROFILE (Firebase Realtime DB) ── */
+    async function fetchMyProfile() {
+      if (!me) { myProfile = null; return; }
+      const snap = await get(ref(db, `profiles/${me.uid}`));
+      if (snap.exists()) { myProfile = snap.val(); return; }
+      /* Profile নেই → তৈরি করো */
+      const profilePayload = {
+        id:         me.uid,
+        full_name:  me.displayName || null,
+        username:   me.email ? me.email.split('@')[0] : null,
+        bio:        null,
+        avatar_url: me.photoURL || null,
+        cover_url:  null
+      };
+      await set(ref(db, `profiles/${me.uid}`), profilePayload);
+      myProfile = profilePayload;
+    }
 
-    // ── Load feed from Firebase ──────────────────────────────
-    function loadFeed() {
-      const postsQuery = query(
-        ref(db, "posts"),
-        orderByChild("timestamp"),
-        limitToLast(30)
-      );
+    /* ── REALTIME PROFILE SUBSCRIPTION (Firebase) ── */
+    let _profileUnsub = null;
+    function setupProfileRealtime() {
+      if (_profileUnsub) { _profileUnsub(); _profileUnsub = null; }
+      if (!me) return;
+      // Firebase onValue – import করা হয়নি তাই get দিয়ে চালাও; realtime চাইলে onValue import করুন
+    }
 
-      onValue(postsQuery, (snapshot) => {
-        feedLoading.classList.add("hidden");
+    /* ── AVATAR HELPERS ── */
+    function avatarHtmlFor(profile, size = 34) {
+      const name = profile?.full_name || profile?.username || '?';
+      const url  = profile?.avatar_url;
+      if (url) return `<img src="${url}" alt="${esc(name)}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;">`;
+      return `<span style="font-size:${Math.round(size*0.42)}px;font-weight:700;color:#374151;">${name.charAt(0).toUpperCase()}</span>`;
+    }
 
-        // Remove old post cards
-        document.querySelectorAll(".post-card").forEach(el => el.remove());
+    function renderAvatars() {
+      const navAv = document.getElementById('navAv');
+      navAv.innerHTML = avatarHtmlFor(myProfile, 26);
+      navAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
+      const boxAv = document.getElementById('boxAvatar');
+      boxAv.innerHTML = avatarHtmlFor(myProfile, 40);
+      boxAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
+    }
 
-        if (!snapshot.exists()) {
-          emptyFeed.classList.remove("hidden");
+    function clearAvatars() {
+      const svg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+      ['navAv'].forEach(id => { const el=document.getElementById(id); el.innerHTML=svg; el.style.background='#f3f4f6'; });
+      const svg2 = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+      ['boxAvatar'].forEach(id => { const el=document.getElementById(id); el.innerHTML=svg2; el.style.background='#f3f4f6'; });
+    }
+
+    /* ── NAV ── */
+    function onNavProfile() { if (me) { window.location.href = '/profile'; } else { openAuth(); } }
+
+    /* ── AUTH MODAL ── */
+    function openAuth()  { document.getElementById('authOverlay').classList.add('active'); }
+    function closeAuth() { document.getElementById('authOverlay').classList.remove('active'); }
+
+    function switchTab(tab) {
+      document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+      document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+      document.getElementById('loginFields').style.display  = tab==='login'  ? 'flex' : 'none';
+      document.getElementById('signupFields').style.display = tab==='signup' ? 'flex' : 'none';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('liEmail').value.trim();
+      const pass  = document.getElementById('liPass').value;
+      const errEl = document.getElementById('liErr');
+      const btn   = document.getElementById('liBtn');
+      if (!email || !pass) { errEl.textContent='ইমেইল ও পাসওয়ার্ড দিন'; return; }
+      btn.disabled=true; btn.textContent='লোড হচ্ছে...'; errEl.textContent='';
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        closeAuth(); toast('সফলভাবে লগইন হয়েছে ✓');
+      } catch(e) {
+        errEl.textContent='ইমেইল বা পাসওয়ার্ড ভুল হয়েছে';
+      }
+      btn.disabled=false; btn.textContent='লগইন করুন';
+    }
+
+    async function doSignup() {
+      const name  = document.getElementById('suName').value.trim();
+      const email = document.getElementById('suEmail').value.trim();
+      const pass  = document.getElementById('suPass').value;
+      const errEl = document.getElementById('suErr');
+      const btn   = document.getElementById('suBtn');
+      if (!name||!email||!pass) { errEl.textContent='সব তথ্য পূরণ করুন'; return; }
+      if (pass.length<6) { errEl.textContent='পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'; return; }
+      btn.disabled=true; btn.textContent='তৈরি হচ্ছে...'; errEl.textContent='';
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(cred.user, { displayName: name });
+        const uname = name.toLowerCase().replace(/\s+/g,'_');
+        await set(ref(db, `profiles/${cred.user.uid}`), {
+          id: cred.user.uid, full_name: name, username: uname,
+          bio: null, avatar_url: null, cover_url: null
+        });
+        closeAuth(); toast('অ্যাকাউন্ট তৈরি হয়েছে ✓');
+      } catch(e) {
+        errEl.textContent = e.message || 'অ্যাকাউন্ট তৈরি হয়নি';
+      }
+      btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
+    }
+
+
+
+    /* ── POST BOX ── */
+    function onPostBox()      { if (!me) { openAuth(); return; } window.location.href = '/create'; }
+    function onMediaBtn(type) { if (!me) { openAuth(); return; } window.location.href = '/create'; }
+
+    /* ── FEED (Firebase) ── */
+    async function loadFeed() {
+      const feedEl = document.getElementById('feed');
+      if (!feedEl) return;
+      feedEl.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+      try {
+        const postsSnap = await get(query(ref(db, 'posts'), orderByChild('created_at'), limitToLast(40)));
+        if (!postsSnap.exists()) {
+          feedEl.innerHTML = '<div class="empty-state"><span>🚀</span>এখনো কোনো পোস্ট নেই। প্রথম পোস্ট করুন!</div>';
           return;
         }
-
-        emptyFeed.classList.add("hidden");
-
-        // Collect & reverse (newest first)
         const posts = [];
-        snapshot.forEach((child) => {
-          posts.unshift({ id: child.key, ...child.val() });
-        });
-
-        posts.forEach(post => {
-          const card = buildPostCard(post);
-          feedContainer.appendChild(card);
-        });
-      });
+        postsSnap.forEach(c => posts.unshift({ id: c.key, ...c.val() }));
+        /* প্রতিটি পোস্টের profile ও likes fetch করো */
+        const enriched = await Promise.all(posts.map(async p => {
+          const [profSnap, likesSnap] = await Promise.all([
+            get(ref(db, `profiles/${p.user_id}`)),
+            get(ref(db, `likes/${p.id}`))
+          ]);
+          p.profile = profSnap.exists() ? profSnap.val() : {};
+          p.likesMap = likesSnap.exists() ? likesSnap.val() : {};
+          return p;
+        }));
+        feedEl.innerHTML = enriched.map(renderCard).join('');
+      } catch(err) {
+        console.error('loadFeed:', err);
+        feedEl.innerHTML = '<div class="empty-state"><span>⚠️</span>পোস্ট লোড হয়নি</div>';
+      }
     }
 
-    // ── Build post card element ──────────────────────────────
-    function buildPostCard(post) {
-      const card = document.createElement("article");
-      card.className = "post-card";
-      card.dataset.postId = post.id;
+    const TYPE_COLORS = { thought:['#ede9fe','#7c3aed'], photo:['#d1fae5','#059669'], video:['#fee2e2','#dc2626'], audio:['#fef3c7','#d97706'], poll:['#dbeafe','#2563eb'] };
 
-      const isLiked    = post.likes?.[currentUser?.uid] === true;
-      const likeCount  = post.likesCount  || 0;
-      const cmtCount   = post.commentsCount || 0;
-      const avatarHtml = post.avatarUrl
-        ? `<img src="${escHtml(post.avatarUrl)}" alt="${escHtml(post.username || '')}" style="width:100%;height:100%;object-fit:cover;">`
-        : `<span style="font-size:16px;font-weight:600;color:var(--primary)">
-             ${(post.username || "?")[0].toUpperCase()}
-           </span>`;
-
-      const mediaHtml = post.mediaUrl
-        ? `<div class="post-media">
-             ${post.mediaType === "video"
-               ? `<video src="${escHtml(post.mediaUrl)}" controls playsinline></video>`
-               : `<img src="${escHtml(post.mediaUrl)}" alt="Post" loading="lazy">`}
-           </div>`
-        : "";
-
-      card.innerHTML = `
-        <div class="post-header">
-          <div class="post-user">
-            <div class="post-avatar">${avatarHtml}</div>
-            <div class="post-meta">
-              <span class="post-username">${escHtml(post.username || "Unknown")}</span>
-              <span class="post-time">${timeAgo(post.timestamp)}</span>
-            </div>
-          </div>
-          <button class="post-more">${MORE_SVG}</button>
+    function renderCard(post) {
+      const prof=post.profile||{}; const name=prof.full_name||prof.username||'Anonymous';
+      const url=prof.avatar_url; const initial=name.charAt(0).toUpperCase();
+      const likesMap=post.likesMap||{}; const likesCnt=Object.keys(likesMap).length;
+      const isLiked=me?!!likesMap[me.uid]:false;
+      const isOwner=me&&me.uid===post.user_id;
+      const timeStr=timeAgo(post.created_at);
+      const avHtml=url?`<img src="${url}" alt="${esc(name)}">`:initial;
+      const avBg=url?'transparent':'#e0f2fe';
+      const hF=isLiked?'#ef4444':'none'; const hS=isLiked?'#ef4444':'currentColor';
+      return `<div class="post-card" id="pc-${post.id}">
+        <div class="post-card-header">
+          <div class="post-av" style="background:${avBg};cursor:pointer;" onclick="openVisitorProfile('${prof.id||''}')">${avHtml}</div>
+          <div class="post-user-info" style="cursor:pointer;" onclick="openVisitorProfile('${prof.id||''}')"><div class="post-username">${esc(name)}</div><div class="post-time">${timeStr}</div></div>
         </div>
-        ${post.content ? `<p class="post-content">${escHtml(post.content)}</p>` : ""}
-        ${mediaHtml}
+        <div class="post-content">${esc(post.content)}</div>
         <div class="post-actions">
-          <button class="action-btn like-btn ${isLiked ? "liked" : ""}" data-post-id="${post.id}">
-            ${HEART_SVG} <span class="action-count">${likeCount}</span>
+          <button class="action-btn ${isLiked?'liked':''}" onclick="toggleLike('${post.id}',${isLiked})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="${hF}" stroke="${hS}" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${likesCnt}
           </button>
-          <button class="action-btn comment-btn" data-post-id="${post.id}">
-            ${COMMENT_SVG} <span class="action-count">${cmtCount}</span>
-          </button>
-          <button class="action-btn share-btn">
-            ${SHARE_SVG}
-          </button>
-          <button class="action-btn bookmark-btn">
-            ${BOOKMARK_SVG}
-          </button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+          ${isOwner?`<button class="post-delete-btn" title="ডিলিট" onclick="deletePost('${post.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
         </div>
-      `;
+      </div>`;
+    }
 
-      // Like toggle
-      card.querySelector(".like-btn").addEventListener("click", () => toggleLike(post.id));
+    async function toggleLike(postId, isLiked) {
+      if (!me) { openAuth(); return; }
+      const likeRef = ref(db, `likes/${postId}/${me.uid}`);
+      if (isLiked) { await remove(likeRef); }
+      else { await set(likeRef, { user_id: me.uid, created_at: Date.now() }); }
+      loadFeed();
+    }
 
-      // Comment → go to post detail
-      card.querySelector(".comment-btn").addEventListener("click", () => {
-        window.location.href = `/post?id=${post.id}`;
+    async function deletePost(postId) {
+      if (!confirm('পোস্টটি ডিলিট করবেন?')) return;
+      try {
+        await remove(ref(db, `posts/${postId}`));
+        await remove(ref(db, `likes/${postId}`));
+        toast('পোস্ট ডিলিট হয়েছে'); loadFeed();
+      } catch(e) { toast('ডিলিট হয়নি'); }
+    }
+
+    /* ── REALTIME (Firebase) ── */
+    onChildAdded(ref(db, 'posts'), () => loadFeed());
+    onChildRemoved(ref(db, 'posts'), () => loadFeed());
+
+    /* ── HELPERS ── */
+    function timeAgo(str) {
+      const sec=Math.floor((Date.now()-new Date(str))/1000);
+      if (sec<60) return 'এইমাত্র';
+      const m=Math.floor(sec/60); if (m<60) return `${m} মিনিট আগে`;
+      const h=Math.floor(m/60);   if (h<24) return `${h} ঘণ্টা আগে`;
+      return `${Math.floor(h/24)} দিন আগে`;
+    }
+    function esc(s) { const d=document.createElement('div'); d.appendChild(document.createTextNode(s||'')); return d.innerHTML; }
+    function toast(msg) { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
+
+    document.getElementById('authOverlay').addEventListener('click', e=>{ if(e.target.id==='authOverlay') closeAuth(); });
+
+    function openNewStory() {
+      if (!me) { openAuth(); return; }
+      storyFile=null;
+      document.getElementById('storyErr').textContent='';
+      const zone=document.getElementById('storyUploadZone');
+      zone.innerHTML=`<input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;" onchange="onStoryFileSelect(event)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>Tap to select photo / video</p>`;
+      document.getElementById('storyOverlay').classList.add('active');
+    }
+
+    function closeStoryModal() { document.getElementById('storyOverlay').classList.remove('active'); storyFile=null; }
+
+    function onStoryFileSelect(e) {
+      const file=e.target.files[0]; if (!file) return;
+      if (file.size > 2*1024*1024) { document.getElementById('storyErr').textContent='Maximum file size is 2MB'; e.target.value=''; return; }
+      document.getElementById('storyErr').textContent='';
+      storyFile=file;
+      const url=URL.createObjectURL(file);
+      const zone=document.getElementById('storyUploadZone');
+      if (file.type.startsWith('video')) { zone.innerHTML=`<div class="story-preview-wrap"><video src="${url}" controls style="max-width:100%;max-height:100%;"></video></div>`; }
+      else { zone.innerHTML=`<div class="story-preview-wrap"><img src="${url}" alt="preview"></div>`; }
+    }
+
+    async function submitStory() {
+      const errEl=document.getElementById('storyErr');
+      const btn=document.getElementById('storySubmitBtn');
+      if (!storyFile) { errEl.textContent='Please select a photo or video'; return; }
+      btn.disabled=true; btn.textContent='Uploading...'; errEl.textContent='';
+      try {
+        const { url } = await uploadToCloudinary(storyFile, 'stories');
+        const storyData = {
+          user_id: me.uid,
+          media_url: url,
+          media_type: storyFile.type.startsWith('video') ? 'video' : 'image',
+          created_at: Date.now()
+        };
+        await push(ref(db, 'stories'), storyData);
+        closeStoryModal(); toast('Story added ✓'); loadHomeStories();
+      } catch(e) {
+        errEl.textContent='Upload failed. Please try again.';
+      }
+      btn.disabled=false; btn.textContent='Add';
+    }
+
+    function openStoryViewer(story) {
+      const mediaEl=document.getElementById('storyViewerMedia');
+      if (story.media_type==='video') { mediaEl.innerHTML=`<video src="${story.media_url}" controls autoplay style="width:100%;border-radius:16px;max-height:80vh;"></video>`; }
+      else { mediaEl.innerHTML=`<img src="${story.media_url}" alt="${esc(story.title||'')}">` }
+      document.getElementById('storyViewerTitle').textContent=story.title||'';
+      document.getElementById('storyViewerOverlay').classList.add('active');
+    }
+
+    function closeStoryViewer() { document.getElementById('storyViewerOverlay').classList.remove('active'); document.getElementById('storyViewerMedia').innerHTML=''; }
+
+    /* ── HOME STORIES BAR (Firebase) ── */
+    async function loadHomeStories() {
+      const bar = document.getElementById('homeStoriesBar');
+      bar.querySelectorAll('.hs-item:not(:first-child)').forEach(el=>el.remove());
+      if (!me) return;
+      const cutoff = Date.now() - 24*60*60*1000;
+      try {
+        const storiesSnap = await get(ref(db, 'stories'));
+        if (!storiesSnap.exists()) return;
+        const allStories = []; const seen = new Set();
+        storiesSnap.forEach(c => {
+          const s = { id: c.key, ...c.val() };
+          if (s.created_at < cutoff) return; // expired
+          if (!seen.has(s.user_id)) { seen.add(s.user_id); allStories.push(s); }
+        });
+        const slots = [];
+        for (const s of allStories.slice(0,4)) {
+          const profSnap = await get(ref(db, `profiles/${s.user_id}`));
+          const p = profSnap.exists() ? profSnap.val() : {};
+          const label = s.user_id===me.uid ? 'You' : (p.full_name||p.username||'User');
+          slots.push({ story: s, label, avatarUrl: p.avatar_url||null, initialSrc: label });
+        }
+        renderHomeStories(slots);
+      } catch(e) { console.error('loadHomeStories:', e); }
+    }
+
+    function renderHomeStories(slots) {
+      homeStorySlots = slots;
+      const bar = document.getElementById('homeStoriesBar');
+      const grads = ['hs-grad-0','hs-grad-1','hs-grad-2','hs-grad-3'];
+      let html = '';
+      slots.forEach((s,i) => {
+        const initial = (s.initialSrc||s.label).charAt(0).toUpperCase();
+        const avHtml = s.avatarUrl ? `<img src="${s.avatarUrl}" alt="${esc(s.label)}">` : initial;
+        html += `<div class="hs-item" onclick="openStoryViewer(homeStorySlots[${i}].story)">
+          <div class="hs-ring ${grads[i%4]}"><div class="hs-ring-inner">${avHtml}</div></div>
+          <span class="hs-label">${esc(s.label)}</span>
+        </div>`;
       });
-
-      return card;
+      if (slots.length) {
+        html += `<div class="hs-item" onclick="toast('এই ফিচারটি খুব দ্রুত আসছে ✨')">
+          <div class="hs-more-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.55 3.43 17 5.69 18.61L5 22L8.53 20.08C9.64 20.39 10.8 20.6 12 20.6C17.52 20.6 22 16.66 22 11.8C22 6.94 17.52 3 12 3Z" fill="#A855F7"/><circle cx="9" cy="11" r="1" fill="white"/><circle cx="15" cy="11" r="1" fill="white"/><path d="M9 14C10 15 14 15 15 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <span class="hs-label">More</span>
+        </div>`;
+      }
+      bar.insertAdjacentHTML('beforeend', html);
     }
 
-    // ── Like toggle ──────────────────────────────────────────
-    async function toggleLike(postId) {
-      // Will be implemented with Firebase transactions
-      // Placeholder for now
+    /* ── SEARCH PAGE ── */
+    const SEARCH_HISTORY_KEY = 'insight_search_history';
+    let _searchTimer = null;
+
+    function openSearchPage() {
+      document.getElementById('searchPage').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('searchInput').focus(), 120);
+      renderSearchHistory();
     }
 
-    // ── Helpers ──────────────────────────────────────────────
-    function timeAgo(ts) {
-      if (!ts) return "";
-      const s = Math.floor((Date.now() - ts) / 1000);
-      if (s < 60)  return "Just now";
-      if (s < 3600) return `${Math.floor(s / 60)}m`;
-      if (s < 86400) return `${Math.floor(s / 3600)}h`;
-      if (s < 604800) return `${Math.floor(s / 86400)}d`;
-      return new Date(ts).toLocaleDateString();
+    function closeSearchPage() {
+      document.getElementById('searchPage').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('searchInput').value = '';
+      renderSearchHistory();
     }
 
-    function escHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    function getSearchHistory() {
+      try { return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]'); } catch(e) { return []; }
     }
-  </script>
 
+    function saveSearchHistory(query) {
+      if (!query || query.trim().length < 2) return;
+      let hist = getSearchHistory().filter(h => h.toLowerCase() !== query.toLowerCase());
+      hist.unshift(query.trim());
+      hist = hist.slice(0, 10);
+      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(hist));
+    }
+
+    function deleteHistoryItem(query) {
+      const hist = getSearchHistory().filter(h => h !== query);
+      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(hist));
+      renderSearchHistory();
+    }
+
+    function renderSearchHistory() {
+      const body = document.getElementById('searchBody');
+      const hist = getSearchHistory();
+      if (!hist.length) {
+        body.innerHTML = `<div class="search-empty"><span>🔍</span>সার্চ করে যেকোনো আইডি খুঁজে নিন</div>`;
+        return;
+      }
+      body.innerHTML = `
+        <div class="search-section-title">সাম্প্রতিক সার্চ</div>
+        <div class="search-history-list">
+          ${hist.map(h => `
+            <div class="search-history-item" onclick="fillSearch('${h.replace(/'/g,"\\'")}')">
+              <div class="search-history-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </div>
+              <span class="search-history-text">${esc(h)}</span>
+              <button class="search-history-del" onclick="event.stopPropagation();deleteHistoryItem('${h.replace(/'/g,"\\'")}')">×</button>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    function fillSearch(query) {
+      const inp = document.getElementById('searchInput');
+      inp.value = query;
+      onSearchInput(query);
+    }
+
+    function onSearchKey(e) {
+      if (e.key === 'Enter') {
+        const val = document.getElementById('searchInput').value.trim();
+        if (val) { saveSearchHistory(val); doSearch(val); }
+      }
+    }
+
+    function onSearchInput(val) {
+      clearTimeout(_searchTimer);
+      const q = val.trim();
+      if (!q) { renderSearchHistory(); return; }
+      document.getElementById('searchBody').innerHTML = `<div class="search-spinner"><div class="spinner"></div></div>`;
+      _searchTimer = setTimeout(() => { saveSearchHistory(q); doSearch(q); }, 420);
+    }
+
+    async function doSearch(queryStr) {
+      const body = document.getElementById('searchBody');
+      body.innerHTML = `<div class="search-spinner"><div class="spinner"></div></div>`;
+      try {
+        const snap = await get(ref(db, 'profiles'));
+        if (!snap.exists()) {
+          body.innerHTML = `<div class="search-empty"><span>😕</span>"${esc(queryStr)}" নামে কোনো আইডি পাওয়া যায়নি</div>`;
+          return;
+        }
+        const q = queryStr.toLowerCase();
+        const results = [];
+        snap.forEach(c => {
+          const p = { id: c.key, ...c.val() };
+          const nameMatch = (p.full_name||'').toLowerCase().includes(q);
+          const userMatch = (p.username||'').toLowerCase().includes(q);
+          if (nameMatch || userMatch) results.push(p);
+        });
+        if (!results.length) {
+          body.innerHTML = `<div class="search-empty"><span>😕</span>"${esc(queryStr)}" নামে কোনো আইডি পাওয়া যায়নি</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="search-section-title">${results.length}টি ফলাফল</div>
+          <div class="search-results-list">
+            ${results.slice(0,20).map(p => {
+              const name = p.full_name || p.username || 'Unknown';
+              const uname = p.username ? '@' + p.username : '';
+              const avHtml = p.avatar_url
+                ? `<img src="${p.avatar_url}" alt="${esc(name)}">`
+                : `<span>${name.charAt(0).toUpperCase()}</span>`;
+              return `<div class="search-result-item" onclick="openVisitorProfile('${p.id}');closeSearchPage();">
+                <div class="search-result-av">${avHtml}</div>
+                <div class="search-result-info">
+                  <div class="search-result-name">${esc(name)}</div>
+                  ${uname ? `<div class="search-result-username">${esc(uname)}</div>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`;
+      } catch(err) {
+        body.innerHTML = `<div class="search-empty"><span>⚠️</span>সার্চ করতে সমস্যা হয়েছে</div>`;
+      }
+    }
+
+    /* ── LOGOUT (Firebase) ── */
+    async function doLogout() {
+      try { await signOut(auth); } catch(e) { console.error('signOut error', e); }
+      me = null; myProfile = null;
+      if (_profileUnsub) { _profileUnsub(); _profileUnsub = null; }
+      clearAvatars();
+      toast('লগআউট সফল হয়েছে');
+      loadFeed();
+    }
+
+    /* ── GLOBAL EXPOSE (type=module এ onclick কাজ করার জন্য) ── */
+    Object.assign(window, {
+      openAuth, closeAuth, switchTab, doLogin, doSignup, doLogout,
+      onNavProfile, onPostBox, onMediaBtn,
+      toggleLike, deletePost,
+      openNewStory, closeStoryModal, onStoryFileSelect, submitStory,
+      openStoryViewer, closeStoryViewer,
+      openSearchPage, closeSearchPage, onSearchInput, onSearchKey,
+      fillSearch, deleteHistoryItem,
+      openVisitorProfile: (id) => { window.location.href = `/profile/${id}`; },
+      toast
+    });
+
+    </script>
 </body>
 </html>
