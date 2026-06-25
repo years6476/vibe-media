@@ -9,281 +9,348 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #f7f8fa; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
 
-    /* === TOP NAVBAR (index.html থেকে অবিকল) === */
-    .navbar {
-      background: #ffffff; padding: 5px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100;
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: #fff;
+      padding: 0 16px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
       border-bottom: 1px solid #f0f0f0;
     }
-    .navbar-logo img { height: 22px; object-fit: contain; }
-    .navbar-icons { display: flex; align-items: center; gap: 16px; }
-    .icon-btn { display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; padding: 4px; }
-    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
-    .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .top-bar-back {
+      width: 36px; height: 36px;
+      border-radius: 50%; background: none; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #111; transition: background 0.15s;
+    }
+    .top-bar-back:hover { background: #f3f4f6; }
+    .top-bar-title {
+      font-size: 16px; font-weight: 700; color: #111;
+    }
+    .top-bar-more {
+      width: 36px; height: 36px;
+      border-radius: 50%; background: none; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #6b7280; transition: background 0.15s; position: relative;
+    }
+    .top-bar-more:hover { background: #f3f4f6; }
 
-    /* === BACK HEADER === */
-    .back-header {
-      background: #fff; padding: 10px 16px;
+    /* ── MORE DROPDOWN ── */
+    .more-menu {
+      position: absolute; top: 44px; right: 0;
+      background: #fff; border-radius: 12px; border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 160px; overflow: hidden; z-index: 200;
+      display: none;
+    }
+    .more-menu.open { display: block; }
+    .more-menu-item {
+      padding: 12px 16px; font-size: 13px; color: #374151;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      transition: background 0.15s;
+    }
+    .more-menu-item:hover { background: #f9fafb; }
+    .more-menu-item.danger { color: #ef4444; }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area {
+      padding-bottom: 80px;
+    }
+
+    /* ── POST CARD ── */
+    .post-card {
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* ── POST HEADER ── */
+    .post-header {
       display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px 12px;
+    }
+    .post-av {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: #e0f2fe; flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: #374151; cursor: pointer;
+    }
+    .post-av img { width: 100%; height: 100%; object-fit: cover; }
+    .post-user-info { flex: 1; min-width: 0; cursor: pointer; }
+    .post-username { font-size: 14px; font-weight: 700; color: #111; }
+    .post-time { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+
+    /* ── CAPTION ── */
+    .post-caption {
+      padding: 0 16px 14px;
+      font-size: 14px; color: #1f2937; line-height: 1.7;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    /* ── MEDIA ── */
+    .post-media { }
+    .post-media img {
+      width: 100%; display: block;
+      max-height: 520px; object-fit: contain; background: #f9fafb;
+    }
+    .post-media video {
+      width: 100%; display: block; max-height: 480px; object-fit: contain;
+    }
+    .media-gallery { display: grid; gap: 2px; }
+    .media-gallery.g2 { grid-template-columns: 1fr 1fr; }
+    .media-gallery.g3 { grid-template-columns: 1fr 1fr; }
+    .media-gallery.g3 .g-item:first-child { grid-column: 1/-1; }
+    .media-gallery.g4 { grid-template-columns: 1fr 1fr; }
+    .g-item { overflow: hidden; background: #000; }
+    .g-item img { width: 100%; height: 200px; object-fit: cover; display: block; }
+
+    /* ── ACTION ROW ── */
+    .action-row {
+      display: flex; align-items: center;
+      padding: 10px 12px 8px;
+      border-top: 1px solid #f3f4f6;
+      gap: 4px;
+    }
+    .action-left {
+      display: flex; flex: 1; gap: 2px;
+    }
+    .act-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      font-size: 13px; color: #6b7280; padding: 7px 10px;
+      border-radius: 8px; transition: background 0.15s, color 0.15s;
+      font-family: 'Segoe UI', sans-serif; font-weight: 500;
+    }
+    .act-btn:hover { background: #f3f4f6; }
+    .act-btn.liked { color: #ef4444; }
+    .act-btn.liked:hover { background: #fef2f2; }
+    .act-btn.saved { color: #6C63FF; }
+    .save-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      font-size: 13px; color: #6b7280; padding: 7px 10px;
+      border-radius: 8px; transition: background 0.15s, color 0.15s;
+      font-family: 'Segoe UI', sans-serif; font-weight: 500; flex-shrink: 0;
+    }
+    .save-btn:hover { background: #f3f4f6; }
+    .save-btn.saved { color: #6C63FF; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: #f0f0f0; margin: 0; }
+
+    /* ── TAB BAR ── */
+    .tab-bar {
+      background: #fff;
+      display: flex; align-items: center;
       border-bottom: 1px solid #f0f0f0;
     }
-    .back-btn {
+    .tab-item {
+      flex: 1; padding: 12px 0; border: none; background: none;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      color: #9ca3af; font-family: 'Segoe UI', sans-serif;
+      position: relative; transition: color 0.2s;
+    }
+    .tab-item.active { color: #2563eb; }
+    .tab-item.active::after {
+      content: '';
+      position: absolute; bottom: 0; left: 15%; right: 15%;
+      height: 2.5px; background: #2563eb; border-radius: 2px 2px 0 0;
+    }
+
+    /* ── TAB CONTENT ── */
+    .tab-content {
+      background: #fff;
+      min-height: 200px;
+    }
+
+    /* ── REACT LIST ── */
+    .react-list, .share-list {
+      padding: 8px 0;
+    }
+    .react-item, .share-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #f7f8fa;
+    }
+    .react-item:last-child, .share-item:last-child { border-bottom: none; }
+    .ri-av {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #e0f2fe; flex-shrink: 0; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
-      background: none; border: none; cursor: pointer; padding: 4px;
-      border-radius: 8px; transition: background 0.15s; color: #374151;
+      font-size: 14px; font-weight: 700; color: #374151;
     }
-    .back-btn:hover { background: #f3f4f6; }
-    .back-title { font-size: 15px; font-weight: 700; color: #111; }
+    .ri-av img { width: 100%; height: 100%; object-fit: cover; }
+    .ri-name { font-size: 13px; font-weight: 600; color: #111; }
+    .ri-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+    .react-emoji { font-size: 18px; margin-left: auto; }
 
-    /* === MAIN CONTENT === */
-    .main-content { width: 96%; max-width: 580px; margin: 0 auto; padding: 12px 0 80px; }
+    /* ── COMMENT SECTION ── */
+    .comment-section { }
 
-    /* === POST DETAIL CARD === */
-    .post-detail-card {
-      background: #fff; border-radius: 12px; border: 1px solid #efefef;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden;
-      margin-bottom: 12px;
-    }
-    .post-detail-body { padding: 16px 16px 0; }
-
-    /* Header */
-    .post-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .post-av {
-      width: 42px; height: 42px; border-radius: 50%; background: #e0f2fe;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      overflow: hidden; font-size: 17px; font-weight: 700; color: #374151;
-    }
-    .post-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .post-user-info { flex: 1; min-width: 0; }
-    .post-username { font-size: 14px; font-weight: 700; color: #111; }
-    .post-meta { font-size: 11px; color: #9ca3af; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
-    .post-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #d1d5db; }
-    .post-more-btn {
-      background: none; border: none; cursor: pointer; padding: 6px;
-      border-radius: 8px; transition: background 0.15s; color: #9ca3af;
-      display: flex; align-items: center;
-    }
-    .post-more-btn:hover { background: #f3f4f6; color: #374151; }
-
-    /* Full caption */
-    .post-caption-full {
-      font-size: 14px; color: #1f2937; line-height: 1.7;
-      white-space: pre-wrap; word-break: break-word; margin-bottom: 14px;
-    }
-
-    /* === MEDIA (full bleed) === */
-    .post-media-full { margin: 0 -0px; }
-    .post-media-full img {
-      width: 100%; max-height: 520px; object-fit: contain;
-      display: block; background: #f9fafb;
-    }
-    .post-media-gallery {
-      display: grid; gap: 2px;
-    }
-    .post-media-gallery.count-1 { grid-template-columns: 1fr; }
-    .post-media-gallery.count-2 { grid-template-columns: 1fr 1fr; }
-    .post-media-gallery.count-3 { grid-template-columns: 1fr 1fr; }
-    .post-media-gallery.count-3 .media-item:first-child { grid-column: 1 / -1; }
-    .post-media-gallery.count-4 { grid-template-columns: 1fr 1fr; }
-    .media-item { position: relative; overflow: hidden; background: #000; }
-    .media-item img { width: 100%; height: 220px; object-fit: cover; display: block; }
-    .media-item video { width: 100%; height: 260px; object-fit: cover; display: block; }
-    .media-item.count-1 img, .media-item.count-1 video { height: auto; max-height: 520px; }
-
-    /* Video in detail view */
-    .post-video-full {
-      position: relative; background: #000;
-    }
-    .post-video-full video {
-      width: 100%; max-height: 480px; display: block; object-fit: contain;
-    }
-
-    /* Audio card */
-    .post-audio-card {
-      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-      border-radius: 0; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
-    }
-    .post-audio-icon {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: linear-gradient(135deg, #A855F7, #EC4899);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .post-audio-info { flex: 1; min-width: 0; }
-    .post-audio-title { font-size: 13px; font-weight: 600; color: #111; }
-    .post-audio-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
-    .post-audio-wave { display: flex; align-items: flex-end; gap: 3px; height: 22px; margin-top: 8px; }
-    .post-audio-wave span { display: block; width: 3px; border-radius: 2px; background: #A855F7; animation: wave 1.2s ease-in-out infinite alternate; }
-    .post-audio-wave span:nth-child(2) { animation-delay: 0.1s; }
-    .post-audio-wave span:nth-child(3) { animation-delay: 0.2s; }
-    .post-audio-wave span:nth-child(4) { animation-delay: 0.3s; }
-    .post-audio-wave span:nth-child(5) { animation-delay: 0.4s; }
-    @keyframes wave { from { height: 4px; } to { height: 20px; } }
-
-    /* === LIKE / COMMENT COUNTS (টুইটার/ইনস্টা স্টাইল) === */
-    .post-stats {
-      display: flex; align-items: center; gap: 16px;
-      padding: 12px 16px 10px; border-top: 1px solid #f3f4f6;
-    }
-    .stat-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b7280; font-weight: 500; }
-    .stat-item strong { color: #111; }
-
-    /* === ACTION BUTTONS (index.html থেকে অবিকল) === */
-    .post-actions {
-      display: flex; gap: 4px; padding: 8px 10px 12px;
-      border-top: 1px solid #f3f4f6;
-    }
-    .action-btn {
-      display: flex; align-items: center; gap: 6px; background: none; border: none;
-      cursor: pointer; font-size: 13px; color: #6b7280; padding: 7px 12px;
-      border-radius: 8px; transition: background 0.15s, color 0.15s;
-      font-family: 'Segoe UI', sans-serif; font-weight: 500; flex: 1; justify-content: center;
-    }
-    .action-btn:hover { background: #f3f4f6; }
-    .action-btn.liked { color: #ef4444; }
-    .action-btn.liked:hover { background: #fef2f2; }
-    .action-btn.shared { color: #6C63FF; }
-
-    /* === COMMENTS SECTION === */
-    .comments-section {
-      background: #fff; border-radius: 12px; border: 1px solid #efefef;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden;
-    }
-    .comments-header {
-      padding: 14px 16px 10px; border-bottom: 1px solid #f3f4f6;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .comments-title { font-size: 14px; font-weight: 700; color: #111; }
-    .comments-count { font-size: 12px; color: #9ca3af; font-weight: 500; }
-
-    /* Comment input */
-    .comment-input-row {
+    /* Comment Input - Fixed at bottom of tab */
+    .comment-input-wrap {
       display: flex; align-items: flex-end; gap: 10px;
-      padding: 12px 14px; border-bottom: 1px solid #f3f4f6;
+      padding: 12px 14px;
+      border-top: 1px solid #f0f0f0;
+      background: #fff;
+      position: sticky; bottom: 54px; z-index: 50;
     }
-    .comment-av {
-      width: 32px; height: 32px; border-radius: 50%; background: #e0f2fe;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      overflow: hidden; font-size: 13px; font-weight: 700; color: #374151;
+    .c-inp-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #e0f2fe; flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #374151;
     }
-    .comment-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .comment-input-wrap { flex: 1; }
-    .comment-input {
-      width: 100%; background: #f7f8fa; border: 1.5px solid #e5e7eb;
-      border-radius: 20px; padding: 9px 14px; font-size: 13px; color: #111;
-      font-family: 'Segoe UI', sans-serif; outline: none; resize: none;
-      min-height: 38px; max-height: 100px; overflow-y: auto; transition: border-color 0.2s;
-      line-height: 1.4;
+    .c-inp-av img { width: 100%; height: 100%; object-fit: cover; }
+    .c-textarea-wrap { flex: 1; }
+    .c-textarea {
+      width: 100%; background: #f7f8fa;
+      border: 1.5px solid #e5e7eb; border-radius: 20px;
+      padding: 9px 14px; font-size: 13px; color: #111;
+      font-family: 'Segoe UI', sans-serif; outline: none;
+      resize: none; min-height: 38px; max-height: 100px;
+      overflow-y: auto; transition: border-color 0.2s; line-height: 1.4;
     }
-    .comment-input:focus { border-color: #374151; }
-    .comment-input::placeholder { color: #9ca3af; }
-    .comment-send-btn {
-      width: 34px; height: 34px; border-radius: 50%; background: #111;
+    .c-textarea:focus { border-color: #2563eb; }
+    .c-textarea::placeholder { color: #9ca3af; }
+    .c-send-btn {
+      width: 34px; height: 34px; border-radius: 50%; background: #2563eb;
       border: none; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; flex-shrink: 0; transition: opacity 0.2s, transform 0.15s;
+      justify-content: center; flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.15s;
     }
-    .comment-send-btn:hover { opacity: 0.85; }
-    .comment-send-btn:active { transform: scale(0.93); }
-    .comment-send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .c-send-btn:hover { opacity: 0.88; }
+    .c-send-btn:active { transform: scale(0.93); }
+    .c-send-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #9ca3af; }
 
-    /* Comment list */
-    .comments-list { padding: 4px 0; }
-    .comment-item { padding: 10px 14px 10px; display: flex; gap: 10px; }
-    .comment-item:not(:last-child) { border-bottom: 1px solid #f7f8fa; }
-    .c-av {
-      width: 32px; height: 32px; border-radius: 50%; background: #e0f2fe;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      overflow: hidden; font-size: 12px; font-weight: 700; color: #374151;
+    /* Comment List */
+    .comment-list { padding: 4px 0; }
+    .comment-item {
+      display: flex; gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #f7f8fa;
     }
-    .c-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .c-body { flex: 1; min-width: 0; }
-    .c-bubble {
+    .comment-item:last-child { border-bottom: none; }
+    .cm-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #e0f2fe; flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #374151;
+    }
+    .cm-av img { width: 100%; height: 100%; object-fit: cover; }
+    .cm-body { flex: 1; min-width: 0; }
+    .cm-bubble {
       background: #f7f8fa; border-radius: 0 12px 12px 12px;
       padding: 9px 12px; display: inline-block; max-width: 100%;
     }
-    .c-name { font-size: 12px; font-weight: 700; color: #111; margin-bottom: 3px; }
-    .c-text { font-size: 13px; color: #1f2937; line-height: 1.5; word-break: break-word; }
-    .c-footer { display: flex; align-items: center; gap: 14px; margin-top: 5px; padding-left: 2px; }
-    .c-time { font-size: 11px; color: #9ca3af; }
-    .c-like-btn {
-      background: none; border: none; cursor: pointer; font-size: 11px;
-      color: #9ca3af; font-weight: 600; padding: 0; transition: color 0.15s;
-      font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; gap: 4px;
-    }
-    .c-like-btn:hover { color: #ef4444; }
-    .c-like-btn.liked { color: #ef4444; }
-    .c-reply-btn {
-      background: none; border: none; cursor: pointer; font-size: 11px;
-      color: #9ca3af; font-weight: 600; padding: 0; transition: color 0.15s;
+    .cm-name { font-size: 12px; font-weight: 700; color: #111; margin-bottom: 3px; }
+    .cm-text { font-size: 13px; color: #1f2937; line-height: 1.5; word-break: break-word; }
+    .cm-footer { display: flex; align-items: center; gap: 14px; margin-top: 5px; }
+    .cm-time { font-size: 11px; color: #9ca3af; }
+    .cm-like-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; color: #9ca3af; font-weight: 600;
       font-family: 'Segoe UI', sans-serif;
+      display: flex; align-items: center; gap: 4px; transition: color 0.15s;
     }
-    .c-reply-btn:hover { color: #374151; }
+    .cm-like-btn:hover { color: #ef4444; }
+    .cm-like-btn.liked { color: #ef4444; }
+    .cm-reply-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; color: #9ca3af; font-weight: 600;
+      font-family: 'Segoe UI', sans-serif; transition: color 0.15s;
+    }
+    .cm-reply-btn:hover { color: #374151; }
 
-    /* Reply indent */
+    /* Replies */
     .replies-wrap { padding-left: 42px; }
-    .reply-item {
-      display: flex; gap: 8px; padding: 8px 0 4px;
-    }
-    .reply-item:not(:last-child) { border-bottom: 1px solid #f7f8fa; }
+    .reply-item { display: flex; gap: 8px; padding: 8px 0 4px; border-bottom: 1px solid #f7f8fa; }
+    .reply-item:last-child { border-bottom: none; }
     .r-av {
-      width: 26px; height: 26px; border-radius: 50%; background: #e0f2fe;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      overflow: hidden; font-size: 10px; font-weight: 700; color: #374151;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #e0f2fe; flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: #374151;
     }
-    .r-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .r-bubble {
-      background: #f7f8fa; border-radius: 0 10px 10px 10px;
-      padding: 7px 10px; display: inline-block; max-width: 100%;
-    }
+    .r-av img { width: 100%; height: 100%; object-fit: cover; }
+    .r-bubble { background: #f7f8fa; border-radius: 0 10px 10px 10px; padding: 7px 10px; display: inline-block; max-width: 100%; }
     .r-name { font-size: 11px; font-weight: 700; color: #111; margin-bottom: 2px; }
     .r-text { font-size: 12px; color: #1f2937; line-height: 1.5; word-break: break-word; }
     .r-footer { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
     .r-time { font-size: 10px; color: #9ca3af; }
     .r-like-btn {
-      background: none; border: none; cursor: pointer; font-size: 10px;
-      color: #9ca3af; font-weight: 600; padding: 0; font-family: 'Segoe UI', sans-serif;
+      background: none; border: none; cursor: pointer;
+      font-size: 10px; color: #9ca3af; font-weight: 600;
+      font-family: 'Segoe UI', sans-serif;
       display: flex; align-items: center; gap: 3px; transition: color 0.15s;
     }
     .r-like-btn:hover { color: #ef4444; }
     .r-like-btn.liked { color: #ef4444; }
 
-    /* Reply input (inline under comment) */
+    /* Reply input inline */
     .reply-input-row {
       display: flex; align-items: flex-end; gap: 8px;
       padding: 8px 0 4px; margin-left: 42px;
     }
-    .reply-input {
+    .reply-textarea {
       flex: 1; background: #f7f8fa; border: 1.5px solid #e5e7eb;
       border-radius: 16px; padding: 7px 12px; font-size: 12px; color: #111;
       font-family: 'Segoe UI', sans-serif; outline: none; resize: none;
       min-height: 32px; max-height: 80px; overflow-y: auto; transition: border-color 0.2s;
     }
-    .reply-input:focus { border-color: #374151; }
-    .reply-input::placeholder { color: #9ca3af; }
+    .reply-textarea:focus { border-color: #2563eb; }
+    .reply-textarea::placeholder { color: #9ca3af; }
     .reply-send-btn {
-      width: 30px; height: 30px; border-radius: 50%; background: #111;
+      width: 30px; height: 30px; border-radius: 50%; background: #2563eb;
       border: none; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; flex-shrink: 0; transition: opacity 0.2s; opacity: 0.75;
+      justify-content: center; flex-shrink: 0; transition: opacity 0.2s;
     }
-    .reply-send-btn:hover { opacity: 1; }
-    .reply-send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .reply-send-btn:hover { opacity: 0.88; }
+    .reply-send-btn:disabled { opacity: 0.3; cursor: not-allowed; background: #9ca3af; }
 
-    /* Load more comments */
-    .load-more-btn {
-      width: 100%; padding: 12px; background: none; border: none; border-top: 1px solid #f3f4f6;
-      color: #6C63FF; font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: 'Segoe UI', sans-serif; transition: background 0.15s;
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 40px 20px;
+      color: #9ca3af; font-size: 13px;
     }
-    .load-more-btn:hover { background: #f9f7ff; }
+    .empty-state span { font-size: 28px; display: block; margin-bottom: 8px; }
 
-    /* === UTILITY === */
-    .loading-wrap { display: flex; justify-content: center; padding: 40px 0; }
-    .spinner { width: 22px; height: 22px; border: 2.5px solid #e5e7eb; border-top-color: #374151; border-radius: 50%; animation: spin 0.75s linear infinite; }
+    /* Bottom navbar */
+    .bottom-navbar {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 54px;
+      background: #fff; border-top: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 6px; z-index: 900;
+    }
+    .bottom-plus-btn {
+      width: 44px; height: 44px; border-radius: 50%; background: #6C63FF;
+      border: none; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; box-shadow: 0 3px 12px rgba(108,99,255,0.45);
+      transition: transform 0.15s;
+    }
+    .bottom-plus-btn:active { transform: scale(0.93); }
+    .bottom-nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; background: none; border: none;
+      cursor: pointer; color: #6b7280; padding: 4px 8px;
+    }
+    .bottom-nav-item span { font-size: 10px; font-weight: 500; line-height: 1; }
+
+    /* Utility */
+    .spinner {
+      width: 22px; height: 22px; border: 2.5px solid #e5e7eb;
+      border-top-color: #2563eb; border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state { text-align: center; padding: 28px 20px; color: #9ca3af; font-size: 13px; }
-    .empty-state span { font-size: 24px; display: block; margin-bottom: 8px; }
+    .loading-wrap { display: flex; justify-content: center; padding: 40px 0; }
+
     .toast {
-      position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+      position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
       background: #111; color: #fff; padding: 10px 20px; border-radius: 22px;
       font-size: 12px; font-weight: 500; z-index: 2000; opacity: 0;
       transition: opacity 0.3s; pointer-events: none; white-space: nowrap;
@@ -291,7 +358,7 @@
     }
     .toast.show { opacity: 1; }
 
-    /* === AUTH MODAL (index.html থেকে অবিকল) === */
+    /* Auth modal */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
     .overlay.active { display: flex; }
     .auth-modal { background: #fff; border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.18); position: relative; animation: popIn 0.22s ease; }
@@ -311,28 +378,21 @@
     .modal-x { position: absolute; top: 14px; right: 16px; background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 18px; line-height: 1; }
     .modal-x:hover { color: #374151; }
 
-    /* === BOTTOM NAVBAR (index.html থেকে অবিকল) === */
-    .bottom-navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-around; padding: 0 6px; z-index: 900; }
-    .bottom-plus-btn { width: 44px; height: 44px; border-radius: 50%; background: #6C63FF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(108,99,255,0.45); transition: transform 0.15s; }
-    .bottom-plus-btn:active { transform: scale(0.93); }
-    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; cursor: pointer; color: #6b7280; padding: 4px 8px; }
-    .bottom-nav-item span { font-size: 10px; font-weight: 500; line-height: 1; }
-
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    .post-detail-card, .comments-section { animation: fadeIn 0.22s ease; }
+    .post-card { animation: fadeIn 0.22s ease; }
   </style>
 </head>
 <body>
 
-  <!-- ===== APP LOADER ===== -->
+  <!-- APP LOADER -->
   <div id="appLoader" style="position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;">
     <div class="spinner"></div>
   </div>
 
-  <!-- ===== TOAST ===== -->
+  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
-  <!-- ===== AUTH MODAL ===== -->
+  <!-- AUTH MODAL -->
   <div class="overlay" id="authOverlay">
     <div class="auth-modal">
       <button class="modal-x" onclick="closeAuth()">✕</button>
@@ -358,90 +418,88 @@
     </div>
   </div>
 
-  <!-- ===== TOP NAVBAR ===== -->
-  <nav class="navbar">
-    <div class="navbar-logo">
-      <img src="https://i.ibb.co.com/VWzTFZXq/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png" alt="Logo">
-    </div>
-    <div class="navbar-icons">
-      <button class="icon-btn" aria-label="Search" onclick="toast('Search ফিচারটি খুব দ্রুত আসছে ✨')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-      <button class="icon-btn" aria-label="Notifications">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-      </button>
-      <button class="icon-btn" id="navProfileBtn" aria-label="Profile" onclick="onNavProfile()">
-        <div class="nav-avatar" id="navAv">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        </div>
-      </button>
-    </div>
-  </nav>
-
-  <!-- ===== BACK HEADER ===== -->
-  <div class="back-header">
-    <button class="back-btn" onclick="history.back()" aria-label="পেছনে যান">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <button class="top-bar-back" onclick="history.back()" aria-label="পেছনে যান">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <span class="back-title">পোস্ট</span>
+    <span class="top-bar-title">পোস্ট</span>
+    <div class="top-bar-more" id="moreBtn" onclick="toggleMoreMenu()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <div class="more-menu" id="moreMenu">
+        <div class="more-menu-item" onclick="sharePost()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          শেয়ার করুন
+        </div>
+        <div class="more-menu-item" id="deleteMenuItem" onclick="deletePost()" style="display:none;" class="danger">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <span style="color:#ef4444">ডিলিট করুন</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- ===== MAIN CONTENT ===== -->
-  <div class="main-content">
-    <!-- পোস্ট ডিটেইল + কমেন্ট এখানে JS দিয়ে ইনজেক্ট হবে -->
-    <div id="postDetailWrap">
+  <!-- MAIN SCROLL -->
+  <div class="scroll-area">
+
+    <!-- POST CARD -->
+    <div id="postWrap">
       <div class="loading-wrap"><div class="spinner"></div></div>
     </div>
-    <div id="commentsWrap" style="display:none;" class="comments-section">
-      <div class="comments-header">
-        <span class="comments-title">মন্তব্য</span>
-        <span class="comments-count" id="commentCount">০টি</span>
+
+    <!-- TAB SECTION -->
+    <div id="tabSection" style="display:none;">
+
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-item" id="tab-react" onclick="switchContentTab('react')">React</button>
+        <button class="tab-item active" id="tab-comment" onclick="switchContentTab('comment')">Comment</button>
+        <button class="tab-item" id="tab-share" onclick="switchContentTab('share')">Share</button>
       </div>
-      <!-- কমেন্ট ইনপুট -->
-      <div class="comment-input-row">
-        <div class="comment-av" id="commentAv">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="tabContent">
+        <!-- content injected by JS -->
+      </div>
+
+      <!-- Comment Input (only visible on comment tab) -->
+      <div class="comment-input-wrap" id="commentInputWrap">
+        <div class="c-inp-av" id="commentAv">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </div>
-        <div class="comment-input-wrap">
-          <textarea
-            class="comment-input"
-            id="commentInput"
-            placeholder="মন্তব্য করুন..."
-            rows="1"
-            oninput="autoResize(this)"
-          ></textarea>
+        <div class="c-textarea-wrap">
+          <textarea class="c-textarea" id="commentInput" placeholder="মন্তব্য করুন..." rows="1" oninput="autoResize(this)"></textarea>
         </div>
-        <button class="comment-send-btn" id="commentSendBtn" onclick="submitComment()" disabled>
+        <button class="c-send-btn" id="commentSendBtn" onclick="submitComment()" disabled>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <!-- কমেন্ট লিস্ট -->
-      <div class="comments-list" id="commentsList">
-        <div class="loading-wrap"><div class="spinner"></div></div>
-      </div>
+
     </div>
+
   </div>
 
-  <!-- ===== BOTTOM NAVBAR ===== -->
+  <!-- BOTTOM NAVBAR -->
   <div class="bottom-navbar">
-    <button class="bottom-nav-item" aria-label="Home" onclick="window.location.href='/'">
+    <button class="bottom-nav-item" onclick="window.location.href='/'">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
     </button>
-    <button class="bottom-nav-item" aria-label="Friends" onclick="navGuard('/friend')">
+    <button class="bottom-nav-item" onclick="navGuard('/friend')">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Friend</span>
     </button>
-    <button class="bottom-plus-btn" onclick="window.location.href='/create'" aria-label="Create post">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
+    <button class="bottom-plus-btn" onclick="window.location.href='/create'">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
-    <button class="bottom-nav-item" aria-label="Inbox" onclick="navGuard('/messages')">
+    <button class="bottom-nav-item" onclick="navGuard('/messages')">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
       <span>Inbox</span>
     </button>
-    <button class="bottom-nav-item" aria-label="Me" onclick="onNavProfile()">
+    <button class="bottom-nav-item" onclick="onNavProfile()">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       <span>Me</span>
     </button>
@@ -465,23 +523,15 @@
     let _postId = null;
     let _post = null;
     let _commentsUnsub = null;
-    let _COMMENTS_LIMIT = 20;
-    let _commentsLoaded = 0;
+    let _currentTab = 'comment';
 
-    /* ── URL থেকে পোস্ট পারামিটার বের করা ──
-       দুটো ফরম্যাট সাপোর্ট করে:
-         /post?uid=ABC&id=XYZ      (query string)
-         /post/ABC/XYZ             (path segment — Netlify _redirects দিয়ে route হলে)
-    */
+    /* ── URL PARAMS ── */
     (function parseParams() {
       const sp = new URLSearchParams(location.search);
       _postAuthorUid = sp.get('uid') || null;
       _postId        = sp.get('id')  || null;
-
       if (!_postAuthorUid || !_postId) {
-        /* path segment fallback: /post/UID/ID */
         const parts = location.pathname.replace(/^\/+/, '').split('/');
-        /* parts[0] = "post", parts[1] = uid, parts[2] = id */
         if (parts.length >= 3) {
           _postAuthorUid = parts[1] || null;
           _postId        = parts[2] || null;
@@ -501,18 +551,17 @@
       document.getElementById('appLoader').style.display = 'none';
       if (user) {
         me = user;
-        try { await fetchMyProfile(); renderAvatars(); } catch(e) { console.error(e); }
-        _uiReady = true;
+        try { await fetchMyProfile(); renderAvatarInputs(); } catch(e) { console.error(e); }
       } else {
-        me = null; myProfile = null; clearAvatars();
-        _uiReady = true;
+        me = null; myProfile = null;
       }
+      _uiReady = true;
       init();
     });
 
     function init() {
       if (!_postAuthorUid || !_postId) {
-        document.getElementById('postDetailWrap').innerHTML =
+        document.getElementById('postWrap').innerHTML =
           `<div class="empty-state"><span>🔍</span>পোস্ট খুঁজে পাওয়া যায়নি</div>`;
         return;
       }
@@ -520,7 +569,7 @@
       setupCommentInput();
     }
 
-    /* ── PROFILE FETCH ── */
+    /* ── MY PROFILE ── */
     async function fetchMyProfile() {
       if (!me) { myProfile = null; return; }
       const snap = await get(ref(db, `users/${me.uid}`));
@@ -534,33 +583,24 @@
       };
     }
 
-    /* ── AVATAR HELPERS ── */
     function avatarHtml(profile, size = 32) {
       const name = profile?.full_name || profile?.username || '?';
       const url  = profile?.avatar_url;
       if (url) return `<img src="${esc(url)}" alt="${esc(name)}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;">`;
       return `<span style="font-size:${Math.round(size*0.42)}px;font-weight:700;color:#374151;">${name.charAt(0).toUpperCase()}</span>`;
     }
-    function renderAvatars() {
-      const navAv = document.getElementById('navAv');
-      navAv.innerHTML = avatarHtml(myProfile, 26);
-      navAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
 
-      const cAv = document.getElementById('commentAv');
+    function renderAvatarInputs() {
+      const av = document.getElementById('commentAv');
       if (me && myProfile) {
-        cAv.innerHTML = avatarHtml(myProfile, 30);
-        cAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
+        av.innerHTML = avatarHtml(myProfile, 30);
+        av.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
       }
-    }
-    function clearAvatars() {
-      const svg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
-      const navAv = document.getElementById('navAv');
-      navAv.innerHTML = svg; navAv.style.background = '#f3f4f6';
     }
 
     /* ── LOAD POST ── */
     function loadPost() {
-      const wrap = document.getElementById('postDetailWrap');
+      const wrap = document.getElementById('postWrap');
       onValue(ref(db, `posts/${_postAuthorUid}/${_postId}`), async (snap) => {
         if (!snap.exists()) {
           wrap.innerHTML = `<div class="empty-state"><span>🔍</span>পোস্ট খুঁজে পাওয়া যায়নি</div>`;
@@ -568,107 +608,95 @@
         }
         _post = { id: _postId, uid: _postAuthorUid, ...snap.val() };
         document.title = (_post.authorName || 'পোস্ট') + ' — Insight';
-        wrap.innerHTML = renderPostDetail(_post);
+        wrap.innerHTML = renderPostCard(_post);
 
-        /* লাইক অবস্থা লাইভ */
+        /* delete menu show/hide */
+        if (me && me.uid === _post.uid) {
+          document.getElementById('deleteMenuItem').style.display = 'flex';
+        }
+        /* লাইক লাইভ */
         if (me) attachLikeListener(_post);
 
-        /* কমেন্ট সেকশন দেখাও */
-        const cw = document.getElementById('commentsWrap');
-        cw.style.display = 'block';
-        loadComments();
+        /* Tab section show */
+        document.getElementById('tabSection').style.display = 'block';
+
+        /* default tab: comment */
+        switchContentTab('comment');
+
       }, { onlyOnce: false });
     }
 
-    /* ── RENDER POST DETAIL ── */
-    function renderPostDetail(post) {
-      const isAnon   = !!post.isAnonymous;
-      const name     = isAnon ? 'Anonymous' : (post.authorName || 'User');
-      const url      = isAnon ? null : post.authorAvatar;
-      const initial  = name.charAt(0).toUpperCase();
-      const avBg     = url ? 'transparent' : '#e0f2fe';
-      const avHtml   = url ? `<img src="${esc(url)}" alt="${esc(name)}">` : initial;
-      const likesCnt = post.likesCount   || 0;
+    /* ── RENDER POST CARD ── */
+    function renderPostCard(post) {
+      const isAnon  = !!post.isAnonymous;
+      const name    = isAnon ? 'Anonymous' : (post.authorName || 'User');
+      const url     = isAnon ? null : post.authorAvatar;
+      const avBg    = url ? 'transparent' : '#e0f2fe';
+      const avHtml  = url ? `<img src="${esc(url)}" alt="${esc(name)}">` : name.charAt(0).toUpperCase();
+      const timeStr = timeAgo(post.timestamp);
+      const fullDate= post.timestamp
+        ? new Date(post.timestamp).toLocaleString('bn-BD', { dateStyle:'medium', timeStyle:'short' })
+        : '';
+      const likesCnt = post.likesCount || 0;
       const cmtCnt   = post.commentsCount || 0;
-      const timeStr  = timeAgo(post.timestamp);
-      const fullDate = post.timestamp ? new Date(post.timestamp).toLocaleString('bn-BD', { dateStyle:'medium', timeStyle:'short' }) : '';
 
       /* মিডিয়া */
       let mediaHtml = '';
-      if (post.mediaUrl) {
+      if (post.mediaUrls && Array.isArray(post.mediaUrls) && post.mediaUrls.length > 0) {
+        const cnt = post.mediaUrls.length;
+        const cls = cnt >= 4 ? 'g4' : `g${cnt}`;
+        mediaHtml = `<div class="post-media"><div class="media-gallery ${cls}">` +
+          post.mediaUrls.slice(0, 4).map((mu, i) => {
+            if (/\.(mp4|mov|webm)/i.test(mu))
+              return `<div class="g-item"><video src="${esc(mu)}" controls playsinline></video></div>`;
+            return `<div class="g-item"><img src="${esc(mu)}" alt="media ${i+1}" loading="lazy"></div>`;
+          }).join('') +
+          `</div></div>`;
+      } else if (post.mediaUrl) {
         if (post.mediaType === 'video') {
-          mediaHtml = `<div class="post-video-full"><video src="${esc(post.mediaUrl)}" controls playsinline style="width:100%;max-height:480px;display:block;object-fit:contain;"></video></div>`;
+          mediaHtml = `<div class="post-media"><video src="${esc(post.mediaUrl)}" controls playsinline></video></div>`;
         } else if (post.mediaType === 'audio') {
-          mediaHtml = `
-            <div class="post-audio-card">
-              <div class="post-audio-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-              </div>
-              <div class="post-audio-info">
-                <div class="post-audio-title">অডিও পোস্ট</div>
-                <audio src="${esc(post.mediaUrl)}" controls style="width:100%;margin-top:6px;height:32px;"></audio>
-                <div class="post-audio-wave">
-                  <span style="height:6px"></span><span style="height:12px"></span><span style="height:18px"></span>
-                  <span style="height:10px"></span><span style="height:16px"></span><span style="height:8px"></span>
-                  <span style="height:20px"></span><span style="height:14px"></span>
-                </div>
-              </div>
-            </div>`;
+          mediaHtml = `<div class="post-media" style="padding:14px 16px;background:#f0f9ff;">
+            <audio src="${esc(post.mediaUrl)}" controls style="width:100%;height:32px;"></audio></div>`;
         } else {
-          mediaHtml = `<div class="post-media-full"><img src="${esc(post.mediaUrl)}" alt="post media" loading="lazy"></div>`;
+          mediaHtml = `<div class="post-media"><img src="${esc(post.mediaUrl)}" alt="post media" loading="lazy"></div>`;
         }
       }
 
-      /* multiple images — যদি mediaUrls array থাকে */
-      if (post.mediaUrls && Array.isArray(post.mediaUrls) && post.mediaUrls.length > 0) {
-        const cnt = post.mediaUrls.length;
-        const cls = `count-${Math.min(cnt, 4)}`;
-        mediaHtml = `<div class="post-media-gallery ${cls}">` +
-          post.mediaUrls.slice(0, 4).map((mu, i) => {
-            const isVideo = mu.match(/\.(mp4|mov|webm)/i);
-            const singleCls = cnt === 1 ? 'count-1' : '';
-            if (isVideo) return `<div class="media-item ${singleCls}"><video src="${esc(mu)}" controls playsinline></video></div>`;
-            return `<div class="media-item ${singleCls}"><img src="${esc(mu)}" alt="media ${i+1}" loading="lazy"></div>`;
-          }).join('') +
-        `</div>`;
-      }
-
       return `
-      <div class="post-detail-card" id="post-detail-${post.uid}-${post.id}">
-        <div class="post-detail-body">
-          <div class="post-card-header">
-            <div class="post-av" style="width:42px;height:42px;background:${avBg};cursor:pointer;" onclick="openProfile('${isAnon?'':post.uid}')">${avHtml}</div>
-            <div class="post-user-info" style="cursor:pointer;" onclick="openProfile('${isAnon?'':post.uid}')">
-              <div class="post-username">${esc(name)}</div>
-              <div class="post-meta">
-                <span>${timeStr}</span>
-                ${fullDate ? `<span class="post-meta-dot"></span><span>${fullDate}</span>` : ''}
-              </div>
-            </div>
-            ${me && me.uid === post.uid ? `
-            <button class="post-more-btn" onclick="deletePost('${post.uid}','${post.id}')" title="ডিলিট করুন">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            </button>` : ''}
+      <div class="post-card" id="post-${post.uid}-${post.id}">
+        <!-- Header: avatar + name/time -->
+        <div class="post-header">
+          <div class="post-av" style="background:${avBg};" onclick="openProfile('${isAnon?'':post.uid}')">${avHtml}</div>
+          <div class="post-user-info" onclick="openProfile('${isAnon?'':post.uid}')">
+            <div class="post-username">${esc(name)}</div>
+            <div class="post-time">${timeStr}${fullDate ? ' · ' + fullDate : ''}</div>
           </div>
-          ${post.caption ? `<div class="post-caption-full">${esc(post.caption)}</div>` : ''}
         </div>
+
+        <!-- Full caption -->
+        ${post.caption ? `<div class="post-caption">${esc(post.caption)}</div>` : ''}
+
+        <!-- Media -->
         ${mediaHtml}
-        <div class="post-stats">
-          <div class="stat-item"><strong id="likeCount">${likesCnt}</strong> লাইক</div>
-          <div class="stat-item"><strong>${cmtCnt}</strong> মন্তব্য</div>
-        </div>
-        <div class="post-actions">
-          <button class="action-btn" id="lb-detail" onclick="toggleLike('${post.uid}','${post.id}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            লাইক
-          </button>
-          <button class="action-btn" onclick="focusComment()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            মন্তব্য
-          </button>
-          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            শেয়ার
+
+        <!-- Action Row: react/comment/share + save -->
+        <div class="action-row">
+          <div class="action-left">
+            <button class="act-btn" id="lb-detail" onclick="toggleLike('${post.uid}','${post.id}')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span id="likeCount">${likesCnt}</span>
+            </button>
+            <button class="act-btn" onclick="switchContentTab('comment');scrollToTab()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>${cmtCnt}</span>
+            </button>
+            <button class="act-btn" onclick="sharePost()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <button class="save-btn" id="saveBtn" onclick="toggleSave('${post.uid}','${post.id}')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
           </button>
         </div>
       </div>`;
@@ -676,16 +704,21 @@
 
     /* ── LIKE ── */
     function attachLikeListener(post) {
-      const likeRef = ref(db, `posts/${post.uid}/${post.id}/likes/${me.uid}`);
-      onValue(likeRef, (snap) => {
+      onValue(ref(db, `posts/${post.uid}/${post.id}/likes/${me.uid}`), (snap) => {
         const btn = document.getElementById('lb-detail');
         if (btn) btn.classList.toggle('liked', snap.exists());
       });
-      /* likesCount লাইভ */
       onValue(ref(db, `posts/${post.uid}/${post.id}/likesCount`), (snap) => {
         const el = document.getElementById('likeCount');
         if (el) el.textContent = snap.exists() ? (snap.val() || 0) : 0;
       });
+      /* Save state */
+      if (me) {
+        onValue(ref(db, `users/${me.uid}/saved/${post.uid}_${post.id}`), (snap) => {
+          const btn = document.getElementById('saveBtn');
+          if (btn) btn.classList.toggle('saved', snap.exists());
+        });
+      }
     }
 
     async function toggleLike(authorUid, postId) {
@@ -703,22 +736,34 @@
       }
     }
 
-    /* ── DELETE POST ── */
-    async function deletePost(authorUid, postId) {
-      if (!confirm('পোস্টটি ডিলিট করবেন?')) return;
-      try {
-        await remove(ref(db, `posts/${authorUid}/${postId}`));
-        toast('পোস্ট ডিলিট হয়েছে');
-        setTimeout(() => history.back(), 1200);
-      } catch (err) {
-        console.error('deletePost error:', err);
-        toast('ডিলিট হয়নি');
+    async function toggleSave(authorUid, postId) {
+      if (!me) { openAuth(); return; }
+      const saveRef = ref(db, `users/${me.uid}/saved/${authorUid}_${postId}`);
+      const snap = await get(saveRef);
+      if (snap.exists()) {
+        await remove(saveRef);
+        toast('সেভ থেকে সরানো হয়েছে');
+      } else {
+        await set(saveRef, { postUid: authorUid, postId, savedAt: Date.now() });
+        toast('পোস্ট সেভ হয়েছে ✓');
       }
     }
 
+    /* ── DELETE ── */
+    async function deletePost() {
+      if (!_post || !me || me.uid !== _post.uid) return;
+      if (!confirm('পোস্টটি ডিলিট করবেন?')) return;
+      try {
+        await remove(ref(db, `posts/${_post.uid}/${_post.id}`));
+        toast('পোস্ট ডিলিট হয়েছে');
+        setTimeout(() => history.back(), 1200);
+      } catch(e) { toast('ডিলিট হয়নি'); }
+    }
+
     /* ── SHARE ── */
-    function sharePost(uid, id) {
-      const url = `${location.origin}/post?uid=${uid}&id=${id}`;
+    function sharePost() {
+      if (!_post) return;
+      const url = `${location.origin}/post?uid=${_post.uid}&id=${_post.id}`;
       if (navigator.share) {
         navigator.share({ title: 'Insight পোস্ট', url });
       } else {
@@ -726,169 +771,164 @@
       }
     }
 
-    /* ── COMMENT INPUT SETUP ── */
-    function setupCommentInput() {
-      const inp = document.getElementById('commentInput');
-      const btn = document.getElementById('commentSendBtn');
-      if (!inp || !btn) return;
-      inp.addEventListener('input', () => {
-        btn.disabled = inp.value.trim().length === 0;
-      });
-      inp.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          if (!btn.disabled) submitComment();
-        }
-      });
+    /* ── MORE MENU ── */
+    function toggleMoreMenu() {
+      document.getElementById('moreMenu').classList.toggle('open');
     }
+    document.addEventListener('click', (e) => {
+      const btn = document.getElementById('moreBtn');
+      if (btn && !btn.contains(e.target)) {
+        document.getElementById('moreMenu').classList.remove('open');
+      }
+    });
 
-    function focusComment() {
-      const inp = document.getElementById('commentInput');
-      if (!inp) return;
-      if (!me) { openAuth(); return; }
-      inp.focus();
-      inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    /* ── TAB SWITCH ── */
+    function switchContentTab(tab) {
+      _currentTab = tab;
+      ['react','comment','share'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+      });
 
-    /* ── SUBMIT COMMENT ── */
-    async function submitComment(replyToId = null) {
-      if (!me) { openAuth(); return; }
-      const inp = document.getElementById('commentInput');
-      const btn = document.getElementById('commentSendBtn');
-      const text = inp.value.trim();
-      if (!text) return;
+      const inputWrap = document.getElementById('commentInputWrap');
+      inputWrap.style.display = tab === 'comment' ? 'flex' : 'none';
 
-      btn.disabled = true;
-      try {
-        const cmtRef = replyToId
-          ? ref(db, `comments/${_postAuthorUid}/${_postId}/${replyToId}/replies`)
-          : ref(db, `comments/${_postAuthorUid}/${_postId}`);
+      const content = document.getElementById('tabContent');
 
-        const newRef = push(cmtRef);
-        await set(newRef, {
-          text,
-          authorUid:    me.uid,
-          authorName:   myProfile?.full_name || me.displayName || 'User',
-          authorAvatar: myProfile?.avatar_url || me.photoURL || null,
-          timestamp:    Date.now(),
-          likesCount:   0
-        });
-
-        /* commentsCount আপডেট */
-        const countRef = ref(db, `posts/${_postAuthorUid}/${_postId}/commentsCount`);
-        const cSnap = await get(countRef);
-        await set(countRef, (cSnap.exists() ? (cSnap.val() || 0) : 0) + 1);
-
-        inp.value = ''; inp.style.height = ''; btn.disabled = true;
-        toast('মন্তব্য যোগ হয়েছে ✓');
-      } catch (err) {
-        console.error('submitComment error:', err);
-        toast('মন্তব্য যোগ হয়নি');
-        btn.disabled = false;
+      if (tab === 'comment') {
+        renderCommentTab(content);
+      } else if (tab === 'react') {
+        renderReactTab(content);
+      } else if (tab === 'share') {
+        renderShareTab(content);
       }
     }
 
-    /* ── LOAD COMMENTS (realtime) ── */
-    function loadComments() {
-      const list = document.getElementById('commentsList');
-      if (_commentsUnsub) { _commentsUnsub(); _commentsUnsub = null; }
-
-      _commentsUnsub = onValue(ref(db, `comments/${_postAuthorUid}/${_postId}`), (snap) => {
-        if (!snap.exists()) {
-          list.innerHTML = `<div class="empty-state"><span>💬</span>প্রথম মন্তব্য করুন!</div>`;
-          document.getElementById('commentCount').textContent = '০টি';
-          return;
-        }
-
-        const all = [];
-        snap.forEach(c => all.push({ id: c.key, ...c.val(), replies: c.val().replies || null }));
-        all.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-
-        document.getElementById('commentCount').textContent = `${all.length}টি`;
-        list.innerHTML = all.map(c => renderComment(c)).join('');
-
-        /* রিপ্লাই বাটন ক্লিক ইভেন্ট */
-        list.querySelectorAll('.c-reply-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const cid = btn.dataset.cid;
-            toggleReplyInput(cid);
-          });
-        });
-
-        /* কমেন্ট লাইক বাটন */
-        list.querySelectorAll('.c-like-btn[data-cid]').forEach(btn => {
-          btn.addEventListener('click', () => toggleCommentLike(btn.dataset.cid, btn));
-        });
-
-        /* রিপ্লাই লাইক বাটন */
-        list.querySelectorAll('.r-like-btn[data-rid]').forEach(btn => {
-          btn.addEventListener('click', () => toggleReplyLike(btn.dataset.cid, btn.dataset.rid, btn));
-        });
-
-        /* রিপ্লাই সেন্ড বাটন */
-        list.querySelectorAll('.reply-send-btn[data-cid]').forEach(btn => {
-          btn.addEventListener('click', () => submitReply(btn.dataset.cid));
-        });
-
-        /* রিপ্লাই ইনপুট এন্টার */
-        list.querySelectorAll('.reply-input[data-cid]').forEach(inp => {
-          inp.addEventListener('input', () => {
-            const sendBtn = list.querySelector(`.reply-send-btn[data-cid="${inp.dataset.cid}"]`);
-            if (sendBtn) sendBtn.disabled = inp.value.trim().length === 0;
-          });
-          inp.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              submitReply(inp.dataset.cid);
-            }
-          });
-        });
-
-        /* নিজের লাইক অবস্থা */
-        if (me) {
-          all.forEach(c => {
-            const btn = list.querySelector(`.c-like-btn[data-cid="${c.id}"]`);
-            if (btn && c.likes && c.likes[me.uid]) btn.classList.add('liked');
-          });
-        }
-
-      }, { onlyOnce: false });
+    function scrollToTab() {
+      const el = document.getElementById('tabSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /* ── RENDER COMMENT ── */
-    function renderComment(c) {
+    /* ── REACT TAB ── */
+    function renderReactTab(container) {
+      if (!_postAuthorUid || !_postId) return;
+      container.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+      get(ref(db, `posts/${_postAuthorUid}/${_postId}/likes`)).then(snap => {
+        if (!snap.exists() || !snap.val()) {
+          container.innerHTML = `<div class="empty-state"><span>❤️</span>এখনও কেউ রিয়েক্ট করেনি</div>`;
+          return;
+        }
+        const uids = Object.keys(snap.val());
+        container.innerHTML = `<div class="react-list">` +
+          uids.map(uid => `
+            <div class="react-item" onclick="openProfile('${uid}')">
+              <div class="ri-av" id="ri-av-${uid}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <div>
+                <div class="ri-name" id="ri-name-${uid}">লোড হচ্ছে...</div>
+              </div>
+              <span class="react-emoji">❤️</span>
+            </div>`).join('') +
+          `</div>`;
+
+        /* প্রতিটি user এর প্রোফাইল লোড */
+        uids.forEach(uid => loadUserPreview(uid, `ri-av-${uid}`, `ri-name-${uid}`));
+      });
+    }
+
+    /* ── SHARE TAB ── */
+    function renderShareTab(container) {
+      container.innerHTML = `<div class="empty-state"><span>🔗</span>এখনও কেউ শেয়ার করেনি</div>`;
+    }
+
+    /* ── COMMENT TAB ── */
+    function renderCommentTab(container) {
+      if (_commentsUnsub) { _commentsUnsub(); _commentsUnsub = null; }
+
+      container.innerHTML = `<div class="loading-wrap"><div class="spinner"></div></div>`;
+
+      _commentsUnsub = onValue(
+        ref(db, `comments/${_postAuthorUid}/${_postId}`),
+        (snap) => {
+          if (_currentTab !== 'comment') return;
+
+          if (!snap.exists()) {
+            container.innerHTML = `<div class="empty-state"><span>💬</span>প্রথম মন্তব্য করুন!</div>`;
+            return;
+          }
+
+          const all = [];
+          snap.forEach(c => all.push({ id: c.key, ...c.val() }));
+          all.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+          container.innerHTML = `<div class="comment-list">` + all.map(c => renderCommentItem(c)).join('') + `</div>`;
+
+          /* Events */
+          container.querySelectorAll('.cm-reply-btn').forEach(btn => {
+            btn.addEventListener('click', () => toggleReplyInput(btn.dataset.cid));
+          });
+          container.querySelectorAll('.cm-like-btn[data-cid]').forEach(btn => {
+            btn.addEventListener('click', () => toggleCommentLike(btn.dataset.cid, btn));
+          });
+          container.querySelectorAll('.r-like-btn[data-rid]').forEach(btn => {
+            btn.addEventListener('click', () => toggleReplyLike(btn.dataset.cid, btn.dataset.rid, btn));
+          });
+          container.querySelectorAll('.reply-send-btn[data-cid]').forEach(btn => {
+            btn.addEventListener('click', () => submitReply(btn.dataset.cid));
+          });
+          container.querySelectorAll('.reply-textarea[data-cid]').forEach(inp => {
+            inp.addEventListener('input', () => {
+              const sb = container.querySelector(`.reply-send-btn[data-cid="${inp.dataset.cid}"]`);
+              if (sb) sb.disabled = inp.value.trim().length === 0;
+            });
+            inp.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitReply(inp.dataset.cid); }
+            });
+          });
+
+          /* My likes */
+          if (me) {
+            all.forEach(c => {
+              const btn = container.querySelector(`.cm-like-btn[data-cid="${c.id}"]`);
+              if (btn && c.likes && c.likes[me.uid]) btn.classList.add('liked');
+            });
+          }
+        },
+        { onlyOnce: false }
+      );
+    }
+
+    function renderCommentItem(c) {
       const avBg = c.authorAvatar ? 'transparent' : '#e0f2fe';
       const avHtml = c.authorAvatar
         ? `<img src="${esc(c.authorAvatar)}" alt="${esc(c.authorName||'')}">`
         : `<span style="font-size:12px;font-weight:700;color:#374151;">${(c.authorName||'?').charAt(0).toUpperCase()}</span>`;
 
       const replies = c.replies
-        ? Object.entries(c.replies).map(([rid, r]) => renderReply(c.id, rid, r)).join('')
+        ? Object.entries(c.replies).map(([rid, r]) => renderReplyItem(c.id, rid, r)).join('')
         : '';
 
       const replyCount = c.replies ? Object.keys(c.replies).length : 0;
 
       return `
       <div class="comment-item" id="comment-${c.id}">
-        <div class="c-av" style="background:${avBg};">${avHtml}</div>
-        <div class="c-body">
-          <div class="c-bubble">
-            <div class="c-name">${esc(c.authorName || 'User')}</div>
-            <div class="c-text">${esc(c.text || '')}</div>
+        <div class="cm-av" style="background:${avBg};">${avHtml}</div>
+        <div class="cm-body">
+          <div class="cm-bubble">
+            <div class="cm-name">${esc(c.authorName || 'User')}</div>
+            <div class="cm-text">${esc(c.text || '')}</div>
           </div>
-          <div class="c-footer">
-            <span class="c-time">${timeAgo(c.timestamp)}</span>
-            <button class="c-like-btn" data-cid="${c.id}">
+          <div class="cm-footer">
+            <span class="cm-time">${timeAgo(c.timestamp)}</span>
+            <button class="cm-like-btn" data-cid="${c.id}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               ${c.likesCount > 0 ? c.likesCount : 'লাইক'}
             </button>
-            <button class="c-reply-btn" data-cid="${c.id}">
-              রিপ্লাই${replyCount > 0 ? ` (${replyCount})` : ''}
-            </button>
+            <button class="cm-reply-btn" data-cid="${c.id}">রিপ্লাই${replyCount > 0 ? ` (${replyCount})` : ''}</button>
           </div>
           ${replies ? `<div class="replies-wrap" id="replies-${c.id}">${replies}</div>` : `<div class="replies-wrap" id="replies-${c.id}"></div>`}
           <div id="reply-input-wrap-${c.id}" style="display:none;" class="reply-input-row">
-            <textarea class="reply-input" data-cid="${c.id}" placeholder="রিপ্লাই করুন..." rows="1" oninput="autoResize(this)"></textarea>
+            <textarea class="reply-textarea" data-cid="${c.id}" placeholder="রিপ্লাই করুন..." rows="1" oninput="autoResize(this)"></textarea>
             <button class="reply-send-btn" data-cid="${c.id}" disabled>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
@@ -897,17 +937,15 @@
       </div>`;
     }
 
-    /* ── RENDER REPLY ── */
-    function renderReply(cid, rid, r) {
+    function renderReplyItem(cid, rid, r) {
       const avBg = r.authorAvatar ? 'transparent' : '#e0f2fe';
       const avHtml = r.authorAvatar
         ? `<img src="${esc(r.authorAvatar)}" alt="${esc(r.authorName||'')}">`
         : `<span style="font-size:10px;font-weight:700;color:#374151;">${(r.authorName||'?').charAt(0).toUpperCase()}</span>`;
-
       return `
       <div class="reply-item" id="reply-${rid}">
         <div class="r-av" style="background:${avBg};">${avHtml}</div>
-        <div class="c-body">
+        <div class="cm-body">
           <div class="r-bubble">
             <div class="r-name">${esc(r.authorName || 'User')}</div>
             <div class="r-text">${esc(r.text || '')}</div>
@@ -923,32 +961,84 @@
       </div>`;
     }
 
-    /* ── REPLY INPUT TOGGLE ── */
+    /* ── USER PREVIEW ── */
+    async function loadUserPreview(uid, avId, nameId) {
+      try {
+        const snap = await get(ref(db, `users/${uid}`));
+        const d = snap.exists() ? snap.val() : {};
+        const name = d.name || d.displayName || d.fullName || 'User';
+        const photoUrl = d.profilePhotoUrl || d.photoURL || null;
+        const avEl = document.getElementById(avId);
+        const nameEl = document.getElementById(nameId);
+        if (nameEl) nameEl.textContent = name;
+        if (avEl) {
+          if (photoUrl) {
+            avEl.innerHTML = `<img src="${esc(photoUrl)}" style="width:36px;height:36px;object-fit:cover;border-radius:50%;">`;
+            avEl.style.background = 'transparent';
+          } else {
+            avEl.innerHTML = `<span style="font-size:14px;font-weight:700;color:#374151;">${name.charAt(0).toUpperCase()}</span>`;
+          }
+        }
+      } catch(e) {}
+    }
+
+    /* ── COMMENT INPUT SETUP ── */
+    function setupCommentInput() {
+      const inp = document.getElementById('commentInput');
+      const btn = document.getElementById('commentSendBtn');
+      if (!inp || !btn) return;
+      inp.addEventListener('input', () => { btn.disabled = inp.value.trim().length === 0; });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!btn.disabled) submitComment(); }
+      });
+    }
+
+    /* ── SUBMIT COMMENT ── */
+    async function submitComment() {
+      if (!me) { openAuth(); return; }
+      const inp = document.getElementById('commentInput');
+      const btn = document.getElementById('commentSendBtn');
+      const text = inp.value.trim();
+      if (!text) return;
+      btn.disabled = true;
+      try {
+        const newRef = push(ref(db, `comments/${_postAuthorUid}/${_postId}`));
+        await set(newRef, {
+          text,
+          authorUid:    me.uid,
+          authorName:   myProfile?.full_name || me.displayName || 'User',
+          authorAvatar: myProfile?.avatar_url || me.photoURL || null,
+          timestamp:    Date.now(),
+          likesCount:   0
+        });
+        const countRef = ref(db, `posts/${_postAuthorUid}/${_postId}/commentsCount`);
+        const cSnap = await get(countRef);
+        await set(countRef, (cSnap.exists() ? (cSnap.val() || 0) : 0) + 1);
+        inp.value = ''; inp.style.height = ''; btn.disabled = true;
+        toast('মন্তব্য যোগ হয়েছে ✓');
+      } catch(err) { console.error(err); toast('মন্তব্য হয়নি'); btn.disabled = false; }
+    }
+
+    /* ── REPLY ── */
     function toggleReplyInput(cid) {
       if (!me) { openAuth(); return; }
       const wrap = document.getElementById(`reply-input-wrap-${cid}`);
       if (!wrap) return;
       const isOpen = wrap.style.display !== 'none';
       wrap.style.display = isOpen ? 'none' : 'flex';
-      if (!isOpen) {
-        const inp = wrap.querySelector('.reply-input');
-        if (inp) { inp.focus(); }
-      }
+      if (!isOpen) { const inp = wrap.querySelector('.reply-textarea'); if (inp) inp.focus(); }
     }
 
-    /* ── SUBMIT REPLY ── */
     async function submitReply(cid) {
       if (!me) { openAuth(); return; }
       const wrap = document.getElementById(`reply-input-wrap-${cid}`);
-      const inp  = wrap?.querySelector('.reply-input');
+      const inp  = wrap?.querySelector('.reply-textarea');
       const btn  = wrap?.querySelector('.reply-send-btn');
       const text = inp?.value.trim();
       if (!text) return;
       if (btn) btn.disabled = true;
-
       try {
-        const rRef = ref(db, `comments/${_postAuthorUid}/${_postId}/${cid}/replies`);
-        await set(push(rRef), {
+        await set(push(ref(db, `comments/${_postAuthorUid}/${_postId}/${cid}/replies`)), {
           text,
           authorUid:    me.uid,
           authorName:   myProfile?.full_name || me.displayName || 'User',
@@ -960,11 +1050,7 @@
         if (btn) btn.disabled = true;
         if (wrap) wrap.style.display = 'none';
         toast('রিপ্লাই যোগ হয়েছে ✓');
-      } catch (err) {
-        console.error('submitReply error:', err);
-        toast('রিপ্লাই হয়নি');
-        if (btn) btn.disabled = false;
-      }
+      } catch(err) { toast('রিপ্লাই হয়নি'); if (btn) btn.disabled = false; }
     }
 
     /* ── COMMENT LIKE ── */
@@ -975,13 +1061,11 @@
       const [snap, cSnap] = await Promise.all([get(likeRef), get(countRef)]);
       const cur = cSnap.exists() ? (cSnap.val() || 0) : 0;
       if (snap.exists()) {
-        await remove(likeRef);
-        await set(countRef, Math.max(0, cur - 1));
+        await remove(likeRef); await set(countRef, Math.max(0, cur - 1));
         btn.classList.remove('liked');
         btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${Math.max(0, cur - 1) || 'লাইক'}`;
       } else {
-        await set(likeRef, true);
-        await set(countRef, cur + 1);
+        await set(likeRef, true); await set(countRef, cur + 1);
         btn.classList.add('liked');
         btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${cur + 1}`;
       }
@@ -995,17 +1079,13 @@
       const [snap, cSnap] = await Promise.all([get(likeRef), get(countRef)]);
       const cur = cSnap.exists() ? (cSnap.val() || 0) : 0;
       if (snap.exists()) {
-        await remove(likeRef);
-        await set(countRef, Math.max(0, cur - 1));
-        btn.classList.remove('liked');
+        await remove(likeRef); await set(countRef, Math.max(0, cur - 1)); btn.classList.remove('liked');
       } else {
-        await set(likeRef, true);
-        await set(countRef, cur + 1);
-        btn.classList.add('liked');
+        await set(likeRef, true); await set(countRef, cur + 1); btn.classList.add('liked');
       }
     }
 
-    /* ── AUTH MODAL ── */
+    /* ── AUTH ── */
     function openAuth()  { document.getElementById('authOverlay').classList.add('active'); }
     function closeAuth() { document.getElementById('authOverlay').classList.remove('active'); }
     function switchTab(tab) {
@@ -1025,7 +1105,7 @@
         await signInWithEmailAndPassword(auth, email, pass);
         btn.disabled=false; btn.textContent='লগইন করুন';
         closeAuth(); toast('সফলভাবে লগইন হয়েছে ✓');
-      } catch (err) {
+      } catch {
         btn.disabled=false; btn.textContent='লগইন করুন';
         errEl.textContent='ইমেইল বা পাসওয়ার্ড ভুল হয়েছে';
       }
@@ -1043,23 +1123,21 @@
         const username = name.toLowerCase().replace(/\s+/g,'_');
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(cred.user, { displayName: name });
-        await set(ref(db, `users/${cred.user.uid}`), {
-          name, username, profilePhotoUrl: null, postsCount: 0, friendsCount: 0, followersCount: 0
-        });
+        await set(ref(db, `users/${cred.user.uid}`), { name, username, profilePhotoUrl: null, postsCount: 0, friendsCount: 0, followersCount: 0 });
         btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
         closeAuth(); toast('অ্যাকাউন্ট তৈরি হয়েছে ✓');
-      } catch (err) {
+      } catch(err) {
         btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
         errEl.textContent = err?.code?.includes('email-already-in-use') ? 'এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট আছে' : 'অ্যাকাউন্ট তৈরি করা সম্ভব হয়নি';
       }
     }
 
-    /* ── NAV HELPERS ── */
+    /* ── NAV ── */
     function onNavProfile() { if (me) { window.location.href = '/profile'; } else { openAuth(); } }
     function navGuard(path) { if (!me) { openAuth(); return; } window.location.href = path; }
     function openProfile(uid) { if (uid) window.location.href = `/profile?uid=${encodeURIComponent(uid)}`; }
 
-    /* ── UTILITY ── */
+    /* ── UTILS ── */
     function timeAgo(ts) {
       if (!ts) return '';
       const sec = Math.floor((Date.now() - ts) / 1000);
@@ -1083,17 +1161,18 @@
       el.style.height = Math.min(el.scrollHeight, 100) + 'px';
     }
 
-    /* overlay বাইরে ক্লিক করলে বন্ধ */
     document.getElementById('authOverlay').addEventListener('click', e => {
       if (e.target.id === 'authOverlay') closeAuth();
     });
 
-    /* ── GLOBAL EXPOSE (inline onclick থেকে কল হওয়া ফাংশন) ── */
+    /* Global expose */
     Object.assign(window, {
       closeAuth, switchTab, doLogin, doSignup,
-      toggleLike, deletePost, sharePost, focusComment,
-      submitComment, onNavProfile, navGuard, openProfile,
-      autoResize, toast
+      toggleLike, toggleSave, deletePost, sharePost,
+      switchContentTab, scrollToTab,
+      submitComment, toggleReplyInput, submitReply,
+      onNavProfile, navGuard, openProfile,
+      autoResize, toast, toggleMoreMenu
     });
   </script>
 </body>
