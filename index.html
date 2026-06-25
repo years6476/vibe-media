@@ -726,7 +726,13 @@
       Object.entries(REACTIONS).forEach(([key, cfg]) => {
         const elId = `rl-${key}-${uid}-${pid}`;
         const el = document.getElementById(elId);
-        if (!el || _lottieCache[elId]) return;
+        if (!el) return;
+        /* ফিড re-render হলে পুরনো DOM ধ্বংস হয়ে যায়, তাই পুরনো lottie
+           instance থাকলে destroy করে নতুন element-এর সাথে fresh animation লোড করো */
+        if (_lottieCache[elId]) {
+          try { _lottieCache[elId].destroy(); } catch(e) {}
+          delete _lottieCache[elId];
+        }
         _lottieCache[elId] = lottie.loadAnimation({
           container: el, renderer: 'svg', loop: true, autoplay: true, path: cfg.lottie
         });
