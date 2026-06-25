@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Website</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #ffffff; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
@@ -87,24 +86,23 @@
     .action-btn.saved { color: #6C63FF; }
     .action-btn.saved:hover { background: #f5f3ff; }
     /* === REACTION SYSTEM === */
-    .reaction-wrap { position: relative; display: inline-flex; }
     .reaction-summary { display: flex; align-items: center; gap: 5px; padding: 3px 14px 3px; min-height: 22px; border-bottom: 1px solid #f3f4f6; }
     .reaction-summary:empty, .reaction-summary.hidden { display: none; }
     .reaction-summary-emojis { display: flex; align-items: center; gap: 1px; }
     .reaction-summary-emojis span { font-size: 14px; line-height: 1; }
     .reaction-summary-count { font-size: 12px; color: #6b7280; font-weight: 500; }
-    .reaction-picker { position: absolute; bottom: calc(100% + 8px); left: -8px; background: #fff; border-radius: 50px; box-shadow: 0 4px 24px rgba(0,0,0,0.18); padding: 7px 10px; display: flex; gap: 4px; align-items: center; z-index: 500; opacity: 0; pointer-events: none; transform: scale(0.75) translateY(8px); transform-origin: bottom left; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); border: 1px solid #f0f0f0; white-space: nowrap; }
-    .reaction-picker.open { opacity: 1; pointer-events: all; transform: scale(1) translateY(0); }
-    .reaction-picker-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 2px 2px; border-radius: 8px; transition: transform 0.15s; }
-    .reaction-picker-item:hover { transform: scale(1.35) translateY(-5px); }
-    .reaction-picker-item .lottie-icon { width: 38px; height: 38px; pointer-events: none; }
-    .reaction-picker-item .r-label { font-size: 9px; color: #6b7280; margin-top: 1px; font-weight: 500; opacity: 0; transition: opacity 0.15s; text-align: center; }
-    .reaction-picker-item:hover .r-label { opacity: 1; }
-    .react-btn.reacted .react-icon-svg { display: none; }
-    .react-btn .react-icon-svg { display: inline-flex; }
-    .react-btn.reacted { color: #e94560; font-weight: 600; }
-    .react-btn .react-icon-lottie { display: none; align-items: center; }
-    .react-btn .react-icon-lottie svg { width: 18px; height: 18px; }
+    .react-icon-3d { display: inline-flex; align-items: center; justify-content: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15)); transition: filter 0.15s; }
+    .react-btn:not(.reacted) .react-icon-3d svg path { fill: #c9c9d1; stroke: #9b9ba3; }
+    .react-btn.reacted { color: #7c3aed; font-weight: 600; }
+    .react-btn.reacted .react-icon-3d { filter: drop-shadow(0 2px 3px rgba(124,58,237,0.45)); }
+    @keyframes reactBounce {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.5) rotate(-8deg); }
+      55%  { transform: scale(0.85) rotate(4deg); }
+      75%  { transform: scale(1.15) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .react-icon-3d.react-bounce { animation: reactBounce 0.5s cubic-bezier(0.34,1.56,0.64,1); }
     /* === AUTH MODAL === */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
     .overlay.active { display: flex; }
@@ -688,6 +686,9 @@
       const longCaption = caption.length > 140 || (caption.match(/\n/g) || []).length >= 2;
       const captionHtml = captionEsc ? `<div class="post-content${longCaption ? ' clamped' : ''}" id="cap-${post.uid}-${post.id}" style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${captionEsc}</div>${longCaption ? `<span class="post-see-more" onclick="(function(el,sp){el.classList.remove('clamped');sp.style.display='none';})(document.getElementById('cap-${post.uid}-${post.id}'),this)">See more</span>` : ''}` : '';
       const mediaHtml = post.mediaUrl ? `<div class="post-media" style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${post.mediaType==='video' ? `<video src="${esc(post.mediaUrl)}" controls playsinline></video>` : `<img src="${esc(post.mediaUrl)}" alt="post media" loading="lazy">`}</div>` : '';
+      const cmtCnt   = post.commentsCount || 0;
+      const shrCnt   = post.sharesCount   || 0;
+      const savCnt   = post.savesCount    || 0;
       return `<div class="post-card" id="pc-${post.uid}-${post.id}">
         <div class="post-card-header">
           <div class="post-av" style="background:${avBg};cursor:pointer;" onclick="openVisitorProfile('${isAnon?'':post.uid}')">${avHtml}</div>
@@ -697,220 +698,84 @@
         ${mediaHtml}
         <div class="reaction-summary hidden" id="rs-${post.uid}-${post.id}"></div>
         <div class="post-actions">
-          <div class="reaction-wrap">
-            <button class="action-btn react-btn" id="lb-${post.uid}-${post.id}"
-              onclick="quickReact('${post.uid}','${post.id}')"
-              onmousedown="startHold('${post.uid}','${post.id}',this)"
-              onmouseup="cancelHold()"
-              onmouseleave="cancelHold()"
-              ontouchstart="startHold('${post.uid}','${post.id}',this)"
-              ontouchend="cancelHold()"
-            >
-              <span class="react-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
-              <span class="react-icon-emoji" id="re-${post.uid}-${post.id}" style="display:none;font-size:16px;line-height:1;">❤️</span>
-              <span class="react-icon-lottie" id="rbl-${post.uid}-${post.id}" style="display:none;width:18px;height:18px;"></span>
-              <span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : 'Like'}</span>
-            </button>
-            <div class="reaction-picker" id="rp-${post.uid}-${post.id}">
-              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','love')"><div class="lottie-icon" id="rl-love-${post.uid}-${post.id}"></div><div class="r-label">Love</div></div>
-              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','haha')"><div class="lottie-icon" id="rl-haha-${post.uid}-${post.id}"></div><div class="r-label">Haha</div></div>
-              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','cry')"><div class="lottie-icon" id="rl-cry-${post.uid}-${post.id}"></div><div class="r-label">Sad</div></div>
-              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','angry')"><div class="lottie-icon" id="rl-angry-${post.uid}-${post.id}"></div><div class="r-label">Angry</div></div>
-            </div>
-          </div>
-          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Comment</span></button>
-          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Share</span></button>
-          <button class="action-btn save-btn" id="sb-${post.uid}-${post.id}" onclick="toggleSave('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Save</span></button>
+          <button class="action-btn react-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')">
+            <span class="react-icon-3d" id="ri3d-${post.uid}-${post.id}">
+              <svg viewBox="0 0 24 24" width="18" height="18"><defs><linearGradient id="rg-${post.uid}-${post.id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="55%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient></defs><path fill="url(#rg-${post.uid}-${post.id})" stroke="#3b0764" stroke-width="0.6" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </span>
+            <span id="lc-${post.uid}-${post.id}">${likesCnt}</span>
+          </button>
+          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span id="cc-${post.uid}-${post.id}">${cmtCnt}</span></button>
+          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="shc-${post.uid}-${post.id}">${shrCnt}</span></button>
+          <button class="action-btn save-btn" id="sb-${post.uid}-${post.id}" onclick="toggleSave('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span id="svc-${post.uid}-${post.id}">${savCnt}</span></button>
         </div>
       </div>`;
     }
-    /* ── REACTION CONFIG ── */
-    const REACTIONS = {
-      love:  { emoji: '❤️', label: 'Love',  lottie: '/Lottie/Love Animation with Particle.json',  color: '#e94560' },
-      haha:  { emoji: '😂', label: 'Haha',  lottie: '/Lottie/Joy Laugh Emoji.json',               color: '#f59e0b' },
-      cry:   { emoji: '😢', label: 'Sad',   lottie: '/Lottie/Crying emoji.json',                  color: '#3b82f6' },
-      angry: { emoji: '😡', label: 'Angry', lottie: '/Lottie/Angry emoji Lottie JSON animation.json', color: '#ef4444' },
-    };
-    /* Lottie instances cache — picker খোলার সময় init হবে */
-    const _lottieCache = {};
-    function _initPickerLotties(uid, pid) {
-      Object.entries(REACTIONS).forEach(([key, cfg]) => {
-        const elId = `rl-${key}-${uid}-${pid}`;
-        const el = document.getElementById(elId);
-        if (!el) return;
-        /* ফিড re-render হলে পুরনো DOM ধ্বংস হয়ে যায়, তাই পুরনো lottie
-           instance থাকলে destroy করে নতুন element-এর সাথে fresh animation লোড করো */
-        if (_lottieCache[elId]) {
-          try { _lottieCache[elId].destroy(); } catch(e) {}
-          delete _lottieCache[elId];
-        }
-        _lottieCache[elId] = lottie.loadAnimation({
-          container: el, renderer: 'svg', loop: true, autoplay: true, path: cfg.lottie
-        });
-      });
-    }
-    /* ── HOLD TIMER ── */
-    let _holdTimer = null;
-    let _holdActive = false;
-    function startHold(uid, pid, btnEl) {
-      _holdActive = false;
-      _holdTimer = setTimeout(() => {
-        _holdActive = true;
-        openReactionPicker(uid, pid, btnEl);
-      }, 420);
-    }
-    function cancelHold() { clearTimeout(_holdTimer); }
-    /* ── PICKER OPEN / CLOSE ── */
-    let _openPicker = null;
-    function openReactionPicker(uid, pid, btnEl) {
-      closeAllPickers();
-      const picker = document.getElementById(`rp-${uid}-${pid}`);
-      if (!picker) return;
-      _initPickerLotties(uid, pid);
-      picker.classList.add('open');
-      _openPicker = { uid, pid };
-      /* outside click এ বন্ধ */
-      setTimeout(() => {
-        document.addEventListener('click', _closePickerOutside, { once: true });
-      }, 50);
-    }
-    function closeAllPickers() {
-      document.querySelectorAll('.reaction-picker.open').forEach(p => p.classList.remove('open'));
-      _openPicker = null;
-    }
-    function _closePickerOutside(e) {
-      if (!e.target.closest('.reaction-picker') && !e.target.closest('.react-btn')) {
-        closeAllPickers();
-      }
-    }
-    /* ── QUICK REACT (single tap → love) ── */
-    function quickReact(uid, pid) {
-      if (_holdActive) { _holdActive = false; return; } /* hold এ picker খুলেছে, tap এ কিছু করবো না */
-      if (!me) { openAuth(); return; }
-      const btn = document.getElementById(`lb-${uid}-${pid}`);
-      if (!btn) return;
-      if (btn.classList.contains('reacted')) {
-        /* ইতিমধ্যে reacted — সরাও */
-        _removeReaction(uid, pid);
-      } else {
-        setReaction(uid, pid, 'love');
-      }
-    }
-    /* ── SET REACTION ── */
-    async function setReaction(uid, pid, type) {
-      closeAllPickers();
+    /* ── REACTION (single Like reaction, পার্পল 3D আইকন + ক্লিকে বাউন্স) ── */
+    async function toggleLike(uid, pid) {
       if (!me) { openAuth(); return; }
       const rRef = ref(db, `reactions/${uid}/${pid}/${me.uid}`);
       const prevSnap = await get(rRef);
-      const prevType = prevSnap.exists() ? prevSnap.val().type : null;
-      /* পুরানো reaction এর count কমাও */
-      if (prevType) {
-        const oldCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${prevType}`);
-        const oldSnap = await get(oldCountRef);
-        const oldVal = oldSnap.exists() ? (oldSnap.val() || 0) : 0;
-        await set(oldCountRef, Math.max(0, oldVal - 1));
-        /* likesCount ও কমাও */
-        const lcRef = ref(db, `posts/${uid}/${pid}/likesCount`);
-        const lcSnap = await get(lcRef);
-        await set(lcRef, Math.max(0, (lcSnap.exists() ? lcSnap.val() : 0) - 1));
-      }
-      if (prevType === type) {
-        /* একই reaction আবার চাপলে সরাও */
-        await remove(rRef);
-        _updateReactBtn(uid, pid, null);
-        return;
-      }
-      /* নতুন reaction সেট */
-      await set(rRef, { type, ts: Date.now() });
-      const newCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${type}`);
-      const newSnap = await get(newCountRef);
-      await set(newCountRef, ((newSnap.exists() ? newSnap.val() : 0) || 0) + 1);
-      /* likesCount বাড়াও */
-      const lcRef2 = ref(db, `posts/${uid}/${pid}/likesCount`);
-      const lcSnap2 = await get(lcRef2);
-      await set(lcRef2, ((lcSnap2.exists() ? lcSnap2.val() : 0) || 0) + 1);
-      _updateReactBtn(uid, pid, type);
-    }
-    async function _removeReaction(uid, pid) {
-      if (!me) return;
-      const rRef = ref(db, `reactions/${uid}/${pid}/${me.uid}`);
-      const prevSnap = await get(rRef);
-      if (!prevSnap.exists()) return;
-      const prevType = prevSnap.val().type;
-      await remove(rRef);
-      const oldCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${prevType}`);
-      const oldSnap = await get(oldCountRef);
-      await set(oldCountRef, Math.max(0, (oldSnap.exists() ? oldSnap.val() : 0) - 1));
+      const alreadyLiked = prevSnap.exists();
       const lcRef = ref(db, `posts/${uid}/${pid}/likesCount`);
       const lcSnap = await get(lcRef);
-      await set(lcRef, Math.max(0, (lcSnap.exists() ? lcSnap.val() : 0) - 1));
-      _updateReactBtn(uid, pid, null);
-    }
-    /* ── UI UPDATE ── */
-    const _btnLottieCache = {}; /* action button-এর animated reaction icon cache */
-    function _updateReactBtn(uid, pid, type) {
-      const btn = document.getElementById(`lb-${uid}-${pid}`);
-      if (!btn) return;
-      const emojiEl  = document.getElementById(`re-${uid}-${pid}`);
-      const lottieEl = document.getElementById(`rbl-${uid}-${pid}`);
-      const countEl  = document.getElementById(`lc-${uid}-${pid}`);
-      if (type) {
-        const cfg = REACTIONS[type];
-        btn.classList.add('reacted');
-        btn.style.color = cfg.color;
-        /* static emoji স্প্যান হাইড করো, animated lottie স্প্যান দেখাও */
-        if (emojiEl) emojiEl.style.display = 'none';
-        if (lottieEl) {
-          lottieEl.style.display = 'inline-flex';
-          const cacheKey = `${uid}-${pid}`;
-          if (_btnLottieCache[cacheKey]) {
-            try { _btnLottieCache[cacheKey].destroy(); } catch(e) {}
-            delete _btnLottieCache[cacheKey];
-          }
-          lottieEl.innerHTML = '';
-          _btnLottieCache[cacheKey] = lottie.loadAnimation({
-            container: lottieEl, renderer: 'svg', loop: true, autoplay: true, path: cfg.lottie
-          });
-        }
-        if (countEl) {
-          const cur = parseInt(countEl.textContent) || 0;
-          /* count Firebase listener এ আপডেট হবে */
-        }
+      const curCount = lcSnap.exists() ? (lcSnap.val() || 0) : 0;
+      if (alreadyLiked) {
+        await remove(rRef);
+        await set(lcRef, Math.max(0, curCount - 1));
+        _updateReactBtn(uid, pid, false);
       } else {
-        btn.classList.remove('reacted');
-        btn.style.color = '';
-        const cacheKey = `${uid}-${pid}`;
-        if (_btnLottieCache[cacheKey]) {
-          try { _btnLottieCache[cacheKey].destroy(); } catch(e) {}
-          delete _btnLottieCache[cacheKey];
-        }
-        if (lottieEl) { lottieEl.style.display = 'none'; lottieEl.innerHTML = ''; }
-        if (emojiEl) { emojiEl.style.display = 'none'; emojiEl.textContent = '❤️'; }
+        await set(rRef, { type: 'like', ts: Date.now() });
+        await set(lcRef, curCount + 1);
+        _updateReactBtn(uid, pid, true);
+        _bounceReactIcon(uid, pid);
       }
     }
-    /* ── REACTION SUMMARY (livecount উপরের বার) ── */
-    function _updateReactionSummary(uid, pid, countsObj, total) {
-      const el = document.getElementById(`rs-${uid}-${pid}`);
-      if (!el) return;
-      if (!countsObj || total === 0) { el.classList.add('hidden'); el.innerHTML = ''; return; }
-      /* সর্বোচ্চ ৩টি unique emoji দেখাও */
-      const sorted = Object.entries(countsObj)
-        .filter(([,v]) => v > 0)
-        .sort((a,b) => b[1]-a[1])
-        .slice(0, 3);
-      if (!sorted.length) { el.classList.add('hidden'); el.innerHTML = ''; return; }
-      const emojis = sorted.map(([k]) => `<span>${REACTIONS[k]?.emoji || ''}</span>`).join('');
-      el.innerHTML = `<span class="reaction-summary-emojis">${emojis}</span><span class="reaction-summary-count">${total}</span>`;
-      el.classList.remove('hidden');
+    /* ── ক্লিকে পার্পল 3D আইকনের বাউন্স effect ── */
+    function _bounceReactIcon(uid, pid) {
+      const iconEl = document.getElementById(`ri3d-${uid}-${pid}`);
+      if (!iconEl) return;
+      iconEl.classList.remove('react-bounce');
+      /* reflow ট্রিগার করে animation আবার শুরু করানোর জন্য */
+      void iconEl.offsetWidth;
+      iconEl.classList.add('react-bounce');
     }
-    /* প্রতিটা পোস্ট কার্ডে নিজের reaction অবস্থা লাইভ দেখানোর জন্য */
+    /* ── UI UPDATE (লাইক বাটনের অবস্থা) ── */
+    function _updateReactBtn(uid, pid, liked) {
+      const btn = document.getElementById(`lb-${uid}-${pid}`);
+      if (!btn) return;
+      btn.classList.toggle('reacted', !!liked);
+    }
+    /* প্রতিটা পোস্ট কার্ডে নিজের reaction/save অবস্থা ও comment/share/save count লাইভ দেখানোর জন্য */
     function attachLikeListener(post) {
+      /* reaction counts live (button text) */
+      const lcRef = ref(db, `posts/${post.uid}/${post.id}/likesCount`);
+      onValue(lcRef, (snap) => {
+        const countEl = document.getElementById(`lc-${post.uid}-${post.id}`);
+        if (countEl) countEl.textContent = snap.exists() ? (snap.val() || 0) : 0;
+      }, { onlyOnce: false });
+      /* comment count live */
+      const ccRef = ref(db, `posts/${post.uid}/${post.id}/commentsCount`);
+      onValue(ccRef, (snap) => {
+        const countEl = document.getElementById(`cc-${post.uid}-${post.id}`);
+        if (countEl) countEl.textContent = snap.exists() ? (snap.val() || 0) : 0;
+      }, { onlyOnce: false });
+      /* share count live */
+      const shcRef = ref(db, `posts/${post.uid}/${post.id}/sharesCount`);
+      onValue(shcRef, (snap) => {
+        const countEl = document.getElementById(`shc-${post.uid}-${post.id}`);
+        if (countEl) countEl.textContent = snap.exists() ? (snap.val() || 0) : 0;
+      }, { onlyOnce: false });
+      /* save count live */
+      const svcRef = ref(db, `posts/${post.uid}/${post.id}/savesCount`);
+      onValue(svcRef, (snap) => {
+        const countEl = document.getElementById(`svc-${post.uid}-${post.id}`);
+        if (countEl) countEl.textContent = snap.exists() ? (snap.val() || 0) : 0;
+      }, { onlyOnce: false });
       if (!me) return;
       /* আমার reaction */
       const myRRef = ref(db, `reactions/${post.uid}/${post.id}/${me.uid}`);
       onValue(myRRef, (snap) => {
-        const type = snap.exists() ? snap.val().type : null;
-        _updateReactBtn(post.uid, post.id, type);
+        _updateReactBtn(post.uid, post.id, snap.exists());
       }, { onlyOnce: false });
       /* save state */
       const saveRef = ref(db, `saves/${me.uid}/${post.uid}_${post.id}`);
@@ -922,26 +787,21 @@
         const svg = btn.querySelector('svg');
         if (svg) svg.style.fill = isSaved ? '#6C63FF' : 'none';
       }, { onlyOnce: false });
-      /* reaction counts live */
-      const countsRef = ref(db, `posts/${post.uid}/${post.id}/reactionCounts`);
-      onValue(countsRef, (snap) => {
-        const counts = snap.exists() ? snap.val() : {};
-        const total = Object.values(counts).reduce((a,b) => a + (b||0), 0);
-        /* count button text */
-        const countEl = document.getElementById(`lc-${post.uid}-${post.id}`);
-        if (countEl) countEl.textContent = total > 0 ? total : 'Like';
-        _updateReactionSummary(post.uid, post.id, counts, total);
-      }, { onlyOnce: false });
     }
     async function toggleSave(authorUid, postId) {
       if (!me) { openAuth(); return; }
       const saveRef = ref(db, `saves/${me.uid}/${authorUid}_${postId}`);
+      const svcRef  = ref(db, `posts/${authorUid}/${postId}/savesCount`);
       const snap = await get(saveRef);
+      const svcSnap = await get(svcRef);
+      const curSaves = svcSnap.exists() ? (svcSnap.val() || 0) : 0;
       if (snap.exists()) {
         await remove(saveRef);
+        await set(svcRef, Math.max(0, curSaves - 1));
         toast('Save সরানো হয়েছে');
       } else {
         await set(saveRef, { authorUid, postId, savedAt: Date.now() });
+        await set(svcRef, curSaves + 1);
         toast('পোস্ট Save হয়েছে ✓');
       }
     }
@@ -1446,8 +1306,12 @@
     function goToPost(uid, id) {
       window.location.href = `/post?uid=${uid}&id=${id}`;
     }
-    function sharePost(uid, id) {
+    async function sharePost(uid, id) {
       const url = `${location.origin}/post?uid=${uid}&id=${id}`;
+      const shcRef = ref(db, `posts/${uid}/${id}/sharesCount`);
+      const shcSnap = await get(shcRef);
+      const curShares = shcSnap.exists() ? (shcSnap.val() || 0) : 0;
+      await set(shcRef, curShares + 1);
       if (navigator.share) {
         navigator.share({ title: 'Insight পোস্ট', url });
       } else {
@@ -1458,7 +1322,7 @@
       closeAuth, closeStoryModal, closeStoryViewer, deletePost, doLogin, doSignup,
       onMediaBtn, onNavProfile, onNavNotif, onPostBox, onStoryFileSelect, openNewStory,
       openStoryViewer, openVisitorProfile, goToPost, sharePost, submitStory, switchTab, toast,
-      quickReact, setReaction, startHold, cancelHold, toggleSave,
+      toggleLike, toggleSave,
       onNavHome, onNavFriends, onNavInbox, onNavMe,
       storyNavPrev, storyNavNext, pauseStory, resumeStory,
       onStoryReact, onStoryShare, sendStoryReply,
