@@ -806,8 +806,7 @@ function renderFriends(list) {
       </button>`;
 
     row.querySelector('.btn-message').addEventListener('click', () => {
-      showToast(`${f.name}-এর সাথে চ্যাট খুলছে...`);
-      // window.location.href = `./chat.html?uid=${f.uid}`;
+      window.location.href = `./message.html?uid=${f.uid}`;
     });
 
     row.querySelector('.btn-more').addEventListener('click', (e) => {
