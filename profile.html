@@ -1009,7 +1009,7 @@
       onAuthStateChanged, signOut
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
     import {
-      ref, onValue, push, set, remove
+      ref, onValue, push, set, remove, get, update
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
     const $ = (id) => document.getElementById(id);
@@ -1429,6 +1429,9 @@
         setTimeout(async () => {
           try {
             await remove(ref(db, `posts/${uid}/${post.id}`));
+            const countSnap = await get(ref(db, `users/${uid}/postsCount`));
+            const cur = countSnap.exists() ? (countSnap.val() || 0) : 0;
+            await update(ref(db, `users/${uid}`), { postsCount: Math.max(0, cur - 1) });
           } catch (err) {
             console.error("Delete post error:", err);
             card.classList.remove("deleting");
