@@ -102,27 +102,50 @@
 
     .feed { margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
 
-    .post-card { background: #fff; border-radius: 8px; border: 1px solid #efefef; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); animation: fadeIn 0.25s ease; max-height: 500px; overflow: hidden; width: 100%; position: relative; }
+    .post-card { background: #fff; border-radius: 10px; border: 1px solid #efefef; overflow: hidden; width: 100%; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.04); animation: fadeIn 0.25s ease; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-    .post-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .post-card-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px 0; }
 
-    .post-av { width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; font-size: 15px; font-weight: 700; color: #374151; }
+    .post-av { width: 38px; height: 38px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; font-size: 15px; font-weight: 700; color: #374151; }
 
     .post-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
     .post-user-info { flex: 1; min-width: 0; }
 
-    .post-username { font-size: 13px; font-weight: 600; color: #111; }
+    .post-username { font-size: 13px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .post-time { font-size: 11px; color: #9ca3af; }
+    .post-time { font-size: 11px; color: #9ca3af; margin-top: 1px; }
 
-    .post-content { font-size: 13.5px; color: #1f2937; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+    /* Caption / text content */
+    .post-content { font-size: 13.5px; color: #1f2937; line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; padding: 8px 14px 0; }
 
-    .post-actions { display: flex; gap: 4px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f3f4f6; }
+    /* See more clamp */
+    .post-content.clamped { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-    .action-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; cursor: pointer; font-size: 13px; color: #6b7280; padding: 7px 12px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; }
+    .post-see-more { font-size: 12.5px; color: #6C63FF; font-weight: 500; cursor: pointer; padding: 2px 14px 0; display: inline-block; }
+
+    .post-see-more:hover { text-decoration: underline; }
+
+    /* Media wrapper — full bleed, no side gaps */
+    .post-media { margin-top: 10px; overflow: hidden; line-height: 0; }
+
+    .post-media img { width: 100%; height: auto; max-height: 420px; object-fit: cover; display: block; }
+
+    .post-media video { width: 100%; max-height: 360px; display: block; object-fit: contain; background: #000; }
+
+    /* Video card with play overlay */
+    .post-media-video { position: relative; background: #000; line-height: 0; }
+
+    .post-media-video video { width: 100%; max-height: 360px; display: block; object-fit: contain; }
+
+    .post-media-video .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+
+    /* Action bar */
+    .post-actions { display: flex; gap: 2px; margin-top: 4px; padding: 6px 8px 8px; border-top: 1px solid #f3f4f6; }
+
+    .action-btn { display: flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; font-size: 12.5px; color: #6b7280; padding: 6px 10px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; flex: 1; justify-content: center; }
 
     .action-btn:hover { background: #f3f4f6; }
 
@@ -332,21 +355,7 @@
 
 
 
-    .post-card.clipped::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 48px; background: linear-gradient(transparent, #fff); pointer-events: none; border-radius: 0 0 16px 16px; }
-
-
-
-    .post-media { margin: 10px -16px 0; overflow: hidden; }
-
-    .post-media img { width: 100%; max-height: 340px; object-fit: cover; display: block; border-radius: 0 0 5px 5px; }
-
-    .post-media-video { position: relative; background: #000; }
-
-    .post-media-video video { width: 100%; max-height: 300px; display: block; object-fit: cover; }
-
-    .post-media-video .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-
-    .post-audio-card { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-radius: 12px; padding: 14px 16px; margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+    .post-audio-card { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-radius: 12px; padding: 14px 16px; margin: 10px 14px 0; display: flex; align-items: center; gap: 12px; }
 
     .post-audio-icon { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#A855F7,#EC4899); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
@@ -359,14 +368,6 @@
     .post-audio-wave { display: flex; align-items: flex-end; gap: 2.5px; height: 20px; }
 
     .post-audio-wave span { display: block; width: 3px; border-radius: 2px; background: #A855F7; }
-
-    .post-video-thumb { position: relative; margin: 10px -16px 0; cursor: pointer; }
-
-    .post-video-thumb img { width: 100%; max-height: 300px; object-fit: cover; display: block; filter: brightness(0.82); }
-
-    .post-video-thumb .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.93); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
-
-    .post-video-thumb .vid-duration { position: absolute; bottom: 8px; right: 12px; background: rgba(0,0,0,0.72); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
 
   </style>
 
@@ -1326,18 +1327,24 @@
 
       const avBg   = url ? 'transparent' : '#e0f2fe';
 
+      const caption = post.caption || '';
+
+      const captionEsc = esc(caption);
+
+      /* caption যদি ৩ লাইনের বেশি হওয়ার সম্ভাবনা থাকে — চরিত্র সংখ্যার হিউরিস্টিক */
+      const longCaption = caption.length > 140 || (caption.match(/\n/g) || []).length >= 2;
+
+      const captionHtml = captionEsc ? `
+        <div class="post-content${longCaption ? ' clamped' : ''}" id="cap-${post.uid}-${post.id}" style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${captionEsc}</div>
+        ${longCaption ? `<span class="post-see-more" onclick="(function(el,sp){el.classList.remove('clamped');sp.style.display='none';})(document.getElementById('cap-${post.uid}-${post.id}'),this)">আরো দেখুন</span>` : ''}
+      ` : '';
+
       const mediaHtml = post.mediaUrl
-
-        ? `<div class="post-media">${
-
+        ? `<div class="post-media" style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${
             post.mediaType === 'video'
-
               ? `<video src="${esc(post.mediaUrl)}" controls playsinline></video>`
-
-              : `<img src="${esc(post.mediaUrl)}" alt="post media" loading="lazy">`
-
+              : `<img src="${esc(post.mediaUrl)}" alt="পোস্ট মিডিয়া" loading="lazy">`
           }</div>`
-
         : '';
 
       return `<div class="post-card" id="pc-${post.uid}-${post.id}">
@@ -1350,25 +1357,23 @@
 
         </div>
 
-        <div class="post-content" style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${esc(post.caption || '')}</div>
+        ${captionHtml}
 
-        <div style="cursor:pointer;" onclick="goToPost('${post.uid}','${post.id}')">${mediaHtml}</div>
+        ${mediaHtml}
 
         <div class="post-actions">
 
           <button class="action-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')">
 
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
 
             <span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : ''}</span>
 
           </button>
 
-          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
 
-          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
-
-          
+          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
 
         </div>
 
