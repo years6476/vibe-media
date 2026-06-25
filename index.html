@@ -144,37 +144,6 @@
     .post-video-thumb img { width: 100%; max-height: 300px; object-fit: cover; display: block; filter: brightness(0.82); }
     .post-video-thumb .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.93); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.22); }
     .post-video-thumb .vid-duration { position: absolute; bottom: 8px; right: 12px; background: rgba(0,0,0,0.72); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
-
-    /* === SEARCH PAGE === */
-    .search-page { position: fixed; inset: 0; background: #fff; z-index: 500; display: none; flex-direction: column; }
-    .search-page.active { display: flex; }
-    .search-page-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f0f0f0; background: #fff; position: sticky; top: 0; z-index: 10; }
-    .search-back-btn { background: none; border: none; cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.15s; flex-shrink: 0; }
-    .search-back-btn:hover { background: #f3f4f6; }
-    .search-input-wrap { flex: 1; position: relative; display: flex; align-items: center; }
-    .search-input-wrap svg { position: absolute; left: 11px; pointer-events: none; }
-    .search-main-input { width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #e5e7eb; border-radius: 22px; font-size: 14px; outline: none; background: #f9fafb; font-family: 'Segoe UI', sans-serif; transition: border-color 0.2s, background 0.2s; }
-    .search-main-input:focus { border-color: #6C63FF; background: #fff; }
-    .search-body { flex: 1; overflow-y: auto; padding: 12px 16px 80px; }
-    .search-section-title { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; margin-top: 6px; }
-    .search-history-list { display: flex; flex-direction: column; gap: 2px; }
-    .search-history-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; cursor: pointer; transition: background 0.13s; }
-    .search-history-item:hover { background: #f9fafb; }
-    .search-history-icon { width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .search-history-text { font-size: 13px; color: #374151; font-weight: 500; }
-    .search-history-del { margin-left: auto; background: none; border: none; cursor: pointer; color: #d1d5db; padding: 4px; font-size: 16px; line-height: 1; border-radius: 50%; transition: color 0.15s, background 0.15s; }
-    .search-history-del:hover { color: #ef4444; background: #fef2f2; }
-    .search-results-list { display: flex; flex-direction: column; gap: 6px; }
-    .search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px 10px; border-radius: 12px; cursor: pointer; transition: background 0.13s; }
-    .search-result-item:hover { background: #f9fafb; }
-    .search-result-av { width: 42px; height: 42px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #374151; overflow: hidden; flex-shrink: 0; }
-    .search-result-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .search-result-info { flex: 1; min-width: 0; }
-    .search-result-name { font-size: 14px; font-weight: 600; color: #111; }
-    .search-result-username { font-size: 12px; color: #6b7280; margin-top: 1px; }
-    .search-empty { text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 13px; }
-    .search-empty span { font-size: 28px; display: block; margin-bottom: 8px; }
-    .search-spinner { display: flex; justify-content: center; padding: 24px 0; }
   </style>
 </head>
 <body>
@@ -213,22 +182,6 @@
     </div>
   </div>
 
-  <!-- ===== SEARCH PAGE ===== -->
-  <div class="search-page" id="searchPage">
-    <div class="search-page-header">
-      <button class="search-back-btn" onclick="closeSearchPage()" aria-label="Back">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      </button>
-      <div class="search-input-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-main-input" id="searchInput" type="text" placeholder="নাম বা username দিয়ে সার্চ করুন..." autocomplete="off" oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)">
-      </div>
-    </div>
-    <div class="search-body" id="searchBody">
-      <!-- dynamically filled -->
-    </div>
-  </div>
-
   <!-- ===== TOAST ===== -->
   <div class="toast" id="toast"></div>
 
@@ -264,7 +217,7 @@
       <img src="https://i.ibb.co.com/VWzTFZXq/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png" alt="Logo">
     </div>
     <div class="navbar-icons">
-      <button class="icon-btn" aria-label="Search" onclick="openSearchPage()">
+      <button class="icon-btn" aria-label="Search" onclick="toast('Search ফিচারটি খুব দ্রুত আসছে ✨')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <button class="icon-btn" aria-label="Notifications">
@@ -312,13 +265,154 @@
         </div>
         <span class="hs-label" style="font-size:11px;font-weight:600;color:#2563EB;text-align:center;">Create Story</span>
       </div>
+      <div class="hs-item" onclick="toast('স্টোরি দেখতে লগইন করুন')">
+        <div class="hs-ring"><div class="hs-ring-inner"><img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=90" alt="Rahim"></div><div class="hs-av-badge"><img src="https://i.pravatar.cc/22?img=3" alt=""></div></div>
+        <span class="hs-label">Rahim</span>
+      </div>
+      <div class="hs-item" onclick="toast('স্টোরি দেখতে লগইন করুন')">
+        <div class="hs-ring"><div class="hs-ring-inner"><img src="https://images.unsplash.com/photo-1490750967868-88df5691cc13?w=200&q=90" alt="Sumaiya"></div><div class="hs-av-badge"><img src="https://i.pravatar.cc/22?img=47" alt=""></div></div>
+        <span class="hs-label">Sumaiya</span>
+      </div>
+      <div class="hs-item" onclick="toast('স্টোরি দেখতে লগইন করুন')">
+        <div class="hs-ring"><div class="hs-ring-inner"><img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=200&q=90" alt="Karim"></div><div class="hs-av-badge"><img src="https://i.pravatar.cc/22?img=7" alt=""></div></div>
+        <span class="hs-label">Karim</span>
+      </div>
+      <div class="hs-item" onclick="toast('স্টোরি দেখতে লগইন করুন')">
+        <div class="hs-ring"><div class="hs-ring-inner"><img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=200&q=90" alt="Arif"></div><div class="hs-av-badge"><img src="https://i.pravatar.cc/22?img=12" alt=""></div></div>
+        <span class="hs-label">Arif</span>
+      </div>
+      <div class="hs-item" onclick="toast('স্টোরি দেখতে লগইন করুন')">
+        <div class="hs-ring"><div class="hs-ring-inner"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=90" alt="Nadia"></div><div class="hs-av-badge"><img src="https://i.pravatar.cc/22?img=25" alt=""></div></div>
+        <span class="hs-label">Nadia</span>
+      </div>
       <div class="hs-item" onclick="toast('এই ফিচারটি খুব দ্রুত আসছে ✨')">
         <div class="hs-more-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.55 3.43 17 5.69 18.61L5 22L8.53 20.08C9.64 20.39 10.8 20.6 12 20.6C17.52 20.6 22 16.66 22 11.8C22 6.94 17.52 3 12 3Z" fill="#A855F7"/><circle cx="9" cy="11" r="1" fill="white"/><circle cx="15" cy="11" r="1" fill="white"/><path d="M9 14C10 15 14 15 15 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         
       </div>
     </div>
     <div class="feed" id="feed">
+      <div class="post-card" id="pc-demo1">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#fce7f3;"><img src="https://i.pravatar.cc/36?img=3" alt="Rahim" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Rahim Ahmed</div>
+            <div class="post-time">২ মিনিট আগে</div>
+          </div>
+        </div>
+        <div class="post-content">আজকে অনেক ভালো একটা দিন কাটালাম। পরিবারের সাথে সময় কাটানোর আনন্দ সত্যিই আলাদা ❤️
+
+মাঝে মাঝে এই ছোট ছোট মুহূর্তগুলোই জীবনকে সুন্দর করে তোলে।</div>
+        <div class="post-actions">
+          <button class="action-btn liked"><svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 48</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
+      <div class="post-card" id="pc-demo2">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#dbeafe;"><img src="https://i.pravatar.cc/36?img=47" alt="Sumaiya" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Sumaiya Begum</div>
+            <div class="post-time">১৫ মিনিট আগে</div>
+          </div>
+        </div>
+        <div class="post-content">কোডিং করতে করতে রাত হয়ে গেছে, কিন্তু project শেষ হলে যে satisfaction পাওয়া যায় সেটা সত্যিই অতুলনীয় 💻✨
+
+আজকে একটা বড় bug fix করলাম! 🎉 তোমরাও কি কখনো এই অনুভূতি পেয়েছ?</div>
+        <div class="post-actions">
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 23</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
+      <div class="post-card" id="pc-demo3">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#d1fae5;"><img src="https://i.pravatar.cc/36?img=7" alt="Karim" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Karim Hossain</div>
+            <div class="post-time">১ ঘণ্টা আগে</div>
+          </div>
+        </div>
+        <div class="post-content">Cox's Bazar এর সূর্যাস্ত 🌅 এই দৃশ্য সত্যিই অসাধারণ!
+
+প্রকৃতির এই রূপ দেখলে মন ভরে যায়। জীবনে অন্তত একবার হলেও যেতে হবে। 📸 #CoxsBazar #Sunset #Bangladesh</div>
+        <div class="post-media">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=580&q=80" alt="Cox's Bazar sunset beach" loading="lazy">
+        </div>
+        <div class="post-actions">
+          <button class="action-btn liked"><svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 112</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
+      <div class="post-card" id="pc-demo4">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#fef3c7;"><img src="https://i.pravatar.cc/36?img=12" alt="Arif" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Arif Rahman</div>
+            <div class="post-time">৩ ঘণ্টা আগে</div>
+          </div>
+        </div>
+        <div class="post-content">তোমাদের favorite programming language কোনটা? 🤔
+
+🐍 Python
+⚡ JavaScript
+☕ Java
+🔧 C++
+
+Comment এ জানাও!</div>
+        <div class="post-actions">
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 67</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
     </div>
+      <div class="post-card" id="pc-demo5">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#e0e7ff;"><img src="https://i.pravatar.cc/36?img=25" alt="Nadia" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Nadia Islam</div>
+            <div class="post-time">5 hours ago</div>
+          </div>
+        </div>
+        <div class="post-content">Our campus fest 2025 — best memories! 🎉🎊 #CampusFest #Memories</div>
+        <div class="post-video-thumb" onclick="toast('Video player coming soon ✨')">
+          <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=580&q=80" alt="Campus fest video thumbnail" loading="lazy">
+          <div class="play-overlay"><svg width="22" height="22" viewBox="0 0 24 24" fill="#374151"><polygon points="5,3 19,12 5,21"/></svg></div>
+          <span class="vid-duration">2:47</span>
+        </div>
+        <div class="post-actions">
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 89</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
+      <div class="post-card" id="pc-demo6">
+        <div class="post-card-header">
+          <div class="post-av" style="background:#ede9fe;"><img src="https://i.pravatar.cc/36?img=15" alt="Tanvir" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="post-user-info">
+            <div class="post-username">Tanvir Ahmed</div>
+            <div class="post-time">Yesterday</div>
+          </div>
+        </div>
+        <div class="post-content">My first original composition 🎵 — "Ekla Raat" (Lonely Night). Hope you like it 🌙</div>
+        <div class="post-audio-card">
+          <div class="post-audio-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+          <div class="post-audio-info">
+            <div class="post-audio-title">Ekla Raat — Tanvir Ahmed</div>
+            <div class="post-audio-sub">3:22 · Original Music</div>
+            <div class="post-audio-wave"><span style="height:6px;opacity:0.4;"></span><span style="height:10px;opacity:0.7;"></span><span style="height:16px;opacity:1;"></span><span style="height:12px;opacity:0.8;"></span><span style="height:18px;opacity:1;"></span><span style="height:8px;opacity:0.5;"></span><span style="height:14px;opacity:0.9;"></span><span style="height:10px;opacity:0.6;"></span><span style="height:16px;opacity:1;"></span><span style="height:7px;opacity:0.4;"></span><span style="height:13px;opacity:0.8;"></span><span style="height:18px;opacity:1;"></span><span style="height:9px;opacity:0.5;"></span><span style="height:15px;opacity:0.9;"></span><span style="height:11px;opacity:0.7;"></span></div>
+          </div>
+          <button onclick="toast('Audio player coming soon ✨')" style="background:linear-gradient(135deg,#A855F7,#EC4899);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg></button>
+        </div>
+        <div class="post-actions">
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 34</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
+          <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
+        </div>
+      </div>
+  </div>
 
   <!-- ===== BOTTOM NAVBAR ===== -->
   <div class="bottom-navbar">
@@ -326,34 +420,34 @@
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
     </button>
-    <button class="bottom-nav-item" aria-label="Friends" onclick="window.location.href='/friend'">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    <button class="bottom-nav-item" aria-label="Friends" onclick="toast('Friends ফিচারটি খুব দ্রুত আসছে ✨')">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Friend</span>
     </button>
-    <button class="bottom-plus-btn" onclick="window.location.href='./create.html'" aria-label="Create post">
+    <button class="bottom-plus-btn" onclick="window.location.href='/create'" aria-label="Create post">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
     </button>
-    <button class="bottom-nav-item" aria-label="Inbox" onclick="window.location.href='/messages'">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <button class="bottom-nav-item" aria-label="Inbox">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
       <span>Inbox</span>
     </button>
-    <button class="bottom-nav-item" aria-label="Me" onclick="window.location.href='/profile'">
+    <button class="bottom-nav-item" aria-label="Me">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       <span>Me</span>
     </button>
   </div>
 
   <script type="module">
-    import { auth, db, CLOUDINARY, uploadToCloudinary } from "./config.js";
+    /* ── FIREBASE + CLOUDINARY (config.js থেকে) ── */
+    import { auth, db, uploadToCloudinary } from "./config.js";
     import {
-      onAuthStateChanged, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, signOut, updateProfile
+      onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      updateProfile, signOut
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
     import {
-      ref, push, set, get, remove, query,
-      orderByChild, limitToLast, onChildAdded, onChildRemoved, onValue, serverTimestamp
+      ref, onValue, push, set, update, remove, get
     } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
     let me = null;
@@ -362,9 +456,8 @@
     let homeStorySlots = [];
 
     /* ── AUTH INITIALIZATION ──
-       getSession() is the reliable way to get current session on page load.
-       It auto-refreshes expired tokens and always returns the true current state.
-       onAuthStateChange handles ONLY runtime events (login/logout/token refresh). */
+       onAuthStateChanged fires once immediately with the current user (or null)
+       on page load, then again on every login/logout/token-refresh event. */
 
     let _uiReady = false;
 
@@ -402,70 +495,83 @@
       loadHomeStories();
     }
 
-    /* ── SINGLE AUTH LISTENER — Firebase ── */
+    /* ── SINGLE AUTH LISTENER — handles every case (Firebase) ── */
+    let _authInitialized = false;
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        me = user;
-        if (!_uiReady) {
-          await _onAuth(user);
-        } else {
-          /* re-login বা token refresh — profile ও avatar আবার লোড করো */
-          try { await fetchMyProfile(); renderAvatars(); } catch(e) { console.error(e); }
-        }
+        await _onAuth(user);
       } else {
         _uiReady = false; me = null; myProfile = null;
         clearAvatars();
-        _hideLoader();
-        loadFeed(); loadHomeStories();
+        _onNoAuth();
       }
+      _authInitialized = true;
     });
 
-    /* ── FETCH PROFILE (Firebase Realtime DB) ── */
+    /* ── FETCH PROFILE (always fresh from DB) ── */
     async function fetchMyProfile() {
       if (!me) { myProfile = null; return; }
       const snap = await get(ref(db, `users/${me.uid}`));
+      const d = snap.exists() ? snap.val() : {};
+
+      /* profile.html যেভাবে users/{uid} পড়ে, ঠিক সেই field-নাম মিলিয়ে myProfile তৈরি */
+      const fullName  = d.name || d.displayName || d.fullName || d.userName || me.displayName || null;
+      const username  = d.username || d.userName || null;
+      const avatarUrl = d.profilePhotoUrl || d.photoURL || me.photoURL || null;
+
       if (snap.exists()) {
-        myProfile = snap.val();
+        myProfile = { id: me.uid, full_name: fullName, username, avatar_url: avatarUrl, ...d };
         return;
       }
-      /* Profile নেই → তৈরি করো */
+
+      /* users/{uid} এখনো নেই → auth তথ্য থেকে নতুন প্রোফাইল রেকর্ড তৈরি করো */
       const profilePayload = {
-        name:            me.displayName || null,
-        userName:        me.email ? me.email.split('@')[0] : null,
-        profilePhotoUrl: me.photoURL || null,
-        coverPhotoUrl:   null,
-        bio:             null
+        name:            fullName,
+        username:        username,
+        profilePhotoUrl: avatarUrl,
+        postsCount:      0,
+        friendsCount:    0,
+        followersCount:  0
       };
-      await set(ref(db, `users/${me.uid}`), profilePayload);
-      myProfile = profilePayload;
+      try { await set(ref(db, `users/${me.uid}`), profilePayload); } catch (e) { console.error('create profile error', e); }
+      myProfile = { id: me.uid, full_name: fullName, username, avatar_url: avatarUrl, ...profilePayload };
     }
 
-    /* ── REALTIME PROFILE SUBSCRIPTION (Firebase) ── */
+    /* ── REALTIME PROFILE SUBSCRIPTION (Firebase users/{uid}) ── */
     let _profileUnsub = null;
     function setupProfileRealtime() {
       if (_profileUnsub) { _profileUnsub(); _profileUnsub = null; }
       if (!me) return;
-      _profileUnsub = onValue(ref(db, `users/${me.uid}`), snap => {
-        if (snap.exists()) { myProfile = snap.val(); renderAvatars(); }
+      const userRef = ref(db, `users/${me.uid}`);
+      _profileUnsub = onValue(userRef, (snap) => {
+        if (!snap.exists()) { return; }
+        const d = snap.val();
+        myProfile = {
+          id:         me.uid,
+          full_name:  d.name || d.displayName || d.fullName || d.userName || me.displayName || null,
+          username:   d.username || d.userName || null,
+          avatar_url: d.profilePhotoUrl || d.photoURL || me.photoURL || null,
+          ...d
+        };
+        renderAvatars();
       });
     }
 
     /* ── AVATAR HELPERS ── */
     function avatarHtmlFor(profile, size = 34) {
-      const name = profile?.name || profile?.displayName || profile?.fullName || profile?.userName || me?.displayName || '?';
-      const url  = profile?.profilePhotoUrl || profile?.photoURL || me?.photoURL || null;
+      const name = profile?.full_name || profile?.username || '?';
+      const url  = profile?.avatar_url;
       if (url) return `<img src="${url}" alt="${esc(name)}" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:50%;">`;
       return `<span style="font-size:${Math.round(size*0.42)}px;font-weight:700;color:#374151;">${name.charAt(0).toUpperCase()}</span>`;
     }
 
     function renderAvatars() {
-      const hasImg = !!(myProfile?.profilePhotoUrl || myProfile?.photoURL || me?.photoURL);
       const navAv = document.getElementById('navAv');
       navAv.innerHTML = avatarHtmlFor(myProfile, 26);
-      navAv.style.background = hasImg ? 'transparent' : '#e0f2fe';
+      navAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
       const boxAv = document.getElementById('boxAvatar');
       boxAv.innerHTML = avatarHtmlFor(myProfile, 40);
-      boxAv.style.background = hasImg ? 'transparent' : '#e0f2fe';
+      boxAv.style.background = myProfile?.avatar_url ? 'transparent' : '#e0f2fe';
     }
 
     function clearAvatars() {
@@ -476,7 +582,7 @@
     }
 
     /* ── NAV ── */
-    function onNavProfile() { if (me) { window.location.href = '/profile'; } else { openAuth(); } }
+    function onNavProfile() { if (me) { if (confirm('লগআউট করবেন?')) doLogout(); } else { openAuth(); } }
 
     /* ── AUTH MODAL ── */
     function openAuth()  { document.getElementById('authOverlay').classList.add('active'); }
@@ -498,11 +604,13 @@
       btn.disabled=true; btn.textContent='লোড হচ্ছে...'; errEl.textContent='';
       try {
         await signInWithEmailAndPassword(auth, email, pass);
+        btn.disabled=false; btn.textContent='লগইন করুন';
         closeAuth(); toast('সফলভাবে লগইন হয়েছে ✓');
-      } catch(e) {
+      } catch (err) {
+        console.error('doLogin error:', err);
+        btn.disabled=false; btn.textContent='লগইন করুন';
         errEl.textContent='ইমেইল বা পাসওয়ার্ড ভুল হয়েছে';
       }
-      btn.disabled=false; btn.textContent='লগইন করুন';
     }
 
     async function doSignup() {
@@ -515,112 +623,146 @@
       if (pass.length<6) { errEl.textContent='পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'; return; }
       btn.disabled=true; btn.textContent='তৈরি হচ্ছে...'; errEl.textContent='';
       try {
+        const username = name.toLowerCase().replace(/\s+/g,'_');
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(cred.user, { displayName: name });
-        const uname = name.toLowerCase().replace(/\s+/g,'_');
-        await set(ref(db, `profiles/${cred.user.uid}`), {
-          id: cred.user.uid, full_name: name, username: uname,
-          bio: null, avatar_url: null, cover_url: null
+        /* users/{uid} প্রোফাইল রেকর্ড — profile.html এর field-নাম মিলিয়ে ── */
+        await set(ref(db, `users/${cred.user.uid}`), {
+          name, username,
+          profilePhotoUrl: null,
+          postsCount: 0, friendsCount: 0, followersCount: 0
         });
+        btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
         closeAuth(); toast('অ্যাকাউন্ট তৈরি হয়েছে ✓');
-      } catch(e) {
-        errEl.textContent = e.message || 'অ্যাকাউন্ট তৈরি হয়নি';
+      } catch (err) {
+        console.error('doSignup error:', err);
+        btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
+        errEl.textContent = firebaseAuthErrorMessage(err);
       }
-      btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
     }
 
-
+    function firebaseAuthErrorMessage(err) {
+      const code = err?.code || '';
+      if (code.includes('email-already-in-use')) return 'এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট আছে';
+      if (code.includes('invalid-email'))        return 'ইমেইল অ্যাড্রেসটি সঠিক নয়';
+      if (code.includes('weak-password'))        return 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে';
+      return 'অ্যাকাউন্ট তৈরি করা সম্ভব হয়নি, আবার চেষ্টা করুন';
+    }
 
     /* ── POST BOX ── */
-    function onPostBox()      { if (!me) { openAuth(); return; } window.location.href = './create.html'; }
-    function onMediaBtn(type) { if (!me) { openAuth(); return; } window.location.href = './create.html'; }
+    function onPostBox()      { if (!me) { openAuth(); return; } window.location.href = '/create'; }
+    function onMediaBtn(type) { if (!me) { openAuth(); return; } window.location.href = '/create'; }
 
-    /* ── FEED (Firebase) ── */
-    async function loadFeed() {
+    /* ── FEED (Firebase: সব ইউজারের posts/{uid} একসাথে flatten করে দেখানো হয়) ── */
+    let _postsUnsub = null;
+    function loadFeed() {
       const feedEl = document.getElementById('feed');
       if (!feedEl) return;
       feedEl.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
-      try {
-        const postsSnap = await get(query(ref(db, 'posts'), orderByChild('created_at'), limitToLast(40)));
-        if (!postsSnap.exists()) {
+
+      if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
+      _postsUnsub = onValue(ref(db, 'posts'), (snap) => {
+        if (!snap.exists()) {
           feedEl.innerHTML = '<div class="empty-state"><span>🚀</span>এখনো কোনো পোস্ট নেই। প্রথম পোস্ট করুন!</div>';
           return;
         }
-        const posts = [];
-        postsSnap.forEach(c => posts.unshift({ id: c.key, ...c.val() }));
-        /* প্রতিটি পোস্টের profile ও likes fetch করো */
-        const enriched = await Promise.all(posts.map(async p => {
-          const [profSnap, likesSnap] = await Promise.all([
-            get(ref(db, `users/${p.user_id}`)),
-            get(ref(db, `likes/${p.id}`))
-          ]);
-          p.profile = profSnap.exists() ? profSnap.val() : {};
-          p.likesMap = likesSnap.exists() ? likesSnap.val() : {};
-          return p;
-        }));
-        feedEl.innerHTML = enriched.map(renderCard).join('');
-      } catch(err) {
-        console.error('loadFeed:', err);
+        const all = [];
+        snap.forEach(userSnap => {
+          const uid = userSnap.key;
+          userSnap.forEach(postSnap => {
+            all.push({ id: postSnap.key, uid, ...postSnap.val() });
+          });
+        });
+        if (!all.length) {
+          feedEl.innerHTML = '<div class="empty-state"><span>🚀</span>এখনো কোনো পোস্ট নেই। প্রথম পোস্ট করুন!</div>';
+          return;
+        }
+        all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        feedEl.innerHTML = all.slice(0, 40).map(renderCard).join('');
+        all.slice(0, 40).forEach(attachLikeListener);
+      }, (err) => {
+        console.error('loadFeed error:', err);
         feedEl.innerHTML = '<div class="empty-state"><span>⚠️</span>পোস্ট লোড হয়নি</div>';
-      }
+      });
     }
 
-    const TYPE_COLORS = { thought:['#ede9fe','#7c3aed'], photo:['#d1fae5','#059669'], video:['#fee2e2','#dc2626'], audio:['#fef3c7','#d97706'], poll:['#dbeafe','#2563eb'] };
-
     function renderCard(post) {
-      const prof=post.profile||{};
-      const name=prof.name||prof.displayName||prof.fullName||prof.userName||'Anonymous';
-      const url=prof.profilePhotoUrl||prof.photoURL||null;
-      const initial=name.charAt(0).toUpperCase();
-      const likesMap=post.likesMap||{}; const likesCnt=Object.keys(likesMap).length;
-      const isLiked=me?!!likesMap[me.uid]:false;
-      const isOwner=me&&me.uid===post.user_id;
-      const timeStr=timeAgo(post.created_at);
-      const avHtml=url?`<img src="${url}" alt="${esc(name)}">`:initial;
-      const avBg=url?'transparent':'#e0f2fe';
-      const hF=isLiked?'#ef4444':'none'; const hS=isLiked?'#ef4444':'currentColor';
-      return `<div class="post-card" id="pc-${post.id}">
+      const isAnon  = !!post.isAnonymous;
+      const name    = isAnon ? 'Anonymous' : (post.authorName || 'User');
+      const url     = isAnon ? null : post.authorAvatar;
+      const initial = name.charAt(0).toUpperCase();
+      const likesCnt = post.likesCount || 0;
+      const isOwner  = me && me.uid === post.authorId;
+      const timeStr  = timeAgo(post.timestamp);
+      const avHtml = url ? `<img src="${url}" alt="${esc(name)}">` : initial;
+      const avBg   = url ? 'transparent' : '#e0f2fe';
+      const mediaHtml = post.mediaUrl
+        ? `<div class="post-media">${
+            post.mediaType === 'video'
+              ? `<video src="${esc(post.mediaUrl)}" controls playsinline></video>`
+              : `<img src="${esc(post.mediaUrl)}" alt="post media" loading="lazy">`
+          }</div>`
+        : '';
+      return `<div class="post-card" id="pc-${post.uid}-${post.id}">
         <div class="post-card-header">
-          <div class="post-av" style="background:${avBg};cursor:pointer;" onclick="openVisitorProfile('${prof.id||''}')">${avHtml}</div>
-          <div class="post-user-info" style="cursor:pointer;" onclick="openVisitorProfile('${prof.id||''}')"><div class="post-username">${esc(name)}</div><div class="post-time">${timeStr}</div></div>
+          <div class="post-av" style="background:${avBg};cursor:pointer;" onclick="openVisitorProfile('${isAnon?'':post.uid}')">${avHtml}</div>
+          <div class="post-user-info" style="cursor:pointer;" onclick="openVisitorProfile('${isAnon?'':post.uid}')"><div class="post-username">${esc(name)}</div><div class="post-time">${timeStr}</div></div>
         </div>
-        <div class="post-content">${esc(post.content)}</div>
+        <div class="post-content">${esc(post.caption || '')}</div>
+        ${mediaHtml}
         <div class="post-actions">
-          <button class="action-btn ${isLiked?'liked':''}" onclick="toggleLike('${post.id}',${isLiked})">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="${hF}" stroke="${hS}" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            ${likesCnt}
+          <button class="action-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : ''}</span>
           </button>
           <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
           <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
-          ${isOwner?`<button class="post-delete-btn" title="ডিলিট" onclick="deletePost('${post.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
+          ${isOwner?`<button class="post-delete-btn" title="ডিলিট" onclick="deletePost('${post.uid}','${post.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
         </div>
       </div>`;
     }
 
-    async function toggleLike(postId, isLiked) {
-      if (!me) { openAuth(); return; }
-      const likeRef = ref(db, `likes/${postId}/${me.uid}`);
-      if (isLiked) { await remove(likeRef); }
-      else { await set(likeRef, { user_id: me.uid, created_at: Date.now() }); }
-      loadFeed();
+    /* প্রতিটা পোস্ট কার্ডে নিজের like অবস্থা লাইভ দেখানোর জন্য */
+    function attachLikeListener(post) {
+      if (!me) return;
+      const likeRef = ref(db, `posts/${post.uid}/${post.id}/likes/${me.uid}`);
+      onValue(likeRef, (snap) => {
+        const btn = document.getElementById(`lb-${post.uid}-${post.id}`);
+        if (btn) btn.classList.toggle('liked', snap.exists());
+      }, { onlyOnce: false });
     }
 
-    async function deletePost(postId) {
+    async function toggleLike(authorUid, postId) {
+      if (!me) { openAuth(); return; }
+      const likeRef  = ref(db, `posts/${authorUid}/${postId}/likes/${me.uid}`);
+      const countRef = ref(db, `posts/${authorUid}/${postId}/likesCount`);
+      const snap = await get(likeRef);
+      const countSnap = await get(countRef);
+      const cur = countSnap.exists() ? (countSnap.val() || 0) : 0;
+      if (snap.exists()) {
+        await remove(likeRef);
+        await set(countRef, Math.max(0, cur - 1));
+      } else {
+        await set(likeRef, true);
+        await set(countRef, cur + 1);
+      }
+    }
+
+    async function deletePost(authorUid, postId) {
       if (!confirm('পোস্টটি ডিলিট করবেন?')) return;
       try {
-        await remove(ref(db, `posts/${postId}`));
-        await remove(ref(db, `likes/${postId}`));
-        toast('পোস্ট ডিলিট হয়েছে'); loadFeed();
-      } catch(e) { toast('ডিলিট হয়নি'); }
+        await remove(ref(db, `posts/${authorUid}/${postId}`));
+        toast('পোস্ট ডিলিট হয়েছে');
+      } catch (err) {
+        console.error('deletePost error:', err);
+        toast('ডিলিট হয়নি');
+      }
     }
 
-    /* ── REALTIME (Firebase) ── */
-    onChildAdded(ref(db, 'posts'), () => loadFeed());
-    onChildRemoved(ref(db, 'posts'), () => loadFeed());
-
     /* ── HELPERS ── */
-    function timeAgo(str) {
-      const sec=Math.floor((Date.now()-new Date(str))/1000);
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const sec=Math.floor((Date.now()-ts)/1000);
       if (sec<60) return 'এইমাত্র';
       const m=Math.floor(sec/60); if (m<60) return `${m} মিনিট আগে`;
       const h=Math.floor(m/60);   if (h<24) return `${h} ঘণ্টা আগে`;
@@ -659,57 +801,56 @@
       const errEl=document.getElementById('storyErr');
       const btn=document.getElementById('storySubmitBtn');
       if (!storyFile) { errEl.textContent='Please select a photo or video'; return; }
+      if (!me) { errEl.textContent='স্টোরি যোগ করতে আগে লগইন করুন'; return; }
       btn.disabled=true; btn.textContent='Uploading...'; errEl.textContent='';
       try {
-        const { url } = await uploadToCloudinary(storyFile, 'stories');
-        const storyData = {
-          user_id: me.uid,
-          media_url: url,
-          media_type: storyFile.type.startsWith('video') ? 'video' : 'image',
-          created_at: Date.now()
-        };
-        await push(ref(db, 'stories'), storyData);
+        const { url, resourceType } = await uploadToCloudinary(storyFile, 'stories');
+        const storyRef = push(ref(db, `stories/${me.uid}`));
+        await set(storyRef, {
+          mediaUrl:  url,
+          mediaType: resourceType === 'video' ? 'video' : 'image',
+          timestamp: Date.now()
+        });
+        btn.disabled=false; btn.textContent='Add';
         closeStoryModal(); toast('Story added ✓'); loadHomeStories();
-      } catch(e) {
+      } catch (err) {
+        console.error('submitStory error:', err);
         errEl.textContent='Upload failed. Please try again.';
+        btn.disabled=false; btn.textContent='Add';
       }
-      btn.disabled=false; btn.textContent='Add';
     }
 
     function openStoryViewer(story) {
       const mediaEl=document.getElementById('storyViewerMedia');
-      if (story.media_type==='video') { mediaEl.innerHTML=`<video src="${story.media_url}" controls autoplay style="width:100%;border-radius:16px;max-height:80vh;"></video>`; }
-      else { mediaEl.innerHTML=`<img src="${story.media_url}" alt="${esc(story.title||'')}">` }
+      if (story.mediaType==='video') { mediaEl.innerHTML=`<video src="${story.mediaUrl}" controls autoplay style="width:100%;border-radius:16px;max-height:80vh;"></video>`; }
+      else { mediaEl.innerHTML=`<img src="${story.mediaUrl}" alt="${esc(story.title||'')}">` }
       document.getElementById('storyViewerTitle').textContent=story.title||'';
       document.getElementById('storyViewerOverlay').classList.add('active');
     }
 
     function closeStoryViewer() { document.getElementById('storyViewerOverlay').classList.remove('active'); document.getElementById('storyViewerMedia').innerHTML=''; }
 
-    /* ── HOME STORIES BAR (Firebase) ── */
+    /* ── HOME STORIES BAR (নিজের স্টোরি; ফ্রেন্ডস সিস্টেম এখনো কনফিগার করা হয়নি) ── */
     async function loadHomeStories() {
       const bar = document.getElementById('homeStoriesBar');
       bar.querySelectorAll('.hs-item:not(:first-child)').forEach(el=>el.remove());
       if (!me) return;
       const cutoff = Date.now() - 24*60*60*1000;
+      let myStory = null;
       try {
-        const storiesSnap = await get(ref(db, 'stories'));
-        if (!storiesSnap.exists()) return;
-        const allStories = []; const seen = new Set();
-        storiesSnap.forEach(c => {
-          const s = { id: c.key, ...c.val() };
-          if (s.created_at < cutoff) return; // expired
-          if (!seen.has(s.user_id)) { seen.add(s.user_id); allStories.push(s); }
-        });
-        const slots = [];
-        for (const s of allStories.slice(0,4)) {
-          const profSnap = await get(ref(db, `profiles/${s.user_id}`));
-          const p = profSnap.exists() ? profSnap.val() : {};
-          const label = s.user_id===me.uid ? 'You' : (p.full_name||p.username||'User');
-          slots.push({ story: s, label, avatarUrl: p.avatar_url||null, initialSrc: label });
+        const snap = await get(ref(db, `stories/${me.uid}`));
+        if (snap.exists()) {
+          const items = [];
+          snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+          items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+          myStory = items.find(s => (s.timestamp||0) >= cutoff) || null;
         }
-        renderHomeStories(slots);
-      } catch(e) { console.error('loadHomeStories:', e); }
+      } catch (err) { console.error('loadHomeStories error:', err); }
+
+      /* TODO: friends/connections schema চালু হলে friendStories এখানে যুক্ত হবে */
+      const slots = [];
+      if (myStory) slots.push({ story: myStory, label: 'You', avatarUrl: myProfile?.avatar_url||null, initialSrc: myProfile?.full_name||myProfile?.username||'Y' });
+      renderHomeStories(slots);
     }
 
     function renderHomeStories(slots) {
@@ -734,131 +875,10 @@
       bar.insertAdjacentHTML('beforeend', html);
     }
 
-    /* ── SEARCH PAGE ── */
-    const SEARCH_HISTORY_KEY = 'insight_search_history';
-    let _searchTimer = null;
-
-    function openSearchPage() {
-      document.getElementById('searchPage').classList.add('active');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => document.getElementById('searchInput').focus(), 120);
-      renderSearchHistory();
-    }
-
-    function closeSearchPage() {
-      document.getElementById('searchPage').classList.remove('active');
-      document.body.style.overflow = '';
-      document.getElementById('searchInput').value = '';
-      renderSearchHistory();
-    }
-
-    function getSearchHistory() {
-      try { return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]'); } catch(e) { return []; }
-    }
-
-    function saveSearchHistory(query) {
-      if (!query || query.trim().length < 2) return;
-      let hist = getSearchHistory().filter(h => h.toLowerCase() !== query.toLowerCase());
-      hist.unshift(query.trim());
-      hist = hist.slice(0, 10);
-      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(hist));
-    }
-
-    function deleteHistoryItem(query) {
-      const hist = getSearchHistory().filter(h => h !== query);
-      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(hist));
-      renderSearchHistory();
-    }
-
-    function renderSearchHistory() {
-      const body = document.getElementById('searchBody');
-      const hist = getSearchHistory();
-      if (!hist.length) {
-        body.innerHTML = `<div class="search-empty"><span>🔍</span>সার্চ করে যেকোনো আইডি খুঁজে নিন</div>`;
-        return;
-      }
-      body.innerHTML = `
-        <div class="search-section-title">সাম্প্রতিক সার্চ</div>
-        <div class="search-history-list">
-          ${hist.map(h => `
-            <div class="search-history-item" onclick="fillSearch('${h.replace(/'/g,"\\'")}')">
-              <div class="search-history-icon">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </div>
-              <span class="search-history-text">${esc(h)}</span>
-              <button class="search-history-del" onclick="event.stopPropagation();deleteHistoryItem('${h.replace(/'/g,"\\'")}')">×</button>
-            </div>`).join('')}
-        </div>`;
-    }
-
-    function fillSearch(query) {
-      const inp = document.getElementById('searchInput');
-      inp.value = query;
-      onSearchInput(query);
-    }
-
-    function onSearchKey(e) {
-      if (e.key === 'Enter') {
-        const val = document.getElementById('searchInput').value.trim();
-        if (val) { saveSearchHistory(val); doSearch(val); }
-      }
-    }
-
-    function onSearchInput(val) {
-      clearTimeout(_searchTimer);
-      const q = val.trim();
-      if (!q) { renderSearchHistory(); return; }
-      document.getElementById('searchBody').innerHTML = `<div class="search-spinner"><div class="spinner"></div></div>`;
-      _searchTimer = setTimeout(() => { saveSearchHistory(q); doSearch(q); }, 420);
-    }
-
-    async function doSearch(queryStr) {
-      const body = document.getElementById('searchBody');
-      body.innerHTML = `<div class="search-spinner"><div class="spinner"></div></div>`;
-      try {
-        const snap = await get(ref(db, 'users'));
-        if (!snap.exists()) {
-          body.innerHTML = `<div class="search-empty"><span>😕</span>"${esc(queryStr)}" নামে কোনো আইডি পাওয়া যায়নি</div>`;
-          return;
-        }
-        const q = queryStr.toLowerCase();
-        const results = [];
-        snap.forEach(c => {
-          const p = { id: c.key, ...c.val() };
-          const nameMatch = (p.name||p.fullName||p.displayName||'').toLowerCase().includes(q);
-          const userMatch = (p.username||p.userName||'').toLowerCase().includes(q);
-          if (nameMatch || userMatch) results.push(p);
-        });
-        if (!results.length) {
-          body.innerHTML = `<div class="search-empty"><span>😕</span>"${esc(queryStr)}" নামে কোনো আইডি পাওয়া যায়নি</div>`;
-          return;
-        }
-        body.innerHTML = `
-          <div class="search-section-title">${results.length}টি ফলাফল</div>
-          <div class="search-results-list">
-            ${results.slice(0,20).map(p => {
-              const name = p.name||p.displayName||p.fullName||p.userName||'Unknown';
-              const uname = (p.username||p.userName) ? '@'+(p.username||p.userName) : '';
-              const avHtml = (p.profilePhotoUrl||p.photoURL)
-                ? `<img src="${p.profilePhotoUrl||p.photoURL}" alt="${esc(name)}">`
-                : `<span>${name.charAt(0).toUpperCase()}</span>`;
-              return `<div class="search-result-item" onclick="openVisitorProfile('${p.id}');closeSearchPage();">
-                <div class="search-result-av">${avHtml}</div>
-                <div class="search-result-info">
-                  <div class="search-result-name">${esc(name)}</div>
-                  ${uname ? `<div class="search-result-username">${esc(uname)}</div>` : ''}
-                </div>
-              </div>`;
-            }).join('')}
-          </div>`;
-      } catch(err) {
-        body.innerHTML = `<div class="search-empty"><span>⚠️</span>সার্চ করতে সমস্যা হয়েছে</div>`;
-      }
-    }
-
-    /* ── LOGOUT (Firebase) ── */
+    /* ── LOGOUT ── */
     async function doLogout() {
       try { await signOut(auth); } catch(e) { console.error('signOut error', e); }
+      /* local state রিসেট */
       me = null; myProfile = null;
       if (_profileUnsub) { _profileUnsub(); _profileUnsub = null; }
       clearAvatars();
@@ -866,18 +886,21 @@
       loadFeed();
     }
 
-    /* ── GLOBAL EXPOSE (type=module এ onclick কাজ করার জন্য) ── */
+    /* ── VISITOR PROFILE (অন্য ইউজারের প্রোফাইল দেখার জন্য — profile.html?uid= রুট প্রত্যাশিত) ── */
+    function openVisitorProfile(uid) {
+      if (!uid) return;
+      window.location.href = `/profile?uid=${encodeURIComponent(uid)}`;
+    }
+    /* ── এই ফাংশনগুলো HTML-এর inline onclick/onchange থেকে কল হয়;
+       type="module" স্ক্রিপ্টে এগুলো অটোমেটিক global হয় না, তাই window-এ এক্সপোজ করা হলো ── */
     Object.assign(window, {
-      openAuth, closeAuth, switchTab, doLogin, doSignup, doLogout,
-      onNavProfile, onPostBox, onMediaBtn,
-      toggleLike, deletePost,
-      openNewStory, closeStoryModal, onStoryFileSelect, submitStory,
-      openStoryViewer, closeStoryViewer,
-      openSearchPage, closeSearchPage, onSearchInput, onSearchKey,
-      fillSearch, deleteHistoryItem,
-      openVisitorProfile: (id) => { window.location.href = `/profile/${id}`; },
-      toast
+      closeAuth, closeStoryModal, closeStoryViewer, deletePost, doLogin, doSignup,
+      onMediaBtn, onNavProfile, onPostBox, onStoryFileSelect, openNewStory,
+      openStoryViewer, openVisitorProfile, submitStory, switchTab, toast, toggleLike
     });
+    /* homeStorySlots পরিবর্তনশীল (renderHomeStories প্রতিবার পুনরায় সেট করে),
+       তাই getter দিয়ে window-এ লাইভ রাখা হলো */
+    Object.defineProperty(window, 'homeStorySlots', { get: () => homeStorySlots });
 
     </script>
 </body>
