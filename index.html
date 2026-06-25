@@ -101,10 +101,10 @@
     .reaction-picker-item .r-label { font-size: 9px; color: #6b7280; margin-top: 1px; font-weight: 500; opacity: 0; transition: opacity 0.15s; text-align: center; }
     .reaction-picker-item:hover .r-label { opacity: 1; }
     .react-btn.reacted .react-icon-svg { display: none; }
-    .react-btn:not(.reacted) .react-icon-emoji { display: none; }
-    .react-btn.reacted .react-icon-emoji { display: inline; font-size: 16px; line-height: 1; }
     .react-btn .react-icon-svg { display: inline-flex; }
     .react-btn.reacted { color: #e94560; font-weight: 600; }
+    .react-btn .react-icon-lottie { display: none; align-items: center; }
+    .react-btn .react-icon-lottie svg { width: 18px; height: 18px; }
     /* === AUTH MODAL === */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
     .overlay.active { display: flex; }
@@ -635,14 +635,17 @@
     function onMediaBtn(type) { if (!me) { openAuth(); return; } window.location.href = '/create'; }
     /* ── FEED (Firebase: সব ইউজারের posts/{uid} একসাথে flatten করে দেখানো হয়) ── */
     let _postsUnsub = null;
+    let _feedPostIds = null; /* আগের render-এর id সিগনেচার — শুধু এটা বদলালেই DOM rebuild হবে */
     function loadFeed() {
       const feedEl = document.getElementById('feed');
       if (!feedEl) return;
       feedEl.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+      _feedPostIds = null;
       if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
       _postsUnsub = onValue(ref(db, 'posts'), (snap) => {
         if (!snap.exists()) {
           feedEl.innerHTML = '<div class="empty-state"><span>🚀</span>এখনো কোনো পোস্ট নেই। প্রথম পোস্ট করুন!</div>';
+          _feedPostIds = '';
           return;
         }
         const all = [];
@@ -654,11 +657,18 @@
         });
         if (!all.length) {
           feedEl.innerHTML = '<div class="empty-state"><span>🚀</span>এখনো কোনো পোস্ট নেই। প্রথম পোস্ট করুন!</div>';
+          _feedPostIds = '';
           return;
         }
         all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        feedEl.innerHTML = all.slice(0, 40).map(renderCard).join('');
-        all.slice(0, 40).forEach(attachLikeListener);
+        const shown = all.slice(0, 40);
+        const idsSignature = shown.map(p => `${p.uid}_${p.id}`).join(',');
+        /* শুধুমাত্র পোস্ট লিস্ট (নতুন/ডিলিট) বদলালেই পুরো DOM rebuild হবে;
+           reaction/like count আপডেটে এই signature অপরিবর্তিত থাকে, তাই rebuild স্কিপ হয় */
+        if (idsSignature === _feedPostIds) return;
+        _feedPostIds = idsSignature;
+        feedEl.innerHTML = shown.map(renderCard).join('');
+        shown.forEach(attachLikeListener);
       }, (err) => {
         console.error('loadFeed error:', err);
         feedEl.innerHTML = '<div class="empty-state"><span>⚠️</span>পোস্ট লোড হয়নি</div>';
@@ -697,7 +707,8 @@
               ontouchend="cancelHold()"
             >
               <span class="react-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
-              <span class="react-icon-emoji" id="re-${post.uid}-${post.id}">❤️</span>
+              <span class="react-icon-emoji" id="re-${post.uid}-${post.id}" style="display:none;font-size:16px;line-height:1;">❤️</span>
+              <span class="react-icon-lottie" id="rbl-${post.uid}-${post.id}" style="display:none;width:18px;height:18px;"></span>
               <span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : 'Like'}</span>
             </button>
             <div class="reaction-picker" id="rp-${post.uid}-${post.id}">
@@ -836,16 +847,31 @@
       _updateReactBtn(uid, pid, null);
     }
     /* ── UI UPDATE ── */
+    const _btnLottieCache = {}; /* action button-এর animated reaction icon cache */
     function _updateReactBtn(uid, pid, type) {
       const btn = document.getElementById(`lb-${uid}-${pid}`);
       if (!btn) return;
-      const emojiEl = document.getElementById(`re-${uid}-${pid}`);
-      const countEl = document.getElementById(`lc-${uid}-${pid}`);
+      const emojiEl  = document.getElementById(`re-${uid}-${pid}`);
+      const lottieEl = document.getElementById(`rbl-${uid}-${pid}`);
+      const countEl  = document.getElementById(`lc-${uid}-${pid}`);
       if (type) {
         const cfg = REACTIONS[type];
         btn.classList.add('reacted');
         btn.style.color = cfg.color;
-        if (emojiEl) emojiEl.textContent = cfg.emoji;
+        /* static emoji স্প্যান হাইড করো, animated lottie স্প্যান দেখাও */
+        if (emojiEl) emojiEl.style.display = 'none';
+        if (lottieEl) {
+          lottieEl.style.display = 'inline-flex';
+          const cacheKey = `${uid}-${pid}`;
+          if (_btnLottieCache[cacheKey]) {
+            try { _btnLottieCache[cacheKey].destroy(); } catch(e) {}
+            delete _btnLottieCache[cacheKey];
+          }
+          lottieEl.innerHTML = '';
+          _btnLottieCache[cacheKey] = lottie.loadAnimation({
+            container: lottieEl, renderer: 'svg', loop: true, autoplay: true, path: cfg.lottie
+          });
+        }
         if (countEl) {
           const cur = parseInt(countEl.textContent) || 0;
           /* count Firebase listener এ আপডেট হবে */
@@ -853,7 +879,13 @@
       } else {
         btn.classList.remove('reacted');
         btn.style.color = '';
-        if (emojiEl) emojiEl.textContent = '❤️';
+        const cacheKey = `${uid}-${pid}`;
+        if (_btnLottieCache[cacheKey]) {
+          try { _btnLottieCache[cacheKey].destroy(); } catch(e) {}
+          delete _btnLottieCache[cacheKey];
+        }
+        if (lottieEl) { lottieEl.style.display = 'none'; lottieEl.innerHTML = ''; }
+        if (emojiEl) { emojiEl.style.display = 'none'; emojiEl.textContent = '❤️'; }
       }
     }
     /* ── REACTION SUMMARY (livecount উপরের বার) ── */
