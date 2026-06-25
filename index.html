@@ -64,8 +64,7 @@
     .action-btn:hover { background: #f3f4f6; }
     .action-btn.liked { color: #ef4444; }
     .action-btn.liked:hover { background: #fef2f2; }
-    .post-delete-btn { margin-left: auto; background: none; border: none; cursor: pointer; color: #d1d5db; padding: 5px 8px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
-    .post-delete-btn:hover { color: #ef4444; background: #fef2f2; }
+    /* post-delete-btn হোম পেইজে নেই — প্রোফাইল পেইজে শুধু owner ডিলিট করতে পারবে */
     /* === AUTH MODAL === */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
     .overlay.active { display: flex; }
@@ -149,6 +148,26 @@
     .story-reply-send { background: none; border: none; cursor: pointer; padding: 6px; color: #fff; display: flex; align-items: center; }
     .story-share-btn { background: none; border: none; cursor: pointer; padding: 6px; color: rgba(255,255,255,0.85); display: flex; align-items: center; }
 
+    /* ── Story Owner Panel (ডিলিট + ভিউ কাউন্ট + ভিউয়ার্স লিস্ট) ── */
+    .story-owner-bar { position: absolute; bottom: 0; left: 0; right: 0; z-index: 12; padding: 10px 14px 24px; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(transparent, rgba(0,0,0,0.72)); }
+    .story-owner-top { display: flex; align-items: center; justify-content: space-between; }
+    .story-view-count { display: flex; align-items: center; gap: 6px; cursor: pointer; color: rgba(255,255,255,0.92); font-size: 13px; font-weight: 500; padding: 6px 10px; border-radius: 20px; background: rgba(255,255,255,0.12); border: none; transition: background 0.15s; }
+    .story-view-count:hover { background: rgba(255,255,255,0.2); }
+    .story-delete-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ff6b6b; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 20px; background: rgba(255,60,60,0.18); border: 1px solid rgba(255,100,100,0.35); transition: background 0.15s; }
+    .story-delete-btn:hover { background: rgba(255,60,60,0.3); }
+    /* Viewers panel (slide up) */
+    .story-viewers-panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; background: #fff; border-radius: 20px 20px 0 0; max-height: 55vh; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1); pointer-events: none; }
+    .story-viewers-panel.open { transform: translateY(0); pointer-events: all; }
+    .svp-handle { width: 36px; height: 4px; background: #ddd; border-radius: 2px; margin: 12px auto 4px; }
+    .svp-title { font-size: 14px; font-weight: 700; color: #111; padding: 6px 16px 10px; border-bottom: 1px solid #f3f4f6; }
+    .svp-list { overflow-y: auto; flex: 1; padding: 6px 0 20px; }
+    .svp-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; }
+    .svp-av { width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; font-size: 14px; font-weight: 700; color: #374151; }
+    .svp-av img { width: 100%; height: 100%; object-fit: cover; }
+    .svp-name { font-size: 13px; font-weight: 500; color: #111; }
+    .svp-time { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+    .svp-close { position: absolute; top: 14px; right: 14px; background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 18px; line-height: 1; padding: 4px; }
+
     /* === BOTTOM NAVBAR === */
     .bottom-navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-around; padding: 0 6px; z-index: 900; }
     .bottom-plus-btn { width: 44px; height: 44px; border-radius: 50%; background: #6C63FF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(108,99,255,0.45); transition: transform 0.15s; }
@@ -224,8 +243,8 @@
       <div class="story-tap-right" id="storyTapRight" onclick="storyNavNext()"></div>
       <!-- Media -->
       <div class="story-viewer-media" id="storyViewerMedia"></div>
-      <!-- Bottom: emoji reactions + reply input + share -->
-      <div class="story-bottom-bar">
+      <!-- Bottom: emoji reactions + reply input + share (Visitor only) -->
+      <div class="story-bottom-bar" id="storyVisitorBar">
         <div class="story-emoji-row">
           <button class="story-emoji-btn" onclick="onStoryReact('❤️')">❤️</button>
           <button class="story-emoji-btn" onclick="onStoryReact('😂')">😂</button>
@@ -243,6 +262,26 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9 22 2z"/></svg>
           </button>
         </div>
+      </div>
+      <!-- Owner Panel (View Count + Delete) -->
+      <div class="story-owner-bar" id="storyOwnerBar" style="display:none;">
+        <div class="story-owner-top">
+          <button class="story-view-count" id="storyViewCountBtn" onclick="openViewersPanel()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span id="storyViewCountText">০ জন দেখেছে</span>
+          </button>
+          <button class="story-delete-btn" id="storyOwnerDeleteBtn" onclick="deleteCurrentStory()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            ডিলিট
+          </button>
+        </div>
+      </div>
+      <!-- Viewers Panel (slide-up, owner only) -->
+      <div class="story-viewers-panel" id="storyViewersPanel">
+        <div class="svp-handle"></div>
+        <div class="svp-title">কে কে দেখেছে</div>
+        <button class="svp-close" onclick="closeViewersPanel()">✕</button>
+        <div class="svp-list" id="storyViewersList"></div>
       </div>
     </div>
   </div>
@@ -630,7 +669,6 @@
       const url     = isAnon ? null : post.authorAvatar;
       const initial = name.charAt(0).toUpperCase();
       const likesCnt = post.likesCount || 0;
-      const isOwner  = me && me.uid === post.authorId;
       const timeStr  = timeAgo(post.timestamp);
       const avHtml = url ? `<img src="${url}" alt="${esc(name)}">` : initial;
       const avBg   = url ? 'transparent' : '#e0f2fe';
@@ -655,7 +693,7 @@
           </button>
           <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</button>
           <button class="action-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Share</button>
-          ${isOwner?`<button class="post-delete-btn" title="ডিলিট" onclick="deletePost('${post.uid}','${post.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
+          
         </div>
       </div>`;
     }
@@ -797,7 +835,6 @@
       const timeEl  = document.getElementById('storyViewerTime');
       const avEl    = document.getElementById('storyViewerAv');
       const barEl   = document.getElementById('storyProgressBar');
-      const fillEl  = document.getElementById('storyProgressFill');
 
       /* media */
       if (story.mediaType === 'video') {
@@ -832,6 +869,27 @@
       /* clear reply input */
       const inp = document.getElementById('storyReplyInput');
       if (inp) inp.value = '';
+
+      /* ── Owner vs Visitor UI ── */
+      const storyAuthorUid = slot.uid || null;
+      const isStoryOwner   = me && storyAuthorUid && me.uid === storyAuthorUid;
+      const visitorBar     = document.getElementById('storyVisitorBar');
+      const ownerBar       = document.getElementById('storyOwnerBar');
+      /* viewers panel বন্ধ রাখো */
+      document.getElementById('storyViewersPanel').classList.remove('open');
+
+      if (isStoryOwner) {
+        visitorBar.style.display = 'none';
+        ownerBar.style.display   = 'flex';
+        _loadStoryViewCount(storyAuthorUid, story.id);
+      } else {
+        visitorBar.style.display = 'flex';
+        ownerBar.style.display   = 'none';
+        /* Visitor-র view রেকর্ড করো */
+        if (me && storyAuthorUid && story.id) {
+          _recordStoryView(storyAuthorUid, story.id);
+        }
+      }
     }
 
     function _startProgress(durationMs) {
@@ -894,6 +952,7 @@
       if (_storyTimer) { clearTimeout(_storyTimer); _storyTimer = null; }
       document.getElementById('storyViewerOverlay').classList.remove('active');
       document.getElementById('storyViewerMedia').innerHTML = '';
+      document.getElementById('storyViewersPanel').classList.remove('open');
       document.body.style.overflow = '';
       _storySlots  = [];
       _storyIdx    = 0;
@@ -901,7 +960,101 @@
       _storyElapsed = 0;
     }
 
+    /* ── Story View Recording (Visitor দেখলে Firebase-এ লেখে) ── */
+    async function _recordStoryView(authorUid, storyId) {
+      if (!me || !authorUid || !storyId) return;
+      try {
+        const viewRef = ref(db, `storyViews/${authorUid}/${storyId}/${me.uid}`);
+        const snap = await get(viewRef);
+        if (!snap.exists()) {
+          /* viewer এর প্রোফাইল info সংরক্ষণ করি */
+          await set(viewRef, {
+            viewedAt:   Date.now(),
+            name:       myProfile?.full_name || myProfile?.username || me.displayName || 'User',
+            avatarUrl:  myProfile?.avatar_url || null
+          });
+        }
+      } catch (e) { console.error('_recordStoryView error:', e); }
+    }
+
+    /* ── Story View Count লোড করো (owner-র জন্য) ── */
+    async function _loadStoryViewCount(authorUid, storyId) {
+      if (!authorUid || !storyId) return;
+      try {
+        const snap = await get(ref(db, `storyViews/${authorUid}/${storyId}`));
+        const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+        const el = document.getElementById('storyViewCountText');
+        if (el) el.textContent = `${count} জন দেখেছে`;
+      } catch (e) { console.error('_loadStoryViewCount error:', e); }
+    }
+
+    /* ── Viewers Panel খোলো ── */
+    async function openViewersPanel() {
+      pauseStory();
+      const panel = document.getElementById('storyViewersPanel');
+      const list  = document.getElementById('storyViewersList');
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">লোড হচ্ছে...</div>';
+      panel.classList.add('open');
+
+      const slot = _storySlots[_storyIdx];
+      const authorUid = slot?.uid;
+      const storyId   = slot?.story?.id;
+      if (!authorUid || !storyId) {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">তথ্য পাওয়া যায়নি</div>';
+        return;
+      }
+      try {
+        const snap = await get(ref(db, `storyViews/${authorUid}/${storyId}`));
+        if (!snap.exists()) {
+          list.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">এখনো কেউ দেখেনি</div>';
+          return;
+        }
+        const viewers = [];
+        snap.forEach(c => viewers.push({ uid: c.key, ...c.val() }));
+        viewers.sort((a, b) => (b.viewedAt || 0) - (a.viewedAt || 0));
+        list.innerHTML = viewers.map(v => {
+          const avHtml = v.avatarUrl
+            ? `<img src="${esc(v.avatarUrl)}" alt="${esc(v.name || '')}">`
+            : `<span>${(v.name || 'U').charAt(0).toUpperCase()}</span>`;
+          const t = v.viewedAt ? timeAgo(v.viewedAt) : '';
+          return `<div class="svp-item">
+            <div class="svp-av">${avHtml}</div>
+            <div><div class="svp-name">${esc(v.name || 'User')}</div><div class="svp-time">${t}</div></div>
+          </div>`;
+        }).join('');
+      } catch (e) {
+        console.error('openViewersPanel error:', e);
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">লোড হয়নি</div>';
+      }
+    }
+
+    function closeViewersPanel() {
+      document.getElementById('storyViewersPanel').classList.remove('open');
+      resumeStory();
+    }
+
+    /* ── Owner স্টোরি ডিলিট করবে ── */
+    async function deleteCurrentStory() {
+      const slot = _storySlots[_storyIdx];
+      const authorUid = slot?.uid;
+      const storyId   = slot?.story?.id;
+      if (!authorUid || !storyId) return;
+      if (!confirm('এই স্টোরিটি ডিলিট করবেন?')) return;
+      try {
+        await remove(ref(db, `stories/${authorUid}/${storyId}`));
+        /* view data-ও মুছে দাও */
+        await remove(ref(db, `storyViews/${authorUid}/${storyId}`)).catch(()=>{});
+        toast('স্টোরি ডিলিট হয়েছে');
+        closeStoryViewer();
+        loadHomeStories();
+      } catch (err) {
+        console.error('deleteCurrentStory error:', err);
+        toast('ডিলিট হয়নি');
+      }
+    }
+
     function onStoryReact(emoji) {
+      if (!me) { toast('রিঅ্যাকশন করতে লগইন করুন'); return; }
       toast(`${emoji} রিঅ্যাকশন পাঠানো হয়েছে`);
     }
 
@@ -930,18 +1083,22 @@
       const overlay = document.getElementById('storyViewerOverlay');
 
       overlay.addEventListener('touchstart', e => {
+        /* viewers panel খোলা থাকলে swipe ignore করো */
+        if (document.getElementById('storyViewersPanel').classList.contains('open')) return;
         const t = e.touches[0];
         touchStartY = t.clientY; touchStartX = t.clientX; touchStartTime = Date.now();
         longPressTimer = setTimeout(() => pauseStory(), 400);
       }, { passive: true });
 
       overlay.addEventListener('touchmove', e => {
+        if (document.getElementById('storyViewersPanel').classList.contains('open')) return;
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
         const dy = e.touches[0].clientY - touchStartY;
         if (dy > 10) pauseStory();
       }, { passive: true });
 
       overlay.addEventListener('touchend', e => {
+        if (document.getElementById('storyViewersPanel').classList.contains('open')) return;
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
         const dy = e.changedTouches[0].clientY - touchStartY;
         const elapsed = Date.now() - touchStartTime;
@@ -976,8 +1133,9 @@
 
       const slots = [];
       if (myStory) slots.push({
-        story: myStory,
-        label: myProfile?.full_name || myProfile?.username || 'You',
+        story: { ...myStory, id: myStory.id },
+        uid:      me.uid,
+        label:    myProfile?.full_name || myProfile?.username || 'You',
         avatarUrl: myProfile?.avatar_url || null
       });
       renderHomeStories(slots);
@@ -1038,7 +1196,8 @@
       openStoryViewer, openVisitorProfile, submitStory, switchTab, toast, toggleLike,
       onNavHome, onNavFriends, onNavInbox, onNavMe,
       storyNavPrev, storyNavNext, pauseStory, resumeStory,
-      onStoryReact, onStoryShare, sendStoryReply
+      onStoryReact, onStoryShare, sendStoryReply,
+      openViewersPanel, closeViewersPanel, deleteCurrentStory
     });
     /* homeStorySlots পরিবর্তনশীল (renderHomeStories প্রতিবার পুনরায় সেট করে),
        তাই getter দিয়ে window-এ লাইভ রাখা হলো */
