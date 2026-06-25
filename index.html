@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Website</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #ffffff; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
@@ -67,16 +68,17 @@
     .post-see-more { font-size: 12.5px; color: #6C63FF; font-weight: 500; cursor: pointer; padding: 2px 14px 0; display: inline-block; }
     .post-see-more:hover { text-decoration: underline; }
     /* Media — no crop, shrink to fit, max-height on media only */
-    .post-media { margin-top: 10px; line-height: 0; background: #f9fafb; }
+    .post-media { margin-top: 10px; margin-bottom: 0; line-height: 0; font-size: 0; background: #f9fafb; display: block; }
     .post-media img { width: 100%; height: auto; max-height: 320px; object-fit: scale-down; display: block; background: #f9fafb; }
     .post-media video { width: 100%; max-height: 280px; display: block; object-fit: contain; background: #000; }
     /* Video card with play overlay */
-    .post-media-video { position: relative; background: #000; line-height: 0; }
+    .post-media-video { position: relative; background: #000; line-height: 0; font-size: 0; margin-bottom: 0; }
     .post-media-video video { width: 100%; max-height: 280px; display: block; object-fit: contain; }
     .post-media-video .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
     /* Action bar — always visible, never clipped */
-    .post-actions { display: flex; gap: 0; padding: 5px 4px 7px; border-top: 1px solid #f3f4f6; margin-top: 8px; }
-    .action-btn { display: flex; align-items: center; justify-content: center; gap: 4px; background: none; border: none; cursor: pointer; font-size: 12px; color: #6b7280; padding: 7px 2px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; flex: 1; min-width: 0; }
+    .post-actions { display: flex; gap: 0; padding: 5px 4px 7px; border-top: 1px solid #f3f4f6; margin-top: 0; justify-content: flex-start; }
+    .action-btn { display: flex; align-items: center; justify-content: center; gap: 4px; background: none; border: none; cursor: pointer; font-size: 12px; color: #6b7280; padding: 7px 10px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; min-width: 0; }
+    .action-btn.save-btn { margin-left: auto; }
     .action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
     .action-btn span { white-space: nowrap; overflow: hidden; }
     .action-btn:hover { background: #f3f4f6; }
@@ -84,6 +86,25 @@
     .action-btn.liked:hover { background: #fef2f2; }
     .action-btn.saved { color: #6C63FF; }
     .action-btn.saved:hover { background: #f5f3ff; }
+    /* === REACTION SYSTEM === */
+    .reaction-wrap { position: relative; display: inline-flex; }
+    .reaction-summary { display: flex; align-items: center; gap: 5px; padding: 3px 14px 3px; min-height: 22px; border-bottom: 1px solid #f3f4f6; }
+    .reaction-summary:empty, .reaction-summary.hidden { display: none; }
+    .reaction-summary-emojis { display: flex; align-items: center; gap: 1px; }
+    .reaction-summary-emojis span { font-size: 14px; line-height: 1; }
+    .reaction-summary-count { font-size: 12px; color: #6b7280; font-weight: 500; }
+    .reaction-picker { position: absolute; bottom: calc(100% + 8px); left: -8px; background: #fff; border-radius: 50px; box-shadow: 0 4px 24px rgba(0,0,0,0.18); padding: 7px 10px; display: flex; gap: 4px; align-items: center; z-index: 500; opacity: 0; pointer-events: none; transform: scale(0.75) translateY(8px); transform-origin: bottom left; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); border: 1px solid #f0f0f0; white-space: nowrap; }
+    .reaction-picker.open { opacity: 1; pointer-events: all; transform: scale(1) translateY(0); }
+    .reaction-picker-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 2px 2px; border-radius: 8px; transition: transform 0.15s; }
+    .reaction-picker-item:hover { transform: scale(1.35) translateY(-5px); }
+    .reaction-picker-item .lottie-icon { width: 38px; height: 38px; pointer-events: none; }
+    .reaction-picker-item .r-label { font-size: 9px; color: #6b7280; margin-top: 1px; font-weight: 500; opacity: 0; transition: opacity 0.15s; text-align: center; }
+    .reaction-picker-item:hover .r-label { opacity: 1; }
+    .react-btn.reacted .react-icon-svg { display: none; }
+    .react-btn:not(.reacted) .react-icon-emoji { display: none; }
+    .react-btn.reacted .react-icon-emoji { display: inline; font-size: 16px; line-height: 1; }
+    .react-btn .react-icon-svg { display: inline-flex; }
+    .react-btn.reacted { color: #e94560; font-weight: 600; }
     /* === AUTH MODAL === */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
     .overlay.active { display: flex; }
@@ -186,10 +207,10 @@
     .svp-time { font-size: 11px; color: #9ca3af; margin-top: 1px; }
     .svp-close { position: absolute; top: 14px; right: 14px; background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 18px; line-height: 1; padding: 4px; }
     /* === BOTTOM NAVBAR === */
-    .bottom-navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 54px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-around; padding: 0 6px; z-index: 900; }
+    .bottom-navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: #fff; border-top: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; z-index: 900; }
     .bottom-plus-btn { width: 44px; height: 44px; border-radius: 50%; background: #6C63FF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(108,99,255,0.45); transition: transform 0.15s; }
     .bottom-plus-btn:active { transform: scale(0.93); }
-    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; cursor: pointer; color: #6b7280; padding: 4px 8px; position: relative; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; cursor: pointer; color: #374151; padding: 4px 8px; position: relative; }
     .bottom-nav-item span { font-size: 10px; font-weight: 500; line-height: 1; }
     .inbox-badge { position: absolute; top: 2px; right: 6px; min-width: 16px; height: 16px; background: #ef4444; border-radius: 8px; border: 2px solid #fff; display: none; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; line-height: 1; padding: 0 3px; z-index: 10; }
     .inbox-badge.show { display: flex; }
@@ -378,11 +399,11 @@
   <!-- ===== BOTTOM NAVBAR ===== -->
   <div class="bottom-navbar">
     <button class="bottom-nav-item" aria-label="Home" onclick="onNavHome()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
       <span>Home</span>
     </button>
     <button class="bottom-nav-item" aria-label="Friends" onclick="onNavFriends()">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Friend</span>
     </button>
     <button class="bottom-plus-btn" onclick="window.location.href='/create'" aria-label="Create post">
@@ -391,12 +412,16 @@
       </svg>
     </button>
     <button class="bottom-nav-item" aria-label="Inbox" onclick="onNavInbox()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20c4.97 0 9-3.58 9-8s-4.03-8-9-8-9 3.58-9 8c0 2.07.89 3.96 2.35 5.38L3 21l5-1.8A10.4 10.4 0 0 0 12 20z"/><circle cx="8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20c4.97 0 9-3.58 9-8s-4.03-8-9-8-9 3.58-9 8c0 2.07.89 3.96 2.35 5.38L3 21l5-1.8A10.4 10.4 0 0 0 12 20z"/><circle cx="8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
       <span class="inbox-badge" id="inboxBadge"></span>
       <span>Inbox</span>
     </button>
     <button class="bottom-nav-item" aria-label="Me" onclick="onNavMe()">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10.5"/>
+        <circle cx="12" cy="8" r="3"/>
+        <path d="M4.8 19.2 C5.2 16.7 7 15.4 9.2 15.4 H14.8 C17 15.4 18.8 16.7 19.2 19.2"/>
+      </svg>
       <span>Me</span>
     </button>
   </div>
@@ -660,21 +685,194 @@
         </div>
         ${captionHtml}
         ${mediaHtml}
+        <div class="reaction-summary hidden" id="rs-${post.uid}-${post.id}"></div>
         <div class="post-actions">
-          <button class="action-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : 'Like'}</span></button>
-          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Comment</span></button>
-          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Share</span></button>
-          <button class="action-btn" id="sb-${post.uid}-${post.id}" onclick="toggleSave('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Save</span></button>
+          <div class="reaction-wrap">
+            <button class="action-btn react-btn" id="lb-${post.uid}-${post.id}"
+              onclick="quickReact('${post.uid}','${post.id}')"
+              onmousedown="startHold('${post.uid}','${post.id}',this)"
+              onmouseup="cancelHold()"
+              onmouseleave="cancelHold()"
+              ontouchstart="startHold('${post.uid}','${post.id}',this)"
+              ontouchend="cancelHold()"
+            >
+              <span class="react-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+              <span class="react-icon-emoji" id="re-${post.uid}-${post.id}">❤️</span>
+              <span id="lc-${post.uid}-${post.id}">${likesCnt > 0 ? likesCnt : 'Like'}</span>
+            </button>
+            <div class="reaction-picker" id="rp-${post.uid}-${post.id}">
+              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','love')"><div class="lottie-icon" id="rl-love-${post.uid}-${post.id}"></div><div class="r-label">Love</div></div>
+              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','haha')"><div class="lottie-icon" id="rl-haha-${post.uid}-${post.id}"></div><div class="r-label">Haha</div></div>
+              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','cry')"><div class="lottie-icon" id="rl-cry-${post.uid}-${post.id}"></div><div class="r-label">Sad</div></div>
+              <div class="reaction-picker-item" onclick="setReaction('${post.uid}','${post.id}','angry')"><div class="lottie-icon" id="rl-angry-${post.uid}-${post.id}"></div><div class="r-label">Angry</div></div>
+            </div>
+          </div>
+          <button class="action-btn" onclick="goToPost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Comment</span></button>
+          <button class="action-btn" onclick="sharePost('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Share</span></button>
+          <button class="action-btn save-btn" id="sb-${post.uid}-${post.id}" onclick="toggleSave('${post.uid}','${post.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Save</span></button>
         </div>
       </div>`;
     }
-    /* প্রতিটা পোস্ট কার্ডে নিজের like অবস্থা লাইভ দেখানোর জন্য */
+    /* ── REACTION CONFIG ── */
+    const REACTIONS = {
+      love:  { emoji: '❤️', label: 'Love',  lottie: '/Lottie/Love_Animation_with_Particle.json',  color: '#e94560' },
+      haha:  { emoji: '😂', label: 'Haha',  lottie: '/Lottie/Joy_Laugh_Emoji.json',               color: '#f59e0b' },
+      cry:   { emoji: '😢', label: 'Sad',   lottie: '/Lottie/Crying_emoji.json',                  color: '#3b82f6' },
+      angry: { emoji: '😡', label: 'Angry', lottie: '/Lottie/Angry_emoji_Lottie_JSON_animation.json', color: '#ef4444' },
+    };
+    /* Lottie instances cache — picker খোলার সময় init হবে */
+    const _lottieCache = {};
+    function _initPickerLotties(uid, pid) {
+      Object.entries(REACTIONS).forEach(([key, cfg]) => {
+        const elId = `rl-${key}-${uid}-${pid}`;
+        const el = document.getElementById(elId);
+        if (!el || _lottieCache[elId]) return;
+        _lottieCache[elId] = lottie.loadAnimation({
+          container: el, renderer: 'svg', loop: true, autoplay: true, path: cfg.lottie
+        });
+      });
+    }
+    /* ── HOLD TIMER ── */
+    let _holdTimer = null;
+    let _holdActive = false;
+    function startHold(uid, pid, btnEl) {
+      _holdActive = false;
+      _holdTimer = setTimeout(() => {
+        _holdActive = true;
+        openReactionPicker(uid, pid, btnEl);
+      }, 420);
+    }
+    function cancelHold() { clearTimeout(_holdTimer); }
+    /* ── PICKER OPEN / CLOSE ── */
+    let _openPicker = null;
+    function openReactionPicker(uid, pid, btnEl) {
+      closeAllPickers();
+      const picker = document.getElementById(`rp-${uid}-${pid}`);
+      if (!picker) return;
+      _initPickerLotties(uid, pid);
+      picker.classList.add('open');
+      _openPicker = { uid, pid };
+      /* outside click এ বন্ধ */
+      setTimeout(() => {
+        document.addEventListener('click', _closePickerOutside, { once: true });
+      }, 50);
+    }
+    function closeAllPickers() {
+      document.querySelectorAll('.reaction-picker.open').forEach(p => p.classList.remove('open'));
+      _openPicker = null;
+    }
+    function _closePickerOutside(e) {
+      if (!e.target.closest('.reaction-picker') && !e.target.closest('.react-btn')) {
+        closeAllPickers();
+      }
+    }
+    /* ── QUICK REACT (single tap → love) ── */
+    function quickReact(uid, pid) {
+      if (_holdActive) { _holdActive = false; return; } /* hold এ picker খুলেছে, tap এ কিছু করবো না */
+      if (!me) { openAuth(); return; }
+      const btn = document.getElementById(`lb-${uid}-${pid}`);
+      if (!btn) return;
+      if (btn.classList.contains('reacted')) {
+        /* ইতিমধ্যে reacted — সরাও */
+        _removeReaction(uid, pid);
+      } else {
+        setReaction(uid, pid, 'love');
+      }
+    }
+    /* ── SET REACTION ── */
+    async function setReaction(uid, pid, type) {
+      closeAllPickers();
+      if (!me) { openAuth(); return; }
+      const rRef = ref(db, `reactions/${uid}/${pid}/${me.uid}`);
+      const prevSnap = await get(rRef);
+      const prevType = prevSnap.exists() ? prevSnap.val().type : null;
+      /* পুরানো reaction এর count কমাও */
+      if (prevType) {
+        const oldCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${prevType}`);
+        const oldSnap = await get(oldCountRef);
+        const oldVal = oldSnap.exists() ? (oldSnap.val() || 0) : 0;
+        await set(oldCountRef, Math.max(0, oldVal - 1));
+        /* likesCount ও কমাও */
+        const lcRef = ref(db, `posts/${uid}/${pid}/likesCount`);
+        const lcSnap = await get(lcRef);
+        await set(lcRef, Math.max(0, (lcSnap.exists() ? lcSnap.val() : 0) - 1));
+      }
+      if (prevType === type) {
+        /* একই reaction আবার চাপলে সরাও */
+        await remove(rRef);
+        _updateReactBtn(uid, pid, null);
+        return;
+      }
+      /* নতুন reaction সেট */
+      await set(rRef, { type, ts: Date.now() });
+      const newCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${type}`);
+      const newSnap = await get(newCountRef);
+      await set(newCountRef, ((newSnap.exists() ? newSnap.val() : 0) || 0) + 1);
+      /* likesCount বাড়াও */
+      const lcRef2 = ref(db, `posts/${uid}/${pid}/likesCount`);
+      const lcSnap2 = await get(lcRef2);
+      await set(lcRef2, ((lcSnap2.exists() ? lcSnap2.val() : 0) || 0) + 1);
+      _updateReactBtn(uid, pid, type);
+    }
+    async function _removeReaction(uid, pid) {
+      if (!me) return;
+      const rRef = ref(db, `reactions/${uid}/${pid}/${me.uid}`);
+      const prevSnap = await get(rRef);
+      if (!prevSnap.exists()) return;
+      const prevType = prevSnap.val().type;
+      await remove(rRef);
+      const oldCountRef = ref(db, `posts/${uid}/${pid}/reactionCounts/${prevType}`);
+      const oldSnap = await get(oldCountRef);
+      await set(oldCountRef, Math.max(0, (oldSnap.exists() ? oldSnap.val() : 0) - 1));
+      const lcRef = ref(db, `posts/${uid}/${pid}/likesCount`);
+      const lcSnap = await get(lcRef);
+      await set(lcRef, Math.max(0, (lcSnap.exists() ? lcSnap.val() : 0) - 1));
+      _updateReactBtn(uid, pid, null);
+    }
+    /* ── UI UPDATE ── */
+    function _updateReactBtn(uid, pid, type) {
+      const btn = document.getElementById(`lb-${uid}-${pid}`);
+      if (!btn) return;
+      const emojiEl = document.getElementById(`re-${uid}-${pid}`);
+      const countEl = document.getElementById(`lc-${uid}-${pid}`);
+      if (type) {
+        const cfg = REACTIONS[type];
+        btn.classList.add('reacted');
+        btn.style.color = cfg.color;
+        if (emojiEl) emojiEl.textContent = cfg.emoji;
+        if (countEl) {
+          const cur = parseInt(countEl.textContent) || 0;
+          /* count Firebase listener এ আপডেট হবে */
+        }
+      } else {
+        btn.classList.remove('reacted');
+        btn.style.color = '';
+        if (emojiEl) emojiEl.textContent = '❤️';
+      }
+    }
+    /* ── REACTION SUMMARY (livecount উপরের বার) ── */
+    function _updateReactionSummary(uid, pid, countsObj, total) {
+      const el = document.getElementById(`rs-${uid}-${pid}`);
+      if (!el) return;
+      if (!countsObj || total === 0) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+      /* সর্বোচ্চ ৩টি unique emoji দেখাও */
+      const sorted = Object.entries(countsObj)
+        .filter(([,v]) => v > 0)
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, 3);
+      if (!sorted.length) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+      const emojis = sorted.map(([k]) => `<span>${REACTIONS[k]?.emoji || ''}</span>`).join('');
+      el.innerHTML = `<span class="reaction-summary-emojis">${emojis}</span><span class="reaction-summary-count">${total}</span>`;
+      el.classList.remove('hidden');
+    }
+    /* প্রতিটা পোস্ট কার্ডে নিজের reaction অবস্থা লাইভ দেখানোর জন্য */
     function attachLikeListener(post) {
       if (!me) return;
-      const likeRef = ref(db, `posts/${post.uid}/${post.id}/likes/${me.uid}`);
-      onValue(likeRef, (snap) => {
-        const btn = document.getElementById(`lb-${post.uid}-${post.id}`);
-        if (btn) btn.classList.toggle('liked', snap.exists());
+      /* আমার reaction */
+      const myRRef = ref(db, `reactions/${post.uid}/${post.id}/${me.uid}`);
+      onValue(myRRef, (snap) => {
+        const type = snap.exists() ? snap.val().type : null;
+        _updateReactBtn(post.uid, post.id, type);
       }, { onlyOnce: false });
       /* save state */
       const saveRef = ref(db, `saves/${me.uid}/${post.uid}_${post.id}`);
@@ -685,6 +883,16 @@
         btn.classList.toggle('saved', isSaved);
         const svg = btn.querySelector('svg');
         if (svg) svg.style.fill = isSaved ? '#6C63FF' : 'none';
+      }, { onlyOnce: false });
+      /* reaction counts live */
+      const countsRef = ref(db, `posts/${post.uid}/${post.id}/reactionCounts`);
+      onValue(countsRef, (snap) => {
+        const counts = snap.exists() ? snap.val() : {};
+        const total = Object.values(counts).reduce((a,b) => a + (b||0), 0);
+        /* count button text */
+        const countEl = document.getElementById(`lc-${post.uid}-${post.id}`);
+        if (countEl) countEl.textContent = total > 0 ? total : 'Like';
+        _updateReactionSummary(post.uid, post.id, counts, total);
       }, { onlyOnce: false });
     }
     async function toggleSave(authorUid, postId) {
@@ -697,21 +905,6 @@
       } else {
         await set(saveRef, { authorUid, postId, savedAt: Date.now() });
         toast('পোস্ট Save হয়েছে ✓');
-      }
-    }
-    async function toggleLike(authorUid, postId) {
-      if (!me) { openAuth(); return; }
-      const likeRef  = ref(db, `posts/${authorUid}/${postId}/likes/${me.uid}`);
-      const countRef = ref(db, `posts/${authorUid}/${postId}/likesCount`);
-      const snap = await get(likeRef);
-      const countSnap = await get(countRef);
-      const cur = countSnap.exists() ? (countSnap.val() || 0) : 0;
-      if (snap.exists()) {
-        await remove(likeRef);
-        await set(countRef, Math.max(0, cur - 1));
-      } else {
-        await set(likeRef, true);
-        await set(countRef, cur + 1);
       }
     }
     async function deletePost(authorUid, postId) {
@@ -1226,7 +1419,8 @@
     Object.assign(window, {
       closeAuth, closeStoryModal, closeStoryViewer, deletePost, doLogin, doSignup,
       onMediaBtn, onNavProfile, onNavNotif, onPostBox, onStoryFileSelect, openNewStory,
-      openStoryViewer, openVisitorProfile, goToPost, sharePost, submitStory, switchTab, toast, toggleLike, toggleSave,
+      openStoryViewer, openVisitorProfile, goToPost, sharePost, submitStory, switchTab, toast,
+      quickReact, setReaction, startHold, cancelHold, toggleSave,
       onNavHome, onNavFriends, onNavInbox, onNavMe,
       storyNavPrev, storyNavNext, pauseStory, resumeStory,
       onStoryReact, onStoryShare, sendStoryReply,
