@@ -379,11 +379,11 @@
         </button>
       </div>
       <div class="post-row-2">
-        <button class="media-btn" onclick="onMediaBtn('thought')"><img src="https://i.ibb.co.com/1f8xc7pj/file-00000000e59471faacaa2cd1b3a17805-1-removebg-preview.png" alt="Thought"><span>Thought</span></button>
+        <button class="media-btn" style="justify-content:flex-start;" onclick="onMediaBtn('thought')"><img src="https://i.ibb.co.com/1f8xc7pj/file-00000000e59471faacaa2cd1b3a17805-1-removebg-preview.png" alt="Thought"><span>Thought</span></button>
         <button class="media-btn" onclick="onMediaBtn('photo')"><img src="https://i.ibb.co.com/JjnPSvfX/file-00000000380871fabb3a7bf2fa6a1c78-1-removebg-preview.png" alt="Photo"><span>Photo</span></button>
         <button class="media-btn" onclick="onMediaBtn('video')"><img src="https://i.ibb.co.com/cK1fgt4T/file-00000000527c71fa8767d24ba15cf56b-1-removebg-preview.png" alt="Video"><span>Video</span></button>
         <button class="media-btn" onclick="onMediaBtn('audio')"><img src="https://i.ibb.co.com/Ld0J7bpR/file-00000000648071faabc58e28cbf9110b-1-removebg-preview.png" alt="Audio"><span>Audio</span></button>
-        <button class="media-btn" onclick="onMediaBtn('poll')"><img src="https://i.ibb.co.com/rf1Ks2R4/file-00000000d35472079f4f8facfcaa02d3-1-removebg-preview.png" alt="Poll"><span>Poll</span></button>
+        <button class="media-btn" style="justify-content:flex-end;" onclick="onMediaBtn('poll')"><img src="https://i.ibb.co.com/rf1Ks2R4/file-00000000d35472079f4f8facfcaa02d3-1-removebg-preview.png" alt="Poll"><span>Poll</span></button>
       </div>
     </div>
     <div class="home-stories-bar" id="homeStoriesBar">
@@ -724,7 +724,7 @@
           <button class="action-btn react-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')">
             <span class="react-icon-3d" id="ri3d-${post.uid}-${post.id}">
               <svg class="react-svg-outline" viewBox="0 0 24 24" width="21" height="21"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <svg class="react-svg-glossy" viewBox="0 0 24 24" width="26" height="26"><path fill="#ef4444" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg class="react-svg-glossy" viewBox="0 0 24 24" width="32" height="32"><path fill="#ef4444" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </span>
             <span id="lc-${post.uid}-${post.id}">${likesCnt}</span>
           </button>
