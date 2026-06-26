@@ -47,7 +47,7 @@
     .feed-filter-pill { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; cursor: pointer; font-size: 11.5px; font-weight: 600; white-space: nowrap; flex-shrink: 0; font-family: 'Segoe UI', sans-serif; transition: transform 0.12s, background 0.12s, border-color 0.12s; background: #fff; border: 1px solid #e5e7eb; color: #6b7280; }
     .feed-filter-pill:active { transform: scale(0.96); }
     .feed-filter-pill svg { width: 13px; height: 13px; flex-shrink: 0; }
-    .feed-filter-pill.active { border-color: #2563EB; color: #2563EB; background: #eff6ff; }
+    .feed-filter-pill.active { border-color: transparent; color: #fff; background: linear-gradient(135deg,#B09AED,#8B64FB,#8661F8); box-shadow: 0 2px 8px rgba(139,100,251,0.4); }
     .feed-filter-pill:not(.active):hover { background: #f9fafb; border-color: #d1d5db; }
     .hs-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex-shrink: 0; width: 78px; }
     .hs-ring { width: 78px; height: 100px; border-radius: 12px; padding: 0; background: none !important; position: relative; }
@@ -99,7 +99,7 @@
     .reaction-summary-emojis { display: flex; align-items: center; gap: 1px; }
     .reaction-summary-emojis span { font-size: 14px; line-height: 1; }
     .reaction-summary-count { font-size: 12px; color: #6b7280; font-weight: 500; }
-    .react-icon-3d { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 23px; height: 23px; }
+    .react-icon-3d { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
     .react-svg-outline { display: block; }
     .react-svg-glossy { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); filter: drop-shadow(0 2px 5px rgba(124,58,237,0.55)); }
     .react-btn:not(.reacted) .react-svg-outline path { fill: none; stroke: #374151; stroke-width: 1.9; }
@@ -417,7 +417,7 @@
     </div>
     <div class="feed-filter-row" id="feedFilterRow">
       <button class="feed-filter-pill active" onclick="setFeedFilterTab(this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="2.4"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/><circle cx="20.3" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l1.8 5.6L19.5 9.5l-5.7 1.9L12 17l-1.8-5.6L4.5 9.5l5.7-1.9L12 2z"/><path d="M19 14l0.8 2.3L22 17l-2.2 0.7L19 20l-0.8-2.3L16 17l2.2-0.7L19 14z" opacity="0.85"/></svg>
         <span>For You</span>
       </button>
       <button class="feed-filter-pill" onclick="setFeedFilterTab(this)">
@@ -744,7 +744,7 @@
             <span class="react-icon-3d" id="ri3d-${post.uid}-${post.id}">
               <span class="sparkle sp1"></span><span class="sparkle sp2"></span><span class="sparkle sp3"></span><span class="sparkle sp4"></span>
               <svg class="react-svg-outline" viewBox="0 0 24 24" width="21" height="21"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <svg class="react-svg-glossy" viewBox="0 0 24 24" width="21" height="21"><defs><radialGradient id="rgg-${post.uid}-${post.id}" cx="35%" cy="28%" r="75%"><stop offset="0%" stop-color="#e9d5ff"/><stop offset="35%" stop-color="#a855f7"/><stop offset="75%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></radialGradient></defs><path fill="url(#rgg-${post.uid}-${post.id})" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><ellipse cx="9" cy="8.2" rx="2.6" ry="1.7" fill="rgba(255,255,255,0.55)" transform="rotate(-35 9 8.2)"/></svg>
+              <svg class="react-svg-glossy" viewBox="0 0 24 24" width="26" height="26"><defs><radialGradient id="rgg-${post.uid}-${post.id}" cx="35%" cy="28%" r="75%"><stop offset="0%" stop-color="#e9d5ff"/><stop offset="35%" stop-color="#a855f7"/><stop offset="75%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></radialGradient></defs><path fill="url(#rgg-${post.uid}-${post.id})" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><ellipse cx="9" cy="8.2" rx="2.6" ry="1.7" fill="rgba(255,255,255,0.55)" transform="rotate(-35 9 8.2)"/></svg>
             </span>
             <span id="lc-${post.uid}-${post.id}">${likesCnt}</span>
           </button>
