@@ -479,15 +479,30 @@ onAuthStateChanged(auth, (user) => {
   setupPresence(myUid);
 
   /* ── FIX 3: loadFriends Promise + URL ?uid= auto-open ── */
-  loadFriends().then(() => {
+  loadFriends().then(async () => {
     const targetUid = new URLSearchParams(window.location.search).get('uid');
     if (targetUid) {
-      const tryOpen = (n) => {
-        const c = contacts.find(x => x.uid === targetUid);
-        if (c) openChat(targetUid);
-        else if (n > 0) setTimeout(() => tryOpen(n - 1), 300);
-      };
-      setTimeout(() => tryOpen(10), 400);
+      let c = contacts.find(x => x.uid === targetUid);
+      /* FIX: contact cache-এ না থাকলেও Firebase থেকে load করে chat খোলো */
+      if (!c) {
+        try {
+          const snap = await get(ref(db, `users/${targetUid}`));
+          if (snap.exists()) {
+            const d = snap.val();
+            c = {
+              uid: targetUid,
+              name:    d.displayName || d.name || d.username || 'ইউজার',
+              username: d.username || '',
+              photo:   d.photoURL || d.avatar || d.photo || '',
+              online:  !!d.online,
+              nickname: '',
+              time: '', preview: '', _lastTime: 0, messages: [], _offs: []
+            };
+            contacts.push(c);
+          }
+        } catch(e) { console.error('Failed to load contact:', e); }
+      }
+      if (c) openChat(targetUid);
     }
   });
 
@@ -560,6 +575,27 @@ async function loadFriendContact(fid) {
   });
   contact._offs.push(() => off(onlineRef));
 
+  /* FIX: photo realtime listen — photoURL/avatar/photo যেকোনো field update হলে */
+  const photoRef = ref(db, `users/${fid}`);
+  onValue(photoRef, (s) => {
+    const d = s.val();
+    if (!d) return;
+    const newPhoto = d.photoURL || d.avatar || d.photo || '';
+    if (newPhoto !== contact.photo) {
+      contact.photo = newPhoto;
+      refreshChatListIfNeeded();
+      if (currentContact && currentContact.uid === fid) {
+        headerAvatarEl.innerHTML = avatarInnerHTML(contact);
+      }
+    }
+    const newName = d.displayName || d.name || d.username || contact.name;
+    if (newName !== contact.name) {
+      contact.name = newName;
+      refreshChatListIfNeeded();
+    }
+  }, { onlyOnce: false });
+  contact._offs.push(() => off(photoRef));
+
   const cid = chatIdFor(myUid, fid);
   const metaRef = ref(db, `chats/${cid}/meta`);
   onValue(metaRef, (s) => {
@@ -573,9 +609,20 @@ async function loadFriendContact(fid) {
 }
 
 /* ── Chat open + messages ── */
-function openChat(uid) {
+async function openChat(uid) {
   const c = contacts.find(x => x.uid === uid) || channels.find(x => x.uid === uid);
   if (!c) return;
+  /* FIX: photo খালি থাকলে Firebase থেকে সরাসরি একবার fetch করে নাও */
+  if (!c.photo) {
+    try {
+      const snap = await get(ref(db, `users/${uid}`));
+      if (snap.exists()) {
+        const d = snap.val();
+        c.photo = d.photoURL || d.avatar || d.photo || '';
+        c.name  = c.name || d.displayName || d.name || d.username || 'ইউজার';
+      }
+    } catch(e) { /* silent */ }
+  }
   currentContact = c;
   headerAvatarEl.innerHTML = avatarInnerHTML(c);
   headerNameEl.textContent = c.nickname || c.name;
