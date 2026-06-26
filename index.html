@@ -41,6 +41,15 @@
     /* === HOME STORIES BAR === */
     .home-stories-bar { display: flex; gap: 14px; overflow-x: auto; padding: 14px 2px 4px; margin-top: 10px; scrollbar-width: none; }
     .home-stories-bar::-webkit-scrollbar { display: none; }
+    /* === FEED FILTER ROW (For You / Following / Group) === */
+    .feed-filter-row { display: flex; gap: 9px; padding: 10px 4px 12px; overflow-x: auto; scrollbar-width: none; }
+    .feed-filter-row::-webkit-scrollbar { display: none; }
+    .feed-filter-pill { display: flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; font-family: 'Segoe UI', sans-serif; transition: transform 0.12s, box-shadow 0.12s; }
+    .feed-filter-pill:active { transform: scale(0.96); }
+    .feed-filter-pill svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .feed-filter-pill.active { background: linear-gradient(135deg,#6C63FF,#A855F7); color: #fff; box-shadow: 0 3px 10px rgba(108,99,255,0.35); }
+    .feed-filter-pill:not(.active) { background: #f3f1ff; color: #6b7280; }
+    .feed-filter-pill:not(.active):hover { background: #ece8ff; }
     .hs-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex-shrink: 0; width: 78px; }
     .hs-ring { width: 78px; height: 100px; border-radius: 12px; padding: 0; background: none !important; position: relative; }
     .hs-ring-inner { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #f3f4f6; border: none; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: #374151; position: relative; }
@@ -75,10 +84,10 @@
     .post-media-video video { width: 100%; max-height: 280px; display: block; object-fit: contain; }
     .post-media-video .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
     /* Action bar — always visible, never clipped */
-    .post-actions { display: flex; gap: 0; padding: 5px 4px 7px; border-top: 1px solid #f3f4f6; margin-top: 0; justify-content: flex-start; }
-    .action-btn { display: flex; align-items: center; justify-content: center; gap: 4px; background: none; border: none; cursor: pointer; font-size: 12px; color: #6b7280; padding: 7px 10px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; min-width: 0; }
+    .post-actions { display: flex; gap: 0; padding: 9px 4px 11px; border-top: 1px solid #f3f4f6; margin-top: 0; justify-content: flex-start; }
+    .action-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: none; border: none; cursor: pointer; font-size: 13px; color: #6b7280; padding: 11px 14px; border-radius: 8px; transition: background 0.15s, color 0.15s; font-family: 'Segoe UI', sans-serif; font-weight: 500; min-width: 0; }
     .action-btn.save-btn { margin-left: auto; }
-    .action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .action-btn svg { width: 21px; height: 21px; flex-shrink: 0; }
     .action-btn span { white-space: nowrap; overflow: hidden; }
     .action-btn:hover { background: #f3f4f6; }
     .action-btn.liked { color: #ef4444; }
@@ -91,10 +100,10 @@
     .reaction-summary-emojis { display: flex; align-items: center; gap: 1px; }
     .reaction-summary-emojis span { font-size: 14px; line-height: 1; }
     .reaction-summary-count { font-size: 12px; color: #6b7280; font-weight: 500; }
-    .react-icon-3d { display: inline-flex; align-items: center; justify-content: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15)); transition: filter 0.15s; }
-    .react-btn:not(.reacted) .react-icon-3d svg path { fill: #c9c9d1; stroke: #9b9ba3; }
-    .react-btn.reacted { color: #7c3aed; font-weight: 600; }
-    .react-btn.reacted .react-icon-3d { filter: drop-shadow(0 2px 3px rgba(124,58,237,0.45)); }
+    .react-icon-3d { display: inline-flex; align-items: center; justify-content: center; }
+    .react-btn:not(.reacted) .react-icon-3d svg path { fill: none; stroke: #6b7280; stroke-width: 1.8; }
+    .react-btn.reacted { color: #ef4444; font-weight: 600; }
+    .react-btn.reacted .react-icon-3d svg path { fill: #ef4444; stroke: #ef4444; }
     @keyframes reactBounce {
       0%   { transform: scale(1); }
       30%  { transform: scale(1.5) rotate(-8deg); }
@@ -391,6 +400,20 @@
         </div>
         <span class="hs-label" style="font-size:11px;font-weight:600;color:#2563EB;text-align:center;">Create Story</span>
       </div>
+    </div>
+    <div class="feed-filter-row" id="feedFilterRow">
+      <button class="feed-filter-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg>
+        <span>For You</span>
+      </button>
+      <button class="feed-filter-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+        <span>Following</span>
+      </button>
+      <button class="feed-filter-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Group</span>
+      </button>
     </div>
     <div class="feed" id="feed">
     </div>
@@ -700,7 +723,7 @@
         <div class="post-actions">
           <button class="action-btn react-btn" id="lb-${post.uid}-${post.id}" onclick="toggleLike('${post.uid}','${post.id}')">
             <span class="react-icon-3d" id="ri3d-${post.uid}-${post.id}">
-              <svg viewBox="0 0 24 24" width="18" height="18"><defs><linearGradient id="rg-${post.uid}-${post.id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="55%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient></defs><path fill="url(#rg-${post.uid}-${post.id})" stroke="#3b0764" stroke-width="0.6" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg viewBox="0 0 24 24" width="21" height="21"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </span>
             <span id="lc-${post.uid}-${post.id}">${likesCnt}</span>
           </button>
