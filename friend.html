@@ -681,7 +681,9 @@ let sentRequests = new Set();
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=5B5FEF&color=fff&size=80&bold=true&name=";
 
 function avatarFor(name, photoURL) {
-  return photoURL || `${DEFAULT_AVATAR}${encodeURIComponent(name || '?')}`;
+  /* FIX: photoURL ফাঁকা থাকলে initials avatar দেখাও */
+  if (photoURL && photoURL.trim()) return photoURL.trim();
+  return `${DEFAULT_AVATAR}${encodeURIComponent(name || '?')}`;
 }
 
 // ─── Relative time ───────────────────────────────────────────
@@ -702,7 +704,11 @@ function relTime(ts) {
 // ─── Fetch single profile ─────────────────────────────────────
 async function fetchProfile(uid) {
   const snap = await get(ref(db, `users/${uid}`));
-  return snap.exists() ? { uid, ...snap.val() } : null;
+  if (!snap.exists()) return null;
+  const d = snap.val();
+  /* FIX: photoURL / avatar / photo — যেকোনো field থেকে ছবি নাও */
+  const resolvedPhoto = d.photoURL || d.avatar || d.photo || '';
+  return { uid, ...d, photoURL: resolvedPhoto };
 }
 
 // ─── Auth gate ───────────────────────────────────────────────
@@ -755,9 +761,9 @@ async function loadFriends() {
     const addedAt   = meta.addedAt || 0;
     const obj = {
       uid,
-      name:         p.displayName || p.name || 'Unknown',
+      name:         p.displayName || p.name || p.username || 'Unknown',
       username:     p.username ? `@${p.username}` : '',
-      avatar:       avatarFor(p.displayName || p.name, p.photoURL || p.avatar),
+      avatar:       avatarFor(p.displayName || p.name || p.username, p.photoURL || p.avatar || p.photo),
       online:       isOnline,
       active:       isOnline || (Date.now() - (p.lastSeen || 0) < 86400000),
       addedAt,
@@ -842,7 +848,7 @@ async function loadRequests() {
     if (!p) return;
 
     const name   = p.displayName || p.name || 'Unknown';
-    const avatar = avatarFor(name, p.photoURL || p.avatar);
+    const avatar = avatarFor(name, p.photoURL || p.avatar || p.photo);
     const when   = relTime(meta.sentAt);
 
     const row = document.createElement('div');
@@ -933,7 +939,7 @@ async function loadBlocked() {
     if (!p) return;
 
     const name   = p.displayName || p.name || 'Unknown';
-    const avatar = avatarFor(name, p.photoURL || p.avatar);
+    const avatar = avatarFor(name, p.photoURL || p.avatar || p.photo);
     const when   = relTime(meta.blockedAt);
 
     const row = document.createElement('div');
@@ -1009,7 +1015,7 @@ function renderSuggestions(list, container, isCarousel) {
   list.forEach(p => {
     const name   = p.displayName || p.name || 'Unknown';
     const uname  = p.username ? `@${p.username}` : '';
-    const avatar = avatarFor(name, p.photoURL || p.avatar);
+    const avatar = avatarFor(name, p.photoURL || p.avatar || p.photo);
 
     const card = document.createElement('div');
     card.className = 'suggestion-card';
