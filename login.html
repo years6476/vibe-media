@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Insight</title>
+  <title>Login — SocialFeed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -37,9 +37,14 @@
     /* ── Logo ── */
     .logo {
       margin-bottom: 26px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
     .logo img {
-      width: 130px;
+      width: 190px;
+      max-width: 100%;
+      height: auto;
       object-fit: contain;
       display: block;
     }
@@ -255,7 +260,7 @@
     @media (max-width: 480px) {
       .wrapper  { padding: 34px 20px 0; }
       .welcome  { font-size: 20px; }
-      .logo img { width: 115px; }
+      .logo img { width: 165px; }
     }
   </style>
 </head>
@@ -267,8 +272,8 @@
     <!-- Logo -->
     <div class="logo">
       <img
-        src="https://i.ibb.co.com/1fKZGC7X/file-0000000003c87208ad00b615126c723f-1-removebg-preview.png"
-        alt="Insight Logo"
+        src="https://i.ibb.co/67rjXd2D/file-0000000035747207811bfdf654b4a6ef-1.jpg"
+        alt="SocialFeed Logo"
         draggable="false"
       />
     </div>
@@ -344,7 +349,7 @@
   </div>
 
 
-  <!-- ══ Firebase Logic ══ -->
+  <!-- ══ Firebase Logic (ES Module) ══ -->
   <script type="module">
     import { auth } from "./config.js";
     import {
