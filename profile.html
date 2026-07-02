@@ -200,7 +200,7 @@
 
     .profile-address {
       display: flex; align-items: center; gap: 4px;
-      font-size: 11px; font-weight: 400; color: var(--text-muted);
+      font-size: 11px; font-weight: 500; color: #6b6b6b;
       margin-bottom: 3px;
     }
     .profile-address svg { flex-shrink: 0; }
@@ -561,6 +561,26 @@
     .grid-cell video {
       width: 100%; height: 100%;
       object-fit: cover; display: block;
+    }
+
+    .grid-cell.text-only {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .grid-cell.text-only p {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--text-2);
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: center;
+      word-break: break-word;
     }
 
     .grid-cell .reel-badge {
@@ -1352,14 +1372,21 @@
       }
       items.forEach((item, idx) => {
         const cell = document.createElement("div");
-        cell.className = "grid-cell";
         const isVideo = item.mediaType === "video";
-        cell.innerHTML = isVideo
-          ? `<video src="${esc(item.mediaUrl)}" muted playsinline></video>
-             <svg class="reel-badge" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-               <polygon points="5 3 19 12 5 21 5 3"/>
-             </svg>`
-          : `<img src="${esc(item.mediaUrl)}" alt="post" loading="lazy">`;
+        if (!item.mediaUrl) {
+          // Text-only post (only reachable from the "all" tab)
+          cell.className = "grid-cell text-only";
+          const preview = (item.caption || "").trim() || "(no text)";
+          cell.innerHTML = `<p>${esc(preview)}</p>`;
+        } else {
+          cell.className = "grid-cell";
+          cell.innerHTML = isVideo
+            ? `<video src="${esc(item.mediaUrl)}" muted playsinline></video>
+               <svg class="reel-badge" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                 <polygon points="5 3 19 12 5 21 5 3"/>
+               </svg>`
+            : `<img src="${esc(item.mediaUrl)}" alt="post" loading="lazy">`;
+        }
         cell.addEventListener("click", () => openMediaViewer(items, idx, source));
         container.appendChild(cell);
       });
@@ -1374,9 +1401,13 @@
       items.forEach((item) => {
         const slide = document.createElement("div");
         slide.className = "mv-item";
-        slide.innerHTML = item.mediaType === "video"
-          ? `<video src="${esc(item.mediaUrl)}" controls playsinline></video>`
-          : `<img src="${esc(item.mediaUrl)}" alt="post">`;
+        if (!item.mediaUrl) {
+          slide.innerHTML = `<p style="color:#fff;font-size:15px;line-height:1.6;padding:0 28px;text-align:center;max-width:340px;">${esc(item.caption || "")}</p>`;
+        } else {
+          slide.innerHTML = item.mediaType === "video"
+            ? `<video src="${esc(item.mediaUrl)}" controls playsinline></video>`
+            : `<img src="${esc(item.mediaUrl)}" alt="post">`;
+        }
         mediaViewerScroll.appendChild(slide);
       });
 
@@ -1420,8 +1451,10 @@
         snap.forEach(child => items.push({ id: child.key, ownerUid: uid, ...child.val() }));
         items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        allItems   = items.filter(p => p.mediaUrl);
-        photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video");
+        // "All Posts" shows every post, including text-only ones.
+        // Photo/Video tabs only show posts that actually have that media type.
+        allItems   = items;
+        photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
         reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
 
         renderGrid(allGrid, allItems, "all");
