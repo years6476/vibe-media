@@ -24,11 +24,55 @@
       align-items: center;
     }
 
+    /* ── Top bar ── */
+    .topbar {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 28px 0;
+    }
+
+    .help-pill,
+    .lang-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a1a;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 6px;
+      border-radius: 20px;
+      transition: background 0.15s ease;
+    }
+    .help-pill:hover,
+    .lang-pill:hover { background: #f5f5f5; }
+
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-circle svg { display: block; }
+
+    .lang-pill {
+      border: 1.5px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 5px 12px 5px 8px;
+    }
+    .lang-pill svg { flex-shrink: 0; }
+
     /* ── Wrapper ── */
     .wrapper {
       width: 100%;
       max-width: 420px;
-      padding: 44px 28px 0;
+      padding: 24px 28px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -103,9 +147,9 @@
     }
 
     .input-group input:focus {
-      border-color: #8A4FF7;
+      border-color: #1a1a1a;
       background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(138, 79, 247, 0.1);
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
     }
 
     .input-group input::placeholder {
@@ -139,7 +183,7 @@
       transition: color 0.2s;
       line-height: 0;
     }
-    .toggle-pw:hover { color: #8A4FF7; }
+    .toggle-pw:hover { color: #1a1a1a; }
     .toggle-pw svg   { display: block; }
 
     /* ── Forgot password ── */
@@ -151,12 +195,12 @@
 
     .forgot-link {
       font-size: 12.5px;
-      color: #8A4FF7;
-      font-weight: 500;
+      color: #1a1a1a;
+      font-weight: 600;
       text-decoration: none;
       transition: opacity 0.15s;
     }
-    .forgot-link:hover { opacity: 0.75; text-decoration: underline; }
+    .forgot-link:hover { opacity: 0.7; text-decoration: underline; }
 
     /* ── Error message ── */
     .error-msg {
@@ -174,10 +218,10 @@
     /* ── Login button ── */
     .login-btn {
       width: 100%;
-      padding: 10px;
-      background: linear-gradient(to right, #6C3EF4, #8A4FF7, #A65CF8);
+      padding: 11px;
+      background: #1a1a1a;
       border: none;
-      border-radius: 12px;
+      border-radius: 999px;
       color: #fff;
       font-size: 15px;
       font-weight: 600;
@@ -190,9 +234,9 @@
     }
 
     .login-btn:hover:not(:disabled) {
-      opacity: 0.91;
+      opacity: 0.88;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(108, 62, 244, 0.28);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
     }
 
     .login-btn:active:not(:disabled) {
@@ -200,7 +244,7 @@
     }
 
     .login-btn:disabled {
-      opacity: 0.65;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
@@ -225,46 +269,87 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    /* ── Sign up link ── */
-    .signup-text {
-      font-size: 13px;
+    /* ── Divider "or" ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .divider .line {
+      flex: 1;
+      height: 1px;
+      background: #e5e5e5;
+    }
+    .divider span {
+      font-size: 12.5px;
       color: #999;
-      text-align: center;
-      margin-top: 18px;
+      font-weight: 500;
     }
 
-    .signup-text a {
-      color: #8A4FF7;
+    /* ── Create account button ── */
+    .create-account-btn {
+      width: 100%;
+      padding: 10px;
+      background: #fff;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 999px;
+      color: #1a1a1a;
+      font-size: 14px;
       font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      text-align: center;
       text-decoration: none;
-      transition: opacity 0.15s;
-    }
-    .signup-text a:hover { opacity: 0.8; text-decoration: underline; }
-
-    /* ── Illustration — full width ── */
-    .illustration {
-      width: 100%;
-      margin-top: 80px;
-      line-height: 0;
-    }
-
-    .illustration img {
-      width: 100%;
-      height: auto;
       display: block;
-      user-select: none;
-      pointer-events: none;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .create-account-btn:hover {
+      background: #f7f7f7;
+      transform: translateY(-1px);
+    }
+    .create-account-btn:active {
+      transform: translateY(0);
     }
 
     /* ── Mobile ── */
     @media (max-width: 480px) {
-      .wrapper  { padding: 34px 20px 0; }
+      .wrapper  { padding: 18px 20px 0; }
+      .topbar   { padding: 16px 20px 0; }
       .welcome  { font-size: 20px; }
       .logo img { width: 165px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ══ Top bar ══ -->
+  <div class="topbar">
+    <button class="help-pill" type="button" aria-label="Help">
+      <span class="icon-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </span>
+      Help
+    </button>
+
+    <button class="lang-pill" type="button" aria-label="Change language">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+      English
+    </button>
+  </div>
 
   <!-- ══ Main wrapper ══ -->
   <div class="wrapper">
@@ -330,22 +415,18 @@
       <!-- Login button -->
       <button class="login-btn" id="loginBtn">Log In</button>
 
+      <!-- Divider -->
+      <div class="divider">
+        <span class="line"></span>
+        <span>or</span>
+        <span class="line"></span>
+      </div>
+
+      <!-- Create account -->
+      <a href="/signup" class="create-account-btn">Create new account</a>
+
     </div>
 
-    <!-- Sign up -->
-    <p class="signup-text">
-      Don't have an account? <a href="/signup">Sign up</a>
-    </p>
-
-  </div>
-
-  <!-- Illustration — full width -->
-  <div class="illustration">
-    <img
-      src="https://i.ibb.co.com/DyV9tDW/file-00000000dfb871faa658852ecbb02a4b-1-removebg-preview.png"
-      alt="Illustration"
-      draggable="false"
-    />
   </div>
 
 
@@ -406,15 +487,21 @@
       errorMsg.style.display = "none";
     }
 
+    // Generic messages for auth failures. We deliberately do NOT reveal
+    // whether the email exists, whether the password is wrong, or whether
+    // the account is disabled — returning distinct messages for each case
+    // lets an attacker enumerate valid emails on the platform (a real
+    // vulnerability in the original code). Only truly safe-to-disclose
+    // cases (bad email format, rate limiting, network) get a specific hint.
     function friendlyError(code) {
       const map = {
         "auth/invalid-email":          "Please enter a valid email address.",
-        "auth/user-not-found":         "No account found with this email.",
-        "auth/wrong-password":         "Incorrect password. Please try again.",
-        "auth/invalid-credential":     "Incorrect email or password.",
         "auth/too-many-requests":      "Too many attempts. Please try again later.",
         "auth/network-request-failed": "Network error. Check your connection.",
-        "auth/user-disabled":          "This account has been disabled."
+        "auth/user-not-found":         "Incorrect email or password.",
+        "auth/wrong-password":         "Incorrect email or password.",
+        "auth/invalid-credential":     "Incorrect email or password.",
+        "auth/user-disabled":          "Incorrect email or password."
       };
       return map[code] || "Login failed. Please try again.";
     }
