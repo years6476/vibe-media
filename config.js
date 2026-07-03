@@ -9,14 +9,14 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth
 import { getDatabase } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey:            "AIzaSyBEUcb78_Wu8ZaiW56zXqGV1KragAbS7hY",
-  authDomain:        "money-80347.firebaseapp.com",
-  databaseURL:       "https://money-80347-default-rtdb.firebaseio.com",
-  projectId:         "money-80347",
-  storageBucket:     "money-80347.firebasestorage.app",
-  messagingSenderId: "561223627841",
-  appId:             "1:561223627841:web:1fc026e7722786874782c0",
-  measurementId:     "G-0D18NMHEL2"
+  apiKey: "AIzaSyDGIVcJLieXaxYwOpLLt5A9CwttF0GQzAI",
+  authDomain: "vers-fe30a.firebaseapp.com",
+  databaseURL: "https://vers-fe30a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vers-fe30a",
+  storageBucket: "vers-fe30a.firebasestorage.app",
+  messagingSenderId: "56765833106",
+  appId: "1:56765833106:web:2b4bb51e904ba1d8262b4b",
+  measurementId: "G-DCB633V1MG"
 };
 
 const app = initializeApp(firebaseConfig);
