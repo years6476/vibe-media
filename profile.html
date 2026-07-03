@@ -1055,7 +1055,7 @@
       window.location.href = "/login";
     });
 
-    // ── Share Profile — always uses the current (username-based) URL ──
+    // ── Share Profile (URL already carries this profile's uid) ──
     shareBtn.addEventListener("click", async () => {
       const url = window.location.href;
       if (navigator.share) {
@@ -1069,26 +1069,16 @@
     });
 
     // Reads the slug from /profile/<slug> or ?uid=<uid> (legacy).
-    // Slug can be a username (e.g. sara_willson) or a Firebase uid.
     function getSlugFromUrl() {
       const pathMatch = window.location.pathname.match(/\/profile\/([^\/?#]+)/);
       if (pathMatch && pathMatch[1]) return decodeURIComponent(pathMatch[1]);
       return new URLSearchParams(window.location.search).get("uid") || null;
     }
 
-    // Looks up users node to find uid by username.
-    // Returns uid string if found, null otherwise.
+    // O(1) lookup via usernames/<username> index (written at signup).
     async function resolveUsernameToUid(username) {
-      const lower = username.toLowerCase();
-      const snap = await get(ref(db, "users"));
-      if (!snap.exists()) return null;
-      let found = null;
-      snap.forEach(child => {
-        const d = child.val();
-        const uname = (d.username || d.userName || "").toLowerCase().replace(/^@/, "");
-        if (uname === lower) { found = child.key; }
-      });
-      return found;
+      const snap = await get(ref(db, `usernames/${username.toLowerCase()}`));
+      return snap.exists() ? snap.val() : null;
     }
 
     // ── Auth check + resolve which profile to show ───────────
@@ -1097,45 +1087,34 @@
       currentUser = user;
 
       const slug = getSlugFromUrl();
+      const looksLikeUid = slug && /^[A-Za-z0-9_-]{20,}$/.test(slug);
 
       if (!slug) {
-        // No slug → own profile; set clean username URL if available
         profileUid   = user.uid;
         isOwnProfile = true;
-        const ownSnap = await get(ref(db, `users/${user.uid}`));
-        const ownData = ownSnap.val() || {};
-        const ownUsername = (ownData.username || ownData.userName || "").replace(/^@/, "");
-        const cleanSlug = ownUsername || user.uid;
-        history.replaceState({}, "", `/profile/${cleanSlug}`);
-      } else {
-        // Determine if slug is a uid (long, no spaces) or a username
-        // Firebase uids are 28 chars and contain only A-Za-z0-9_-
-        const looksLikeUid = /^[A-Za-z0-9_-]{20,}$/.test(slug);
-        if (looksLikeUid) {
-          // Treat as uid (legacy /profile/<uid> links still work)
-          profileUid = slug;
-        } else {
-          // Treat as username → lookup uid
-          const resolved = await resolveUsernameToUid(slug);
-          if (!resolved) {
-            // Username not found
-            document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Poppins,sans-serif;color:#aaa;font-size:15px;">User not found</div>`;
-            return;
-          }
-          profileUid = resolved;
-        }
-        isOwnProfile = profileUid === user.uid;
+        const ownSnap    = await get(ref(db, `users/${user.uid}`));
+        const ownUsername = (ownSnap.val()?.username || "").replace(/^@/, "");
+        history.replaceState({}, "", `/profile/${ownUsername || user.uid}`);
 
-        // If viewing own profile via uid slug, upgrade URL to username
-        if (isOwnProfile && looksLikeUid) {
-          const ownSnap = await get(ref(db, `users/${user.uid}`));
-          const ownData = ownSnap.val() || {};
-          const ownUsername = (ownData.username || ownData.userName || "").replace(/^@/, "");
+      } else if (looksLikeUid) {
+        profileUid   = slug;
+        isOwnProfile = slug === user.uid;
+        if (isOwnProfile) {
+          const ownSnap    = await get(ref(db, `users/${user.uid}`));
+          const ownUsername = (ownSnap.val()?.username || "").replace(/^@/, "");
           if (ownUsername) history.replaceState({}, "", `/profile/${ownUsername}`);
         }
+
+      } else {
+        const resolved = await resolveUsernameToUid(slug);
+        if (!resolved) {
+          document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Poppins,sans-serif;color:#aaa;font-size:15px;">User not found</div>`;
+          return;
+        }
+        profileUid   = resolved;
+        isOwnProfile = resolved === user.uid;
       }
 
-      // Only the profile owner can edit / add highlights / delete posts
       editProfileBtn.classList.toggle("hidden", !isOwnProfile);
       hlNewBtn.classList.toggle("hidden", !isOwnProfile);
       hlViewerMoreBtnVisibility();
