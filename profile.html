@@ -1021,19 +1021,19 @@
     const mediaViewerClose  = $("mediaViewerClose");
     const mediaViewerDeleteBtn = $("mediaViewerDeleteBtn");
 
-    let currentUser  = null; // the logged-in viewer
-    let profileUid   = null; // uid of the profile being displayed
+    let currentUser  = null;
+    let profileUid   = null;
     let isOwnProfile = false;
     let selectedFile = null;
     let currentHlId  = null;
 
-    let allItems   = [];  // every post (photos + videos) for this profile
-    let photoItems = [];  // posts with image media, for this profile
-    let reelItems  = [];  // posts with video media, for this profile
-    let savedItems = [];  // saved posts (viewer's own saved list)
+    let allItems   = [];
+    let photoItems = [];
+    let reelItems  = [];
+    let savedItems = [];
 
-    let activeMediaList = [];   // list currently open in the fullscreen viewer
-    let activeMediaSource = null; // "photos" | "reels" | "saved"
+    let activeMediaList   = [];
+    let activeMediaSource = null;
 
     // ── Back ────────────────────────────────────────────────
     backBtn.addEventListener("click", () => {
@@ -1055,7 +1055,8 @@
       window.location.href = "/login";
     });
 
-    // ── Share Profile (URL already carries this profile's uid) ──
+    // ── Share Profile ────────────────────────────────────────
+    // Share করার সময় সবসময় ?username=USERNAME format এ URL তৈরি হবে
     shareBtn.addEventListener("click", async () => {
       const url = window.location.href;
       if (navigator.share) {
@@ -1068,17 +1069,39 @@
       }
     });
 
-    // Reads the slug from /profile/<slug> or ?uid=<uid> (legacy).
-    function getSlugFromUrl() {
-      const pathMatch = window.location.pathname.match(/\/profile\/([^\/?#]+)/);
-      if (pathMatch && pathMatch[1]) return decodeURIComponent(pathMatch[1]);
-      return new URLSearchParams(window.location.search).get("uid") || null;
+    // ══════════════════════════════════════════════════════════
+    //  URL PARAMETER HANDLING
+    //  নতুন URL format: /profile?username=USERNAME
+    //  পুরনো format সরানো হয়েছে।
+    // ══════════════════════════════════════════════════════════
+
+    /**
+     * window.location.search থেকে 'username' অথবা 'uid' parameter পড়ে।
+     * username থাকলে সেটা return করে; uid থাকলে সেটা return করে; 
+     * কিছু না থাকলে null return করে।
+     */
+    function getParamFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const username = params.get("username");
+      const uid      = params.get("uid");
+      // username কে প্রাধান্য দেওয়া হচ্ছে; না থাকলে uid চেক করা হবে
+      return { username: username || null, uid: uid || null };
     }
 
-    // O(1) lookup via usernames/<username> index (written at signup).
+    /**
+     * Firebase-এ usernames/<username> index এ O(1) lookup করে UID বের করে।
+     */
     async function resolveUsernameToUid(username) {
       const snap = await get(ref(db, `usernames/${username.toLowerCase()}`));
       return snap.exists() ? snap.val() : null;
+    }
+
+    /**
+     * Profile URL তৈরি করে parameter format এ।
+     * সবসময় /profile?username=USERNAME ব্যবহার করবে।
+     */
+    function buildProfileUrl(username) {
+      return `/profile?username=${encodeURIComponent(username)}`;
     }
 
     // ── Auth check + resolve which profile to show ───────────
@@ -1086,27 +1109,45 @@
       if (!user) { window.location.href = "/login"; return; }
       currentUser = user;
 
-      const slug = getSlugFromUrl();
-      const looksLikeUid = slug && /^[A-Za-z0-9_-]{20,}$/.test(slug);
+      const { username: paramUsername, uid: paramUid } = getParamFromUrl();
 
-      if (!slug) {
+      if (!paramUsername && !paramUid) {
+        // কোনো parameter নেই → লগইন করা ইউজারের নিজের প্রোফাইল দেখাবে
         profileUid   = user.uid;
         isOwnProfile = true;
-        const ownSnap    = await get(ref(db, `users/${user.uid}`));
-        const ownUsername = (ownSnap.val()?.username || "").replace(/^@/, "");
-        history.replaceState({}, "", `/profile/${ownUsername || user.uid}`);
 
-      } else if (looksLikeUid) {
-        profileUid   = slug;
-        isOwnProfile = slug === user.uid;
+        // নিজের username বের করে URL update করা হবে
+        const ownSnap     = await get(ref(db, `users/${user.uid}`));
+        const ownUsername = (ownSnap.val()?.username || "").replace(/^@/, "");
+        if (ownUsername) {
+          // URL কে clean রাখা — history তে নতুন entry ছাড়াই replace করা হচ্ছে
+          history.replaceState({}, "", buildProfileUrl(ownUsername));
+        }
+
+      } else if (paramUid && !paramUsername) {
+        // শুধু uid parameter আছে → legacy support
+        profileUid   = paramUid;
+        isOwnProfile = paramUid === user.uid;
+
+        // uid কে username-based URL এ upgrade করা
         if (isOwnProfile) {
-          const ownSnap    = await get(ref(db, `users/${user.uid}`));
+          const ownSnap     = await get(ref(db, `users/${user.uid}`));
           const ownUsername = (ownSnap.val()?.username || "").replace(/^@/, "");
-          if (ownUsername) history.replaceState({}, "", `/profile/${ownUsername}`);
+          if (ownUsername) {
+            history.replaceState({}, "", buildProfileUrl(ownUsername));
+          }
+        } else {
+          // অন্যের profile: uid থেকে username বের করে URL upgrade করা
+          const theirSnap     = await get(ref(db, `users/${paramUid}`));
+          const theirUsername = (theirSnap.val()?.username || "").replace(/^@/, "");
+          if (theirUsername) {
+            history.replaceState({}, "", buildProfileUrl(theirUsername));
+          }
         }
 
       } else {
-        const resolved = await resolveUsernameToUid(slug);
+        // username parameter আছে → username থেকে uid resolve করা
+        const resolved = await resolveUsernameToUid(paramUsername);
         if (!resolved) {
           document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Poppins,sans-serif;color:#aaa;font-size:15px;">User not found</div>`;
           return;
@@ -1132,8 +1173,8 @@
 
     // ── Load profile ─────────────────────────────────────────
     function loadProfile(uid) {
-      onValue(ref(db, `users/${uid}`), (snap) => {
-        const d = snap.val() || {};
+      onValue(ref(db, `users/${uid}`), (d_snap) => {
+        const d = d_snap.val() || {};
         if (d.coverPhotoUrl) {
           coverPhoto.innerHTML = `<img src="${esc(d.coverPhotoUrl)}" alt="Cover">`;
         }
@@ -1154,8 +1195,6 @@
         if (addr) { addressText.textContent = addr; profileAddress.classList.remove("hidden"); }
         else profileAddress.classList.add("hidden");
 
-        // Joined date — prefer stored createdAt, fall back to auth metadata
-        // (auth metadata is only available for the viewer's own account)
         const createdAt = d.createdAt || (isOwnProfile && currentUser.metadata?.creationTime
           ? new Date(currentUser.metadata.creationTime).getTime()
           : null);
@@ -1166,7 +1205,6 @@
           profileJoined.classList.add("hidden");
         }
 
-        // Date of birth
         const dob = d.dateOfBirth || d.birthday || d.dob || "";
         if (dob) {
           const dobMs = typeof dob === "number" ? dob : new Date(dob).getTime();
@@ -1178,12 +1216,10 @@
           profileBirthday.classList.add("hidden");
         }
 
-        // Stats
         postsCount.textContent     = d.postsCount     || 0;
         friendsCount.textContent   = d.friendsCount   || 0;
         followersCount.textContent = d.followersCount || 0;
 
-        // সব data সেট হওয়ার পর একসাথে দেখাবে
         document.querySelector(".profile-info").classList.add("loaded");
       });
     }
@@ -1197,7 +1233,6 @@
     // ── Load highlights ───────────────────────────────────────
     function loadHighlights(uid) {
       onValue(ref(db, `users/${uid}/highlights`), (snap) => {
-        // Remove old items (keep #hlNewBtn)
         highlightsRow.querySelectorAll(".hl-existing").forEach(el => el.remove());
         if (!snap.exists()) return;
         const items = [];
@@ -1235,7 +1270,6 @@
       uploadModal.classList.remove("hidden");
     });
 
-    // Fix: click preview → trigger file input
     modalPreview.addEventListener("click", () => mediaInput.click());
 
     modalCancel.addEventListener("click", () => uploadModal.classList.add("hidden"));
@@ -1354,7 +1388,7 @@
     }
 
     // ══════════════════════════════════════
-    //  TABS: Photos / Reels / Saved
+    //  TABS: All / Photos / Reels / Saved
     // ══════════════════════════════════════
     function setActiveTab(name) {
       allTab.classList.toggle("active", name === "all");
@@ -1397,7 +1431,6 @@
         const cell = document.createElement("div");
         const isVideo = item.mediaType === "video";
         if (!item.mediaUrl) {
-          // Text-only post (only reachable from the "all" tab)
           cell.className = "grid-cell text-only";
           const preview = (item.caption || "").trim() || "(no text)";
           cell.innerHTML = `<p>${esc(preview)}</p>`;
@@ -1415,7 +1448,7 @@
       });
     }
 
-    // ── Fullscreen media viewer (side-scroll gallery) ──────────
+    // ── Fullscreen media viewer ───────────────────────────────
     function openMediaViewer(items, startIndex, source) {
       activeMediaList   = items;
       activeMediaSource = source;
@@ -1445,7 +1478,6 @@
     mediaViewerClose.addEventListener("click", () => {
       mediaViewer.classList.add("hidden");
       mediaViewerScroll.innerHTML = "";
-      // pause any playing media
     });
 
     mediaViewerDeleteBtn.addEventListener("click", async () => {
@@ -1467,15 +1499,13 @@
       }
     });
 
-    // ── Load posts for the displayed profile → split into photos/reels ──
+    // ── Load posts ────────────────────────────────────────────
     function loadPosts(uid) {
       onValue(ref(db, `posts/${uid}`), (snap) => {
         const items = [];
         snap.forEach(child => items.push({ id: child.key, ownerUid: uid, ...child.val() }));
         items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        // "All Posts" shows every post, including text-only ones.
-        // Photo/Video tabs only show posts that actually have that media type.
         allItems   = items;
         photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
         reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
@@ -1486,7 +1516,7 @@
       });
     }
 
-    // ── Load saved posts (only meaningful on your own profile) ──
+    // ── Load saved posts ──────────────────────────────────────
     function loadSavedPosts(viewerUid) {
       onValue(ref(db, `savedPosts/${viewerUid}`), async (snap) => {
         if (!snap.exists()) {
