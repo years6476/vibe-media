@@ -2,12 +2,10 @@
 //  config.js — Insight Social Media
 //  সব পেইজে এই ফাইলটা <script> দিয়ে লোড করতে হবে
 // ============================================================
-
 // ─── Firebase ───────────────────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyDGIVcJLieXaxYwOpLLt5A9CwttF0GQzAI",
   authDomain: "vers-fe30a.firebaseapp.com",
@@ -18,21 +16,15 @@ const firebaseConfig = {
   appId: "1:56765833106:web:2b4bb51e904ba1d8262b4b",
   measurementId: "G-DCB633V1MG"
 };
-
-const app = initializeApp(firebaseConfig);
-
+export const app  = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db   = getDatabase(app);
-
-
 // ─── Cloudinary ─────────────────────────────────────────────
 export const CLOUDINARY = {
   cloudName:    "dcjn736ic",
   uploadPreset: "insight_upload",
   uploadURL:    "https://api.cloudinary.com/v1_1/dcjn736ic/auto/upload"
 };
-
-
 // ─── Cloudinary আপলোড হেল্পার ───────────────────────────────
 /**
  * যেকোনো ফাইল Cloudinary-তে আপলোড করে public URL রিটার্ন করে।
@@ -51,11 +43,9 @@ export async function uploadToCloudinary(file, folder = "general", onProgress = 
   formData.append("file",          file);
   formData.append("upload_preset", CLOUDINARY.uploadPreset);
   formData.append("folder",        `insight/${folder}`);
-
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", CLOUDINARY.uploadURL);
-
     if (onProgress) {
       xhr.upload.addEventListener("progress", (e) => {
         if (e.lengthComputable) {
@@ -63,7 +53,6 @@ export async function uploadToCloudinary(file, folder = "general", onProgress = 
         }
       });
     }
-
     xhr.onload = () => {
       if (xhr.status === 200) {
         const res = JSON.parse(xhr.responseText);
@@ -76,7 +65,6 @@ export async function uploadToCloudinary(file, folder = "general", onProgress = 
         reject(new Error(`Cloudinary upload failed: ${xhr.statusText}`));
       }
     };
-
     xhr.onerror = () => reject(new Error("Network error during upload"));
     xhr.send(formData);
   });
