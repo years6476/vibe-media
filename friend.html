@@ -892,8 +892,6 @@
 
           <div class="suggestion-grid" id="homeSuggestionGrid">
 
-            <!-- Firebase থেকে লোড হবে -->
-
             <div class="skeleton-card"><div class="skeleton-circle"></div><div class="skeleton-text w70"></div><div class="skeleton-text w50"></div><div class="skeleton-smbtn"></div></div>
 
             <div class="skeleton-card"><div class="skeleton-circle"></div><div class="skeleton-text w70"></div><div class="skeleton-text w50"></div><div class="skeleton-smbtn"></div></div>
@@ -916,8 +914,6 @@
 
         <div id="allFriendsList">
 
-          <!-- Skeleton -->
-
           <div class="skeleton-row"><div class="skeleton-avatar"></div><div class="skeleton-info"><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div><div class="skeleton-btn"></div></div>
 
           <div class="skeleton-row"><div class="skeleton-avatar"></div><div class="skeleton-info"><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div><div class="skeleton-btn"></div></div>
@@ -931,8 +927,6 @@
       </div>
 
     </div>
-
-    <!-- ===== End All Friend Tab Panel ===== -->
 
 
 
@@ -958,8 +952,6 @@
 
     </div>
 
-    <!-- ===== End Requests Tab Panel ===== -->
-
 
 
     <!-- ===== Suggestions Tab Panel ===== -->
@@ -984,8 +976,6 @@
 
     </div>
 
-    <!-- ===== End Suggestions Tab Panel ===== -->
-
 
 
     <!-- ===== Blocked Tab Panel ===== -->
@@ -1007,8 +997,6 @@
       </div>
 
     </div>
-
-    <!-- ===== End Blocked Tab Panel ===== -->
 
 
 
@@ -1252,7 +1240,7 @@
 import { auth, db } from "./config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import {
-  ref, get, set, remove, serverTimestamp
+  ref, get, set, remove
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
 // ─── Toast ───────────────────────────────────────────────────
@@ -1318,23 +1306,15 @@ function relTime(ts) {
   return `${Math.floor(d / 7)} সপ্তাহ আগে`;
 }
 
-// ─── Fetch profile — signup schema aware ─────────────────────
+// ─── Fetch profile ─────────────────────────────────────────────
 async function fetchProfile(uid) {
   const snap = await get(ref(db, `users/${uid}`));
   if (!snap.exists()) return null;
   const d = snap.val();
-  // profilePhotoUrl = signup schema field
   const photo = d.profilePhotoUrl || d.photoURL || d.avatar || d.photo || '';
-  // name fallback chain: displayName → name → firstName+lastName → username
   const nameParts = [d.firstName, d.lastName].filter(Boolean).join(' ');
   const resolvedName = d.displayName || d.name || nameParts || d.username || 'Unknown';
   return { uid, ...d, _photo: photo, _name: resolvedName };
-}
-
-// ─── Profile URL helper ───────────────────────────────────────
-function profileUrl(p) {
-  if (p.username) return `/profile?username=${encodeURIComponent(p.username.replace(/^@/, ''))}`;
-  return `/profile?uid=${p.uid}`;
 }
 
 // ─── Auth gate ────────────────────────────────────────────────
@@ -1352,7 +1332,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ─────────────────────────────────────────────────────────────
-// 1. FRIENDS
+// 1. FRIENDS  —  friends/{currentUid}/{friendUid}: {addedAt}
 // ─────────────────────────────────────────────────────────────
 async function loadFriends() {
   const snap = await get(ref(db, `friends/${currentUid}`));
@@ -1383,7 +1363,6 @@ async function loadFriends() {
       interactions: p.interactions || 0,
       mutual:       p.mutual || 0,
       lastSeen:     p.lastSeen || 0,
-      _rawProfile:  p
     });
   });
 
@@ -1424,7 +1403,6 @@ function renderFriends(list) {
         <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>
       </button>`;
 
-    // Avatar + name → profile
     const goProfile = () => {
       window.location.href = f.username
         ? `/profile?username=${encodeURIComponent(f.username.replace(/^@/, ''))}`
@@ -1433,12 +1411,10 @@ function renderFriends(list) {
     row.querySelector('.friend-avatar').addEventListener('click', goProfile);
     row.querySelector('.friend-info').addEventListener('click', goProfile);
 
-    // Message button
     row.querySelector('.btn-message').addEventListener('click', () => {
       window.location.href = `/messages?uid=${f.uid}`;
     });
 
-    // More menu
     row.querySelector('.btn-more').addEventListener('click', (e) => {
       e.stopPropagation();
       currentMoreRow = row;
@@ -1451,7 +1427,7 @@ function renderFriends(list) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 2. REQUESTS
+// 2. REQUESTS  —  friendRequests/{currentUid}/{fromUid}: {fromUid, status, timestamp}
 // ─────────────────────────────────────────────────────────────
 async function loadRequests() {
   const snap = await get(ref(db, `friendRequests/${currentUid}`));
@@ -1463,7 +1439,16 @@ async function loadRequests() {
     return;
   }
 
-  const entries  = Object.entries(snap.val());
+  // শুধু pending requests দেখাবো
+  const allEntries = Object.entries(snap.val());
+  const entries = allEntries.filter(([, meta]) => (meta.status || 'pending') === 'pending');
+
+  if (entries.length === 0) {
+    noRequestResults.style.display = '';
+    requestCountEl.textContent = '0';
+    return;
+  }
+
   const profiles = await Promise.all(entries.map(([uid]) => fetchProfile(uid)));
   let count = 0;
 
@@ -1473,7 +1458,7 @@ async function loadRequests() {
 
     const name   = p._name;
     const avatar = avatarFor(name, p._photo);
-    const when   = relTime(meta.sentAt);
+    const when   = relTime(meta.timestamp || meta.sentAt || 0);
 
     const row = document.createElement('div');
     row.className        = 'friend-row';
@@ -1490,7 +1475,6 @@ async function loadRequests() {
       <button class="btn-accept-request">Accept</button>
       <button class="btn-remove-request">Remove</button>`;
 
-    // Avatar + name → profile
     const goReqProfile = () => window.location.href = p.username
       ? `/profile?username=${encodeURIComponent(p.username)}`
       : `/profile?uid=${senderUid}`;
@@ -1502,8 +1486,8 @@ async function loadRequests() {
     });
 
     row.querySelector('.btn-remove-request').addEventListener('click', async () => {
+      // friendRequests/{currentUid}/{senderUid} মুছো
       await remove(ref(db, `friendRequests/${currentUid}/${senderUid}`));
-      await remove(ref(db, `sentFriendRequests/${senderUid}/${currentUid}`));
       row.remove();
       updateRequestCount();
       showToast('রিকোয়েস্ট বাতিল করা হয়েছে');
@@ -1518,17 +1502,19 @@ async function loadRequests() {
 }
 
 async function acceptRequest(senderUid, name, avatar, row) {
-  await set(ref(db, `friends/${currentUid}/${senderUid}`), { addedAt: Date.now() });
-  await set(ref(db, `friends/${senderUid}/${currentUid}`), { addedAt: Date.now() });
+  const now = Date.now();
+  // friends দুই দিকে set করো
+  await set(ref(db, `friends/${currentUid}/${senderUid}`), { addedAt: now });
+  await set(ref(db, `friends/${senderUid}/${currentUid}`), { addedAt: now });
+  // request মুছো (যেটা currentUid-এর inbox-এ ছিল)
   await remove(ref(db, `friendRequests/${currentUid}/${senderUid}`));
-  await remove(ref(db, `sentFriendRequests/${senderUid}/${currentUid}`));
 
   row.remove();
   updateRequestCount();
 
   const newFriend = {
     uid: senderUid, name, username: '', avatar,
-    online: false, active: true, addedAt: Date.now(),
+    online: false, active: true, addedAt: now,
     interactions: 0, mutual: 0, lastSeen: 0
   };
   friendsData.unshift(newFriend);
@@ -1544,7 +1530,7 @@ function updateRequestCount() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 3. BLOCKED
+// 3. BLOCKED  —  blockedUsers/{currentUid}/{blockedUid}: {blockedAt}
 // ─────────────────────────────────────────────────────────────
 async function loadBlocked() {
   const snap = await get(ref(db, `blockedUsers/${currentUid}`));
@@ -1566,7 +1552,7 @@ async function loadBlocked() {
 
     const name   = p._name;
     const avatar = avatarFor(name, p._photo);
-    const when   = relTime(meta.blockedAt);
+    const when   = relTime(meta.blockedAt || 0);
 
     const row = document.createElement('div');
     row.className    = 'friend-row';
@@ -1600,21 +1586,38 @@ async function loadBlocked() {
 
 // ─────────────────────────────────────────────────────────────
 // 4. SUGGESTIONS
+//    Exclude: বর্তমান বন্ধু, ব্লকড, আমি যাদের request পাঠিয়েছি,
+//             যারা আমাকে request পাঠিয়েছে (pending)
 // ─────────────────────────────────────────────────────────────
 async function loadSuggestions() {
-  const [friendsSnap, blockedSnap, requestsSnap, allUsersSnap] = await Promise.all([
+  const [friendsSnap, blockedSnap, sentReqSnap, recvReqSnap, allUsersSnap] = await Promise.all([
     get(ref(db, `friends/${currentUid}`)),
     get(ref(db, `blockedUsers/${currentUid}`)),
-    get(ref(db, `sentFriendRequests/${currentUid}`)),
+    // আমি কাকে request পাঠিয়েছি — সরাসরি friendRequests-এ আমার uid দিয়ে খোঁজা যাবে না
+    // কারণ rules: friendRequests/{toUid}/{fromUid} — শুধু toUid পড়তে পারে।
+    // তার বদলে সব users-এর মধ্যে friendRequests/{uid}/{currentUid} চেক করবো না (too expensive).
+    // সহজ পথ: friends আর blocked exclude করাই যথেষ্ট।
+    get(ref(db, `friendRequests/${currentUid}`)), // আমার inbox (received)
+    Promise.resolve(null), // placeholder
     get(ref(db, 'users'))
   ]);
 
-  const excluded = new Set([
-    ...(friendsSnap.exists()  ? Object.keys(friendsSnap.val())  : []),
-    ...(blockedSnap.exists()  ? Object.keys(blockedSnap.val())  : []),
-    ...(requestsSnap.exists() ? Object.keys(requestsSnap.val()) : []),
-    currentUid
-  ]);
+  const excluded = new Set([currentUid]);
+
+  // বন্ধু exclude
+  if (friendsSnap.exists()) {
+    Object.keys(friendsSnap.val()).forEach(uid => excluded.add(uid));
+  }
+  // ব্লকড exclude
+  if (blockedSnap.exists()) {
+    Object.keys(blockedSnap.val()).forEach(uid => excluded.add(uid));
+  }
+  // যারা আমাকে pending request পাঠিয়েছে তাদেরও suggestion থেকে বাদ দাও
+  if (sentReqSnap.exists()) {
+    Object.entries(sentReqSnap.val()).forEach(([uid, meta]) => {
+      if ((meta.status || 'pending') === 'pending') excluded.add(uid);
+    });
+  }
 
   let suggestions = [];
   if (allUsersSnap.exists()) {
@@ -1660,7 +1663,6 @@ function renderSuggestions(list, container, isCarousel) {
       <button class="btn-add-friend">Add Friend</button>
       <button class="btn-remove">Remove</button>`;
 
-    // Avatar + name → profile
     const goSugProfile = () => window.location.href = p.username
       ? `/profile?username=${encodeURIComponent(p.username)}`
       : `/profile?uid=${p.uid}`;
@@ -1671,12 +1673,25 @@ function renderSuggestions(list, container, isCarousel) {
     addBtn.addEventListener('click', async () => {
       if (sentRequests.has(p.uid)) return;
       sentRequests.add(p.uid);
-      const now = Date.now();
-      await set(ref(db, `friendRequests/${p.uid}/${currentUid}`), { sentAt: now });
-      await set(ref(db, `sentFriendRequests/${currentUid}/${p.uid}`), { sentAt: now });
-      addBtn.textContent = 'Request Sent';
+      addBtn.textContent = '...';
       addBtn.disabled = true;
-      showToast(`${name}-কে ফ্রেন্ড রিকোয়েস্ট পাঠানো হয়েছে`);
+      const now = Date.now();
+      try {
+        // friendRequests/{p.uid}/{currentUid} — rules: fromUid, status, timestamp চাই
+        await set(ref(db, `friendRequests/${p.uid}/${currentUid}`), {
+          fromUid:   currentUid,
+          status:    'pending',
+          timestamp: now
+        });
+        addBtn.textContent = 'Request Sent';
+        showToast(`${name}-কে ফ্রেন্ড রিকোয়েস্ট পাঠানো হয়েছে`);
+      } catch (err) {
+        console.error('Send request error:', err);
+        sentRequests.delete(p.uid);
+        addBtn.textContent = 'Add Friend';
+        addBtn.disabled = false;
+        showToast('ব্যর্থ হয়েছে, আবার চেষ্টা করুন');
+      }
     });
 
     card.querySelector('.btn-remove').addEventListener('click', () => {
@@ -1712,6 +1727,7 @@ document.getElementById('blockMenuItem').addEventListener('click', async () => {
   const uid  = currentMoreRow.dataset.uid;
   const name = currentMoreRow.querySelector('.friend-name').textContent;
 
+  // friends দুই দিক থেকে মুছো, blockedUsers-এ add করো
   await remove(ref(db, `friends/${currentUid}/${uid}`));
   await remove(ref(db, `friends/${uid}/${currentUid}`));
   await set(ref(db, `blockedUsers/${currentUid}/${uid}`), { blockedAt: Date.now() });
@@ -1733,8 +1749,6 @@ document.getElementById('unfriendMenuItem').addEventListener('click', async () =
 
   await remove(ref(db, `friends/${currentUid}/${uid}`));
   await remove(ref(db, `friends/${uid}/${currentUid}`));
-  await remove(ref(db, `sentFriendRequests/${currentUid}/${uid}`));
-  await remove(ref(db, `sentFriendRequests/${uid}/${currentUid}`));
 
   currentMoreRow.remove();
   friendsData = friendsData.filter(f => f.uid !== uid);
