@@ -2,7 +2,6 @@
 #  _redirects — Insight Social Media
 #  Cloudflare Pages clean URL redirects (.html বাদ দেয়)
 # ============================================================
-
 /index.html          /                301
 /login.html          /login           301
 /signup.html         /signup          301
@@ -14,4 +13,6 @@
 /notifications.html  /notifications   301
 /settings.html       /settings        301
 /messages.html       /messages        301
-/friend.html				/friend						301
+/friend.html         /friend          301
+
+/profile/*           /profile.html    200
