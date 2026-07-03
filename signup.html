@@ -1,996 +1,729 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up — Insight</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up · Insight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #10162B;
+    --paper: #F7F7F5;
+    --card: #FFFFFF;
+    --accent: #E8A33D;
+    --accent-soft: #FCEFD9;
+    --line: #E4E4E1;
+    --muted: #6E7280;
+    --danger: #D14343;
+    --danger-soft: #FBEAEA;
+    --success: #2E9B5D;
+    --success-soft: #EAF6EE;
+    --radius-field: 12px;
+    --radius-pill: 999px;
+    --font-display: 'Space Grotesk', 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+    --font-body: 'Inter', 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  }
 
-  <style>
-    :root {
-      --primary:    #8A4FF7;
-      --primary-2:  #6D3DF5;
-      --primary-3:  #A85CF6;
-      --bg:         #ffffff;
-      --surface:    #f7f7f7;
-      --border:     #ebebeb;
-      --text:       #1a1a1a;
-      --text-2:     #555;
-      --text-muted: #aaa;
-      --error:      #e63950;
-      --success:    #22c55e;
-      --pad:        20px;
-    }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  /* ---------- পেছনের অ্যাটমোস্ফিয়ার (সিগনেচার রিং মোটিফ) ---------- */
+  .atmosphere {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .atmosphere-ring {
+    position: absolute;
+    top: -180px;
+    left: -180px;
+    width: 620px;
+    height: 620px;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    fill: none;
+    opacity: 0.055;
+    animation: slow-spin 150s linear infinite reverse;
+  }
+  .atmosphere-ring .tick { stroke: var(--ink); }
+  .atmosphere-ring .core { stroke: var(--accent); opacity: 1; }
+  @keyframes slow-spin { to { transform: rotate(360deg); } }
+  @media (max-width: 640px) {
+    .atmosphere-ring { width: 420px; height: 420px; top: -120px; left: -120px; }
+  }
 
-    html, body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+  /* ---------- টপবার ---------- */
+  .topbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+  }
+  .help-link, .lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    padding: 8px 10px;
+    border-radius: var(--radius-pill);
+    transition: background-color .15s ease;
+  }
+  .help-link:hover, .lang-pill:hover { background: rgba(16,22,43,0.05); }
+  .lang-pill { border: 1.5px solid var(--line); padding: 8px 16px 8px 12px; }
+  .icon-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
 
-    .page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 36px var(--pad) 48px;
-    }
+  /* ---------- মূল লেআউট ---------- */
+  .auth-shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    padding-top: 8px;
+    padding-bottom: 40px;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: var(--card);
+    border-radius: 28px;
+    padding: 40px 36px;
+    box-shadow: 0 1px 2px rgba(16,22,43,0.04), 0 24px 48px -24px rgba(16,22,43,0.18);
+    animation: rise-in .5s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    /* ── Logo ── */
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .logo span {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    letter-spacing: -0.01em;
+  }
 
-    .logo-img {
-      height: 44px;
-      width: auto;
-      object-fit: contain;
-    }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 27px;
+    letter-spacing: -0.01em;
+    text-align: center;
+    margin: 0 0 6px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14.5px;
+    margin: 0 0 28px;
+  }
 
-    /* ── Header text ── */
-    .header-block {
-      text-align: center;
-      margin-bottom: 26px;
-    }
+  .banner {
+    font-size: 13.5px;
+    padding: 11px 14px;
+    border-radius: var(--radius-field);
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+  .banner-error { background: var(--danger-soft); color: var(--danger); }
+  .banner-success { background: var(--success-soft); color: var(--success); }
 
-    .header-block h1 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 5px;
-    }
+  form { display: flex; flex-direction: column; gap: 16px; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; min-width: 0; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .optional-tag {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  input, select {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-field);
+    font: 500 15px/1.4 var(--font-body);
+    color: var(--ink);
+    background: #FFF;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236E7280' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+  select:invalid { color: #ADB0B8; }
+  input::placeholder { color: #ADB0B8; font-weight: 400; }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(232,163,61,0.16);
+  }
+  .field-error {
+    font-size: 12.5px;
+    color: var(--danger);
+    min-height: 1px;
+  }
+  .field-status {
+    font-size: 12.5px;
+    min-height: 1px;
+  }
+  .field-status.is-checking { color: var(--muted); }
+  .field-status.is-available { color: var(--success); }
+  .field-status.is-taken { color: var(--danger); }
 
-    .header-block p {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--text-muted);
-    }
+  .input-with-action { position: relative; display: flex; align-items: center; }
+  .input-with-action input { padding-right: 46px; }
+  .toggle-visibility {
+    position: absolute;
+    right: 6px;
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 50%;
+  }
+  .toggle-visibility:hover { background: rgba(16,22,43,0.06); }
+  .toggle-visibility .eye-off { display: none; }
+  .toggle-visibility.is-visible .eye-on { display: none; }
+  .toggle-visibility.is-visible .eye-off { display: block; }
 
-    /* ── Form ── */
-    .form {
-      width: 100%;
-      max-width: 390px;
-      display: flex;
-      flex-direction: column;
-      gap: 13px;
-    }
+  .btn-primary {
+    height: 52px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--ink);
+    color: #FFF;
+    border: none;
+    transition: transform .12s ease, opacity .15s ease;
+    margin-top: 4px;
+  }
+  .btn-primary:hover:not(:disabled) { opacity: .92; }
+  .btn-primary:active:not(:disabled) { transform: scale(.98); }
+  .btn-primary:disabled { opacity: .65; cursor: default; }
 
-    /* Name row */
-    .name-row {
-      display: flex;
-      gap: 9px;
-    }
-    .name-row .field { flex: 1; }
+  .spinner {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #FFF;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Field */
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+  .footer-line {
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 22px;
+  }
+  .footer-line a {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .footer-line a:hover { text-decoration: underline; }
 
-    .field label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-2);
-      padding-left: 2px;
-    }
+  :is(button, a, input, select):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
+  @media (max-width: 480px) {
+    .auth-card { padding: 32px 22px; border-radius: 22px; }
+    .topbar { padding: 16px 16px; }
+    .field-row { flex-direction: column; gap: 16px; }
+  }
 
-    .input-wrap input,
-    .input-wrap select {
-      width: 100%;
-      height: 56px;
-      padding: 0 18px;
-      border: none;
-      border-radius: 999px;
-      font-size: 15px;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400;
-      color: var(--text);
-      background: #efefef;
-      outline: none;
-      cursor: text;
-      transition: background .18s, box-shadow .18s;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    .input-wrap input::placeholder { color: var(--text-muted); }
-
-    .input-wrap input:focus,
-    .input-wrap select:focus {
-      background: #e8e8e8;
-      box-shadow: none;
-      caret-color: var(--primary);
-    }
-
-    /* username prefix */
-    .input-wrap.has-prefix input {
-      padding-left: 32px;
-    }
-    .input-prefix {
-      position: absolute;
-      left: 16px;
-      font-size: 14px;
-      color: var(--text-muted);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    /* status icon inside username input */
-    .input-status {
-      position: absolute;
-      right: 12px;
-      display: flex;
-      align-items: center;
-    }
-
-    /* password toggle */
-    .pw-toggle {
-      position: absolute;
-      right: 12px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* field error/success states */
-    .field.error .input-wrap input,
-    .field.error .input-wrap select {
-      background: #fdecea;
-      box-shadow: inset 0 0 0 1.5px rgba(230,57,80,.35);
-    }
-    .field.ok .input-wrap input {
-      background: #edfaf3;
-      box-shadow: inset 0 0 0 1.5px rgba(34,197,94,.35);
-    }
-
-    .field-msg {
-      font-size: 11px;
-      font-weight: 500;
-      padding-left: 2px;
-      min-height: 16px;
-      transition: color .15s;
-    }
-    .field.error .field-msg { color: var(--error); }
-    .field.ok    .field-msg { color: var(--success); }
-    .field.checking .field-msg { color: var(--text-muted); }
-
-    /* ── Date of Birth (3-box) ── */
-    .dob-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .dob-wrap > label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-2);
-      padding-left: 2px;
-    }
-    .dob-boxes {
-      display: flex;
-      gap: 9px;
-    }
-    .dob-box {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .dob-box select {
-      width: 100%;
-      height: 56px;
-      padding: 0 14px;
-      border: none;
-      border-radius: 999px;
-      font-size: 15px;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400;
-      color: var(--text);
-      background: #efefef;
-      outline: none;
-      cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
-      text-align: center;
-    }
-    .dob-box select:focus {
-      background: #e8e8e8;
-    }
-    .dob-box select.placeholder-selected {
-      color: var(--text-muted);
-    }
-
-    /* ── Gender selector ── */
-    .gender-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-2);
-      padding-left: 2px;
-      margin-bottom: 5px;
-    }
-
-    .gender-options {
-      display: flex;
-      gap: 9px;
-    }
-
-    .gender-opt {
-      flex: 1;
-      position: relative;
-    }
-
-    .gender-opt input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-      width: 0; height: 0;
-    }
-
-    .gender-opt label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      height: 56px;
-      border: none;
-      border-radius: 999px;
-      background: transparent;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-2);
-      cursor: pointer;
-      transition: color .18s, font-weight .1s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .gender-opt input[type="radio"]:checked + label {
-      background: transparent;
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    /* circle indicator — only border, bold when selected */
-    .gender-circle {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      border: 2.5px solid #bbb;
-      flex-shrink: 0;
-      transition: border-color .15s, border-width .15s;
-    }
-    .gender-opt input[type="radio"]:checked + label .gender-circle {
-      border-color: var(--text);
-      border-width: 4px;
-    }
-
-    /* ── Divider ── */
-    .section-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 4px 0;
-    }
-
-    /* ── Signup Button ── */
-    .btn-signup {
-      width: 100%;
-      height: 52px;
-      border: none;
-      border-radius: 999px;
-      background: #1a1a1a;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      cursor: pointer;
-      margin-top: 6px;
-      position: relative;
-      transition: opacity .2s, transform .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-signup:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
-    .btn-signup:active:not(:disabled) { transform: translateY(0); }
-    .btn-signup:disabled { opacity: .85; cursor: not-allowed; }
-    .btn-signup.loading { color: transparent; }
-    .btn-signup.loading::after {
-      content: '';
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      width: 20px; height: 20px;
-      border: 2.5px solid rgba(255,255,255,.35);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
-
-    /* ── Login link ── */
-    .login-link {
-      margin-top: 20px;
-      font-size: 13px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-    .login-link a {
-      color: #1a1a1a;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    /* ── Global error toast ── */
-    .toast {
-      position: fixed;
-      bottom: 28px; left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #1a1a1a;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 11px 20px;
-      border-radius: 12px;
-      white-space: nowrap;
-      z-index: 999;
-      transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .25s;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-  </style>
+  @media (prefers-reduced-motion: reduce) {
+    .atmosphere-ring { animation: none; }
+    .auth-card { animation: none; }
+    * { transition-duration: 0.01ms !important; }
+  }
+</style>
 </head>
 <body>
 
-  <div class="page">
-
-    <!-- Logo -->
-    <div class="logo-wrap">
-      <img src="https://i.ibb.co.com/RTYKxMLK/1782826893005-1-removebg-preview.png"
-           alt="Insight" class="logo-img" />
-    </div>
-
-    <!-- Header -->
-    <div class="header-block">
-      <h1>Create your account</h1>
-      <p>Join and start your journey</p>
-    </div>
-
-    <!-- Form -->
-    <div class="form" id="signupForm">
-
-      <!-- Name row -->
-      <div class="name-row">
-        <div class="field" id="fieldFirstName">
-          <label for="firstName">First name</label>
-          <div class="input-wrap">
-            <input type="text" id="firstName" placeholder="First" autocomplete="given-name" />
-          </div>
-          <span class="field-msg" id="msgFirstName"></span>
-        </div>
-
-        <div class="field" id="fieldLastName">
-          <label for="lastName">Last name</label>
-          <div class="input-wrap">
-            <input type="text" id="lastName" placeholder="Last" autocomplete="family-name" />
-          </div>
-          <span class="field-msg" id="msgLastName"></span>
-        </div>
-      </div>
-
-      <!-- Middle name (optional) -->
-      <div class="field">
-        <label for="middleName">Middle name <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
-        <div class="input-wrap">
-          <input type="text" id="middleName" placeholder="Middle" autocomplete="additional-name" />
-        </div>
-      </div>
-
-      <!-- Username -->
-      <div class="field" id="fieldUsername">
-        <label for="username">Username</label>
-        <div class="input-wrap has-prefix">
-          <span class="input-prefix">@</span>
-          <input type="text" id="username" placeholder="your_username"
-                 autocomplete="username" autocapitalize="none" spellcheck="false" />
-          <span class="input-status" id="usernameStatus"></span>
-        </div>
-        <span class="field-msg" id="msgUsername"></span>
-      </div>
-
-      <!-- Email -->
-      <div class="field" id="fieldEmail">
-        <label for="email">Email</label>
-        <div class="input-wrap">
-          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
-        </div>
-        <span class="field-msg" id="msgEmail"></span>
-      </div>
-
-      <div class="section-divider"></div>
-
-      <!-- Date of Birth -->
-      <div class="dob-wrap" id="fieldDob">
-        <label>Date of birth</label>
-        <div class="dob-boxes">
-          <div class="dob-box">
-            <select id="dobDay" class="placeholder-selected">
-              <option value="" disabled selected>DD</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-              <option value="24">24</option>
-              <option value="25">25</option>
-              <option value="26">26</option>
-              <option value="27">27</option>
-              <option value="28">28</option>
-              <option value="29">29</option>
-              <option value="30">30</option>
-              <option value="31">31</option>
-            </select>
-          </div>
-          <div class="dob-box">
-            <select id="dobMonth" class="placeholder-selected">
-              <option value="" disabled selected>MM</option>
-              <option value="1">January</option>
-              <option value="2">February</option>
-              <option value="3">March</option>
-              <option value="4">April</option>
-              <option value="5">May</option>
-              <option value="6">June</option>
-              <option value="7">July</option>
-              <option value="8">August</option>
-              <option value="9">September</option>
-              <option value="10">October</option>
-              <option value="11">November</option>
-              <option value="12">December</option>
-            </select>
-          </div>
-          <div class="dob-box">
-            <select id="dobYear" class="placeholder-selected">
-              <option value="" disabled selected>YYYY</option>
-              <option value="2010">2010</option>
-              <option value="2009">2009</option>
-              <option value="2008">2008</option>
-              <option value="2007">2007</option>
-              <option value="2006">2006</option>
-              <option value="2005">2005</option>
-              <option value="2004">2004</option>
-              <option value="2003">2003</option>
-              <option value="2002">2002</option>
-              <option value="2001">2001</option>
-              <option value="2000">2000</option>
-              <option value="1999">1999</option>
-              <option value="1998">1998</option>
-              <option value="1997">1997</option>
-              <option value="1996">1996</option>
-              <option value="1995">1995</option>
-              <option value="1994">1994</option>
-              <option value="1993">1993</option>
-              <option value="1992">1992</option>
-              <option value="1991">1991</option>
-              <option value="1990">1990</option>
-              <option value="1989">1989</option>
-              <option value="1988">1988</option>
-              <option value="1987">1987</option>
-              <option value="1986">1986</option>
-              <option value="1985">1985</option>
-              <option value="1984">1984</option>
-              <option value="1983">1983</option>
-              <option value="1982">1982</option>
-              <option value="1981">1981</option>
-              <option value="1980">1980</option>
-              <option value="1979">1979</option>
-              <option value="1978">1978</option>
-              <option value="1977">1977</option>
-              <option value="1976">1976</option>
-              <option value="1975">1975</option>
-              <option value="1974">1974</option>
-              <option value="1973">1973</option>
-              <option value="1972">1972</option>
-              <option value="1971">1971</option>
-              <option value="1970">1970</option>
-              <option value="1969">1969</option>
-              <option value="1968">1968</option>
-              <option value="1967">1967</option>
-              <option value="1966">1966</option>
-              <option value="1965">1965</option>
-              <option value="1964">1964</option>
-              <option value="1963">1963</option>
-              <option value="1962">1962</option>
-              <option value="1961">1961</option>
-              <option value="1960">1960</option>
-              <option value="1959">1959</option>
-              <option value="1958">1958</option>
-              <option value="1957">1957</option>
-              <option value="1956">1956</option>
-              <option value="1955">1955</option>
-              <option value="1954">1954</option>
-              <option value="1953">1953</option>
-              <option value="1952">1952</option>
-              <option value="1951">1951</option>
-              <option value="1950">1950</option>
-              <option value="1949">1949</option>
-              <option value="1948">1948</option>
-              <option value="1947">1947</option>
-              <option value="1946">1946</option>
-              <option value="1945">1945</option>
-              <option value="1944">1944</option>
-              <option value="1943">1943</option>
-              <option value="1942">1942</option>
-              <option value="1941">1941</option>
-              <option value="1940">1940</option>
-              <option value="1939">1939</option>
-              <option value="1938">1938</option>
-              <option value="1937">1937</option>
-              <option value="1936">1936</option>
-              <option value="1935">1935</option>
-              <option value="1934">1934</option>
-              <option value="1933">1933</option>
-              <option value="1932">1932</option>
-              <option value="1931">1931</option>
-              <option value="1930">1930</option>
-              <option value="1929">1929</option>
-              <option value="1928">1928</option>
-              <option value="1927">1927</option>
-              <option value="1926">1926</option>
-              <option value="1925">1925</option>
-              <option value="1924">1924</option>
-            </select>
-          </div>
-        </div>
-        <span class="field-msg" id="msgDob"></span>
-      </div>
-
-      <div class="section-divider"></div>
-
-      <!-- Gender -->
-      <div>
-        <div class="gender-label">Gender</div>
-        <div class="gender-options">
-
-          <div class="gender-opt">
-            <input type="radio" name="gender" id="gMale" value="male" />
-            <label for="gMale">
-              <span class="gender-circle"></span>
-              Male
-            </label>
-          </div>
-
-          <div class="gender-opt">
-            <input type="radio" name="gender" id="gFemale" value="female" />
-            <label for="gFemale">
-              <span class="gender-circle"></span>
-              Female
-            </label>
-          </div>
-
-          <div class="gender-opt">
-            <input type="radio" name="gender" id="gOther" value="other" />
-            <label for="gOther">
-              <span class="gender-circle"></span>
-              Other
-            </label>
-          </div>
-
-        </div>
-        <span class="field-msg" id="msgGender"></span>
-      </div>
-
-      <div class="section-divider"></div>
-
-      <!-- Password -->
-      <div class="field" id="fieldPassword">
-        <label for="password">Password</label>
-        <div class="input-wrap">
-          <input type="password" id="password" placeholder="Min. 8 characters"
-                 autocomplete="new-password" />
-          <button class="pw-toggle" id="pwToggle" type="button" aria-label="Show password">
-            <svg id="eyeShow" width="19" height="19" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            <svg id="eyeHide" width="19" height="19" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 style="display:none">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
-                       a18.45 18.45 0 0 1 5.06-5.94"/>
-              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
-                       a18.5 18.5 0 0 1-2.16 3.19"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-          </button>
-        </div>
-        <span class="field-msg" id="msgPassword"></span>
-      </div>
-
-      <!-- Sign Up button -->
-      <button class="btn-signup" id="signupBtn" disabled>Sign Up</button>
-
-      <div class="login-link">
-        Already have an account? <a href="/login">Log in</a>
-      </div>
-
-    </div>
+  <div class="atmosphere" aria-hidden="true">
+    <svg class="atmosphere-ring" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="300" cy="300" r="260"/>
+      <circle cx="300" cy="300" r="180"/>
+      <g class="tick">
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(0 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(22.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(45 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(67.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(90 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(112.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(135 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(157.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(180 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(202.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(225 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(247.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(270 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(292.5 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(315 300 300)"/>
+        <line x1="300" y1="100" x2="300" y2="118" transform="rotate(337.5 300 300)"/>
+      </g>
+      <circle class="core" cx="300" cy="300" r="60"/>
+    </svg>
   </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+  <header class="topbar">
+    <button type="button" class="help-link" id="helpBtn">
+      <span class="icon-circle">?</span>
+      <span>Help</span>
+    </button>
+    <button type="button" class="lang-pill" id="langBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
+      <span>English</span>
+    </button>
+  </header>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { auth, db } from "./config.js";
-    import {
-      createUserWithEmailAndPassword,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import {
-      ref, set, get
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="logo">
+        <svg width="26" height="26" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="90" stroke="#10162B" stroke-width="10"/>
+          <circle cx="100" cy="100" r="56" stroke="#10162B" stroke-width="10"/>
+          <circle cx="100" cy="100" r="20" fill="#E8A33D"/>
+        </svg>
+        <span>Insight</span>
+      </div>
 
-    // ── helpers ──────────────────────────────────────────────
-    const $ = (id) => document.getElementById(id);
+      <h1>Create your account</h1>
+      <p class="subtitle">Join SocialFeed and start sharing</p>
 
-    function showToast(msg, duration = 3000) {
-      const t = $("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), duration);
+      <div class="banner" id="formBanner" hidden></div>
+
+      <form id="signupForm" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" autocomplete="given-name" placeholder="First name">
+            <span class="field-error" id="firstNameError"></span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" autocomplete="family-name" placeholder="Last name">
+            <span class="field-error" id="lastNameError"></span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="middleName">Middle Name <span class="optional-tag">(optional)</span></label>
+          <input type="text" id="middleName" autocomplete="additional-name" placeholder="Middle name">
+        </div>
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" autocomplete="username" placeholder="Choose a unique username">
+          <span class="field-status" id="usernameStatus"></span>
+          <span class="field-error" id="usernameError"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+          <span class="field-error" id="emailError"></span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" autocomplete="bday">
+            <span class="field-error" id="dobError"></span>
+          </div>
+          <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" required>
+              <option value="" disabled selected>Select</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+              <option value="prefer_not_to_say">Prefer not to say</option>
+            </select>
+            <span class="field-error" id="genderError"></span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-with-action">
+            <input type="password" id="password" autocomplete="new-password" placeholder="Create a password">
+            <button type="button" class="toggle-visibility" id="togglePassword" aria-label="Show password">
+              <svg class="eye-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a21.6 21.6 0 015.06-6.06M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 7 11 7a21.6 21.6 0 01-2.94 3.94M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <button type="submit" class="btn-primary" id="signupSubmitBtn">
+          <span class="btn-label">Sign Up</span>
+          <span class="spinner" hidden></span>
+        </button>
+      </form>
+
+      <p class="footer-line">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </main>
+
+<script type="module">
+  import { auth, db } from "./config.js";
+  import {
+    createUserWithEmailAndPassword,
+    deleteUser,
+  } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+  import {
+    ref,
+    get,
+    set,
+    runTransaction,
+  } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+  // ---------- ইউজারনেম নিয়ম: অক্ষর দিয়ে শুরু, ৩-২০ ক্যারেক্টার, letter/number/_/. ----------
+  const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_.]{2,19}$/;
+
+  function normalizeUsername(value) {
+    return value.trim().toLowerCase();
+  }
+
+  // ---------- এলিমেন্ট রেফারেন্স ----------
+  const form = document.getElementById("signupForm");
+  const banner = document.getElementById("formBanner");
+  const submitBtn = document.getElementById("signupSubmitBtn");
+  const btnLabel = submitBtn.querySelector(".btn-label");
+  const spinner = submitBtn.querySelector(".spinner");
+  const togglePasswordBtn = document.getElementById("togglePassword");
+
+  const fields = {
+    firstName: document.getElementById("firstName"),
+    middleName: document.getElementById("middleName"),
+    lastName: document.getElementById("lastName"),
+    username: document.getElementById("username"),
+    email: document.getElementById("email"),
+    dob: document.getElementById("dob"),
+    gender: document.getElementById("gender"),
+    password: document.getElementById("password"),
+  };
+
+  const errors = {
+    firstName: document.getElementById("firstNameError"),
+    lastName: document.getElementById("lastNameError"),
+    username: document.getElementById("usernameError"),
+    email: document.getElementById("emailError"),
+    dob: document.getElementById("dobError"),
+    gender: document.getElementById("genderError"),
+    password: document.getElementById("passwordError"),
+  };
+
+  const usernameStatus = document.getElementById("usernameStatus");
+
+  // ভবিষ্যতে আজকের চেয়ে বেশি তারিখ যাতে সিলেক্ট করা না যায়
+  fields.dob.max = new Date().toISOString().split("T")[0];
+
+  // ---------- পাসওয়ার্ড শো/হাইড টগল ----------
+  togglePasswordBtn.addEventListener("click", () => {
+    const willShow = fields.password.type === "password";
+    fields.password.type = willShow ? "text" : "password";
+    togglePasswordBtn.classList.toggle("is-visible", willShow);
+    togglePasswordBtn.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+  });
+
+  // ---------- রিয়েল-টাইম ইউজারনেম availability চেক ----------
+  let usernameIsAvailable = false;
+  let usernameCheckToken = 0;
+  let debounceTimer;
+
+  fields.username.addEventListener("input", () => {
+    usernameIsAvailable = false;
+    errors.username.textContent = "";
+    const raw = fields.username.value.trim();
+
+    clearTimeout(debounceTimer);
+
+    if (!raw) {
+      usernameStatus.textContent = "";
+      usernameStatus.className = "field-status";
+      return;
     }
 
-    function setField(fieldId, state, msg = "") {
-      const el = $(fieldId);
-      el.classList.remove("error", "ok", "checking");
-      if (state) el.classList.add(state);
-      const msgEl = el.querySelector(".field-msg");
-      if (msgEl) msgEl.textContent = msg;
+    if (!USERNAME_REGEX.test(raw)) {
+      usernameStatus.textContent = "";
+      usernameStatus.className = "field-status";
+      errors.username.textContent = "3–20 characters, start with a letter. Letters, numbers, _ or . only.";
+      return;
     }
 
-    // ── Field refs ───────────────────────────────────────────
-    const firstName   = $("firstName");
-    const middleName  = $("middleName");
-    const lastName    = $("lastName");
-    const usernameEl  = $("username");
-    const emailEl     = $("email");
-    const passwordEl  = $("password");
-    const signupBtn   = $("signupBtn");
-    const pwToggle    = $("pwToggle");
+    usernameStatus.textContent = "Checking availability…";
+    usernameStatus.className = "field-status is-checking";
 
-    // ── Password show/hide ───────────────────────────────────
-    pwToggle.addEventListener("click", () => {
-      const hidden = passwordEl.type === "password";
-      passwordEl.type = hidden ? "text" : "password";
-      $("eyeShow").style.display = hidden ? "none" : "";
-      $("eyeHide").style.display = hidden ? ""     : "none";
-    });
-
-    // ── Validation state ─────────────────────────────────────
-    const valid = {
-      firstName: false,
-      lastName:  false,
-      username:  false,
-      email:     false,
-      dob:       false,
-      gender:    false,
-      password:  false,
-    };
-
-    function updateSignupBtn() {
-      signupBtn.disabled = !Object.values(valid).every(Boolean);
-    }
-
-    // ── First name ───────────────────────────────────────────
-    firstName.addEventListener("input", () => {
-      const v = firstName.value.trim();
-      if (!v) {
-        setField("fieldFirstName", "error", "Required");
-        valid.firstName = false;
-      } else {
-        setField("fieldFirstName", "ok", "");
-        valid.firstName = true;
-      }
-      updateSignupBtn();
-    });
-
-    // ── Last name ────────────────────────────────────────────
-    lastName.addEventListener("input", () => {
-      const v = lastName.value.trim();
-      if (!v) {
-        setField("fieldLastName", "error", "Required");
-        valid.lastName = false;
-      } else {
-        setField("fieldLastName", "ok", "");
-        valid.lastName = true;
-      }
-      updateSignupBtn();
-    });
-
-    // ── Username — live availability check ───────────────────
-    let usernameTimer = null;
-    const usernameStatus = $("usernameStatus");
-
-    const SPINNER_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="#aaa" stroke-width="2.5" stroke-linecap="round">
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
-               M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-    </svg>`;
-
-    const CHECK_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>`;
-
-    const X_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="#e63950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>`;
-
-    usernameEl.addEventListener("input", () => {
-      clearTimeout(usernameTimer);
-      const raw = usernameEl.value.trim().toLowerCase();
-
-      if (!raw) {
-        setField("fieldUsername", "", "");
-        usernameStatus.innerHTML = "";
-        valid.username = false;
-        updateSignupBtn();
-        return;
-      }
-
-      if (raw.length < 3) {
-        setField("fieldUsername", "error", "At least 3 characters");
-        usernameStatus.innerHTML = X_SVG;
-        valid.username = false;
-        updateSignupBtn();
-        return;
-      }
-
-      if (!/^[a-z0-9_\.]+$/.test(raw)) {
-        setField("fieldUsername", "error", "Only letters, numbers, _ and . allowed");
-        usernameStatus.innerHTML = X_SVG;
-        valid.username = false;
-        updateSignupBtn();
-        return;
-      }
-
-      setField("fieldUsername", "checking", "Checking…");
-      usernameStatus.innerHTML = SPINNER_SVG;
-      valid.username = false;
-      updateSignupBtn();
-
-      usernameTimer = setTimeout(async () => {
-        try {
-          const snap = await get(ref(db, `usernames/${raw}`));
-          if (snap.exists()) {
-            setField("fieldUsername", "error", "@" + raw + " is already taken");
-            usernameStatus.innerHTML = X_SVG;
-            valid.username = false;
-          } else {
-            setField("fieldUsername", "ok", "@" + raw + " is available");
-            usernameStatus.innerHTML = CHECK_SVG;
-            valid.username = true;
-          }
-        } catch {
-          setField("fieldUsername", "", "Could not check — try again");
-          usernameStatus.innerHTML = "";
-          valid.username = false;
-        }
-        updateSignupBtn();
-      }, 600);
-    });
-
-    // ── Email ────────────────────────────────────────────────
-    emailEl.addEventListener("input", () => {
-      const v = emailEl.value.trim();
-      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-      if (!v) {
-        setField("fieldEmail", "", "");
-        valid.email = false;
-      } else if (!ok) {
-        setField("fieldEmail", "error", "Enter a valid email");
-        valid.email = false;
-      } else {
-        setField("fieldEmail", "ok", "");
-        valid.email = true;
-      }
-      updateSignupBtn();
-    });
-
-    // ── Date of Birth (3-box) ────────────────────────────────
-    const dobDayEl   = $("dobDay");
-    const dobMonthEl = $("dobMonth");
-    const dobYearEl  = $("dobYear");
-
-    function validateDob() {
-      const d = dobDayEl.value;
-      const m = dobMonthEl.value;
-      const y = dobYearEl.value;
-      dobDayEl.classList.toggle("placeholder-selected", !d);
-      dobMonthEl.classList.toggle("placeholder-selected", !m);
-      dobYearEl.classList.toggle("placeholder-selected", !y);
-      if (d && m && y) {
-        valid.dob = true;
-        $("msgDob").textContent = "";
-        $("fieldDob").classList.remove("error");
-      } else {
-        valid.dob = false;
-        $("msgDob").textContent = "";
-        $("fieldDob").classList.remove("error");
-      }
-      updateSignupBtn();
-    }
-    dobDayEl.addEventListener("change",   validateDob);
-    dobMonthEl.addEventListener("change", validateDob);
-    dobYearEl.addEventListener("change",  validateDob);
-
-    // ── Gender ───────────────────────────────────────────────
-    document.querySelectorAll('input[name="gender"]').forEach(radio => {
-      radio.addEventListener("change", () => {
-        valid.gender = true;
-        $("msgGender").textContent = "";
-        updateSignupBtn();
-      });
-    });
-
-    // ── Password ─────────────────────────────────────────────
-    passwordEl.addEventListener("input", () => {
-      const v = passwordEl.value;
-      if (!v) {
-        setField("fieldPassword", "", "");
-        valid.password = false;
-      } else if (v.length < 8) {
-        setField("fieldPassword", "error", "At least 8 characters");
-        valid.password = false;
-      } else {
-        setField("fieldPassword", "ok", "");
-        valid.password = true;
-      }
-      updateSignupBtn();
-    });
-
-    // ── Submit ───────────────────────────────────────────────
-    signupBtn.addEventListener("click", async () => {
-      if (!Object.values(valid).every(Boolean)) return;
-
-      const fnVal  = firstName.value.trim();
-      const mnVal  = middleName.value.trim();
-      const lnVal  = lastName.value.trim();
-      const unVal  = usernameEl.value.trim().toLowerCase();
-      const emVal  = emailEl.value.trim();
-      const pwVal  = passwordEl.value;
-      const dobDay   = $("dobDay").value;
-      const dobMonth = $("dobMonth").value;
-      const dobYear  = $("dobYear").value;
-
-      // ✅ FIX: number (timestamp) হিসেবে save করা হচ্ছে, string নয়
-      // Firebase rules এ newData.isNumber() দেওয়া আছে তাই string দিলে fail হত
-      const dobVal = (dobDay && dobMonth && dobYear)
-        ? new Date(`${dobYear}-${String(dobMonth).padStart(2,"0")}-${String(dobDay).padStart(2,"0")}`).getTime()
-        : null;
-
-      const gVal = document.querySelector('input[name="gender"]:checked')?.value || "";
-
-      const displayName = [fnVal, mnVal, lnVal].filter(Boolean).join(" ");
-
-      signupBtn.disabled = true;
-      signupBtn.classList.add("loading");
-
+    const myToken = ++usernameCheckToken;
+    debounceTimer = setTimeout(async () => {
       try {
-        // 1️⃣ Firebase Auth user তৈরি
-        const cred = await createUserWithEmailAndPassword(auth, emVal, pwVal);
-        const uid  = cred.user.uid;
+        const usernameLower = normalizeUsername(raw);
+        const snapshot = await get(ref(db, "usernames/" + usernameLower));
+        if (myToken !== usernameCheckToken) return; // ইউজার এর মধ্যে আরও টাইপ করেছে, পুরনো রেজাল্ট বাতিল
 
-        // 2️⃣ Auth display name আপডেট
-        await updateProfile(cred.user, { displayName });
-
-        // 3️⃣ RTDB-তে user profile লেখা → users/<uid>
-        await set(ref(db, `users/${uid}`), {
-          uid,
-          firstName:       fnVal,
-          middleName:      mnVal || null,
-          lastName:        lnVal,
-          displayName,
-          username:        unVal,
-          email:           emVal,
-          gender:          gVal,
-          bio:             null,
-          profilePhotoUrl: null,
-          coverPhotoUrl:   null,
-          address:         null,
-          dateOfBirth:     dobVal,
-          postsCount:      0,
-          friendsCount:    0,
-          followersCount:  0,
-          createdAt:       Date.now(),
-          updatedAt:       Date.now(),
-          isPrivate:       false,
-          isVerified:      false,
-        });
-
-        // 4️⃣ Username index লেখা → usernames/<username>: uid
-        await set(ref(db, `usernames/${unVal}`), uid);
-
-        // 5️⃣ নিজের profile-এ redirect
-        window.location.href = `/profile/${unVal}`;
-
-      } catch (err) {
-        signupBtn.classList.remove("loading");
-        signupBtn.disabled = false;
-
-        const code = err.code || "";
-        if (code === "auth/email-already-in-use") {
-          setField("fieldEmail", "error", "This email is already registered");
-        } else if (code === "auth/invalid-email") {
-          setField("fieldEmail", "error", "Invalid email address");
-        } else if (code === "auth/weak-password") {
-          setField("fieldPassword", "error", "Password is too weak");
+        if (snapshot.exists()) {
+          usernameIsAvailable = false;
+          usernameStatus.textContent = "✕ This username is taken";
+          usernameStatus.className = "field-status is-taken";
         } else {
-          showToast("Something went wrong. Please try again.");
-          console.error(err);
+          usernameIsAvailable = true;
+          usernameStatus.textContent = "✓ Username is available";
+          usernameStatus.className = "field-status is-available";
         }
+      } catch (err) {
+        if (myToken !== usernameCheckToken) return;
+        usernameStatus.textContent = "";
+        usernameStatus.className = "field-status";
+        // এখানে ব্যর্থ হলেও সাবমিটের সময় আবার যাচাই হবে বলে চুপচাপ থাকা যায়
       }
-    });
-  </script>
+    }, 450);
+  });
 
+  function clearAllErrors() {
+    Object.values(errors).forEach((el) => (el.textContent = ""));
+    banner.hidden = true;
+    banner.textContent = "";
+    banner.className = "banner";
+  }
+
+  function showBanner(message, type = "error") {
+    banner.textContent = message;
+    banner.className = `banner banner-${type}`;
+    banner.hidden = false;
+  }
+
+  function setLoading(isLoading) {
+    submitBtn.disabled = isLoading;
+    btnLabel.textContent = isLoading ? "Creating account..." : "Sign Up";
+    spinner.hidden = !isLoading;
+  }
+
+  function calculateAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
+    return age;
+  }
+
+  function validateForm() {
+    let isValid = true;
+
+    const firstName = fields.firstName.value.trim();
+    const lastName = fields.lastName.value.trim();
+    const username = fields.username.value.trim();
+    const email = fields.email.value.trim();
+    const dob = fields.dob.value;
+    const gender = fields.gender.value;
+    const password = fields.password.value;
+
+    if (!firstName) { errors.firstName.textContent = "First name is required."; isValid = false; }
+    if (!lastName) { errors.lastName.textContent = "Last name is required."; isValid = false; }
+
+    if (!username) {
+      errors.username.textContent = "Username is required.";
+      isValid = false;
+    } else if (!USERNAME_REGEX.test(username)) {
+      errors.username.textContent = "3–20 characters, start with a letter. Letters, numbers, _ or . only.";
+      isValid = false;
+    } else if (!usernameIsAvailable) {
+      errors.username.textContent = "Please wait for the username check, or choose an available one.";
+      isValid = false;
+    }
+
+    if (!email) { errors.email.textContent = "Email is required."; isValid = false; }
+
+    if (!dob) {
+      errors.dob.textContent = "Date of birth is required.";
+      isValid = false;
+    } else if (calculateAge(dob) < 13) {
+      errors.dob.textContent = "You must be at least 13 years old to join.";
+      isValid = false;
+    }
+
+    if (!gender) { errors.gender.textContent = "Please select a gender."; isValid = false; }
+
+    if (!password) {
+      errors.password.textContent = "Password is required.";
+      isValid = false;
+    } else if (password.length < 6) {
+      errors.password.textContent = "Password must be at least 6 characters.";
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function mapSignupError(error) {
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        return { field: "email", message: "This email is already registered." };
+      case "auth/invalid-email":
+        return { field: "email", message: "Please enter a valid email address." };
+      case "auth/weak-password":
+        return { field: "password", message: "Please choose a stronger password (at least 6 characters)." };
+      case "auth/network-request-failed":
+        return { field: "banner", message: "Network error. Please check your connection and try again." };
+      default:
+        return { field: "banner", message: "Something went wrong. Please try again." };
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearAllErrors();
+
+    if (!validateForm()) return;
+
+    const firstName = fields.firstName.value.trim();
+    const middleName = fields.middleName.value.trim();
+    const lastName = fields.lastName.value.trim();
+    const username = fields.username.value.trim();
+    const usernameLower = normalizeUsername(username);
+    const email = fields.email.value.trim();
+    const dob = fields.dob.value;
+    const gender = fields.gender.value;
+    const password = fields.password.value;
+
+    setLoading(true);
+
+    let createdUser = null;
+    let usernameClaimed = false;
+
+    try {
+      // ধাপ ১: Firebase Auth এ একাউন্ট তৈরি
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      createdUser = credential.user;
+
+      // ধাপ ২: ইউজারনেম ট্রানজেকশনের মাধ্যমে atomically claim করা
+      // (দুইজন একসাথে একই ইউজারনেম নিতে চাইলেও রেস কন্ডিশন এড়ানোর জন্য)
+      const usernameRef = ref(db, "usernames/" + usernameLower);
+      const txResult = await runTransaction(usernameRef, (currentValue) => {
+        if (currentValue === null) return createdUser.uid;
+        return; // undefined রিটার্ন করলে ট্রানজেকশন abort হয়ে যাবে, বিদ্যমান ভ্যালু অক্ষত থাকবে
+      });
+
+      if (!txResult.committed) {
+        await deleteUser(createdUser);
+        errors.username.textContent = "This username was just taken. Please choose another.";
+        usernameIsAvailable = false;
+        usernameStatus.textContent = "";
+        usernameStatus.className = "field-status";
+        setLoading(false);
+        return;
+      }
+
+      usernameClaimed = true;
+
+      // ধাপ ৩: users/{uid} এ প্রোফাইল ডেটা লেখা — প্রতিটা ফিল্ড আলাদা, ভবিষ্যতে
+      // firstName/lastName সহ যেকোনো ফিল্ড দিয়ে আলাদাভাবে ফিল্টার/এক্সপোর্ট করা যাবে
+      const now = Date.now();
+      await set(ref(db, "users/" + createdUser.uid), {
+        firstName,
+        middleName: middleName || "",
+        lastName,
+        username,
+        usernameLower,
+        email,
+        dob,
+        gender,
+        createdAt: now,
+        updatedAt: now,
+        profile: {
+          photoURL: "",
+          coverURL: "",
+          bio: "",
+        },
+        stats: {
+          postsCount: 0,
+          followersCount: 0,
+          followingCount: 0,
+        },
+      });
+
+      window.location.href = "home.html";
+    } catch (error) {
+      // যতদূর পর্যন্ত এগিয়েছিলাম, সেই অনুযায়ী ক্লিনআপ/রোলব্যাক করার চেষ্টা
+      if (usernameClaimed) {
+        try { await set(ref(db, "usernames/" + usernameLower), null); } catch (_) {}
+      }
+      if (createdUser) {
+        try { await deleteUser(createdUser); } catch (_) {}
+      }
+
+      const { field, message } = mapSignupError(error);
+      if (errors[field]) errors[field].textContent = message;
+      else showBanner(message, "error");
+      setLoading(false);
+    }
+  });
+</script>
 </body>
 </html>
