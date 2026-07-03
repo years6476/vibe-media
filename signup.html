@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Insight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary:    #8A4FF7;
+      --primary-2:  #6D3DF5;
+      --primary-3:  #A85CF6;
+      --bg:         #ffffff;
+      --surface:    #f7f7f7;
+      --border:     #ebebeb;
+      --text:       #1a1a1a;
+      --text-2:     #555;
+      --text-muted: #aaa;
+      --error:      #e63950;
+      --success:    #22c55e;
+      --pad:        20px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px var(--pad) 48px;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 24px;
+    }
+
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--primary-2), var(--primary-3));
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    /* ── Header text ── */
+    .header-block {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .header-block h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .header-block p {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* ── Form ── */
+    .form {
+      width: 100%;
+      max-width: 390px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    /* Name row */
+    .name-row {
+      display: flex;
+      gap: 9px;
+    }
+    .name-row .field { flex: 1; }
+
+    /* Field */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      padding-left: 2px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .input-wrap input::placeholder { color: var(--text-muted); }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(138,79,247,.1);
+    }
+
+    /* username prefix */
+    .input-wrap.has-prefix input {
+      padding-left: 30px;
+    }
+    .input-prefix {
+      position: absolute;
+      left: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* status icon inside username input */
+    .input-status {
+      position: absolute;
+      right: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* field error/success states */
+    .field.error .input-wrap input,
+    .field.error .input-wrap select {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(230,57,80,.08);
+    }
+    .field.ok .input-wrap input {
+      border-color: var(--success);
+      box-shadow: 0 0 0 3px rgba(34,197,94,.08);
+    }
+
+    .field-msg {
+      font-size: 11px;
+      font-weight: 500;
+      padding-left: 2px;
+      min-height: 16px;
+      transition: color .15s;
+    }
+    .field.error .field-msg { color: var(--error); }
+    .field.ok    .field-msg { color: var(--success); }
+    .field.checking .field-msg { color: var(--text-muted); }
+
+    /* ── Gender selector ── */
+    .gender-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      padding-left: 2px;
+      margin-bottom: 5px;
+    }
+
+    .gender-options {
+      display: flex;
+      gap: 9px;
+    }
+
+    .gender-opt {
+      flex: 1;
+      position: relative;
+    }
+
+    .gender-opt input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+
+    .gender-opt label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      height: 46px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: border-color .18s, background .18s, color .18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .gender-opt input[type="radio"]:checked + label {
+      border-color: var(--primary);
+      background: #f3ecff;
+      color: var(--primary);
+    }
+
+    /* circle indicator */
+    .gender-circle {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: border-color .15s;
+    }
+    .gender-circle::after {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .gender-opt input[type="radio"]:checked + label .gender-circle::after {
+      opacity: 1;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* ── Signup Button ── */
+    .btn-signup {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(to right, var(--primary-2), var(--primary), var(--primary-3));
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 6px;
+      position: relative;
+      transition: opacity .2s, transform .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-signup:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+    .btn-signup:active:not(:disabled) { transform: translateY(0); }
+    .btn-signup:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-signup.loading { color: transparent; }
+    .btn-signup.loading::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    /* ── Login link ── */
+    .login-link {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .login-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ── Global error toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 11px 20px;
+      border-radius: 12px;
+      white-space: nowrap;
+      z-index: 999;
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <span class="logo-text">Insight</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header-block">
+      <h1>Create your account</h1>
+      <p>Join and start your journey</p>
+    </div>
+
+    <!-- Form -->
+    <div class="form" id="signupForm">
+
+      <!-- Name row -->
+      <div class="name-row">
+        <div class="field" id="fieldFirstName">
+          <label for="firstName">First name</label>
+          <div class="input-wrap">
+            <input type="text" id="firstName" placeholder="First" autocomplete="given-name" />
+          </div>
+          <span class="field-msg" id="msgFirstName"></span>
+        </div>
+
+        <div class="field" id="fieldLastName">
+          <label for="lastName">Last name</label>
+          <div class="input-wrap">
+            <input type="text" id="lastName" placeholder="Last" autocomplete="family-name" />
+          </div>
+          <span class="field-msg" id="msgLastName"></span>
+        </div>
+      </div>
+
+      <!-- Middle name (optional) -->
+      <div class="field">
+        <label for="middleName">Middle name <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+        <div class="input-wrap">
+          <input type="text" id="middleName" placeholder="Middle" autocomplete="additional-name" />
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="field" id="fieldUsername">
+        <label for="username">Username</label>
+        <div class="input-wrap has-prefix">
+          <span class="input-prefix">@</span>
+          <input type="text" id="username" placeholder="your_username"
+                 autocomplete="username" autocapitalize="none" spellcheck="false" />
+          <span class="input-status" id="usernameStatus"></span>
+        </div>
+        <span class="field-msg" id="msgUsername"></span>
+      </div>
+
+      <!-- Email -->
+      <div class="field" id="fieldEmail">
+        <label for="email">Email</label>
+        <div class="input-wrap">
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <span class="field-msg" id="msgEmail"></span>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Gender -->
+      <div>
+        <div class="gender-label">Gender</div>
+        <div class="gender-options">
+
+          <div class="gender-opt">
+            <input type="radio" name="gender" id="gMale" value="male" />
+            <label for="gMale">
+              <span class="gender-circle"></span>
+              Male
+            </label>
+          </div>
+
+          <div class="gender-opt">
+            <input type="radio" name="gender" id="gFemale" value="female" />
+            <label for="gFemale">
+              <span class="gender-circle"></span>
+              Female
+            </label>
+          </div>
+
+          <div class="gender-opt">
+            <input type="radio" name="gender" id="gOther" value="other" />
+            <label for="gOther">
+              <span class="gender-circle"></span>
+              Other
+            </label>
+          </div>
+
+        </div>
+        <span class="field-msg" id="msgGender"></span>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Password -->
+      <div class="field" id="fieldPassword">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="password" placeholder="Min. 8 characters"
+                 autocomplete="new-password" />
+          <button class="pw-toggle" id="pwToggle" type="button" aria-label="Show password">
+            <!-- eye icon -->
+            <svg id="eyeShow" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg id="eyeHide" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 style="display:none">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                       a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                       a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <span class="field-msg" id="msgPassword"></span>
+      </div>
+
+      <!-- Sign Up button -->
+      <button class="btn-signup" id="signupBtn" disabled>Sign Up</button>
+
+      <div class="login-link">
+        Already have an account? <a href="/login">Log in</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { auth, db } from "./config.js";
+    import {
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import {
+      ref, set, get
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+    // ── helpers ──────────────────────────────────────────────
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(msg, duration = 3000) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), duration);
+    }
+
+    function setField(fieldId, state, msg = "") {
+      const el = $(fieldId);
+      el.classList.remove("error", "ok", "checking");
+      if (state) el.classList.add(state);
+      const msgEl = el.querySelector(".field-msg");
+      if (msgEl) msgEl.textContent = msg;
+    }
+
+    // ── Field refs ───────────────────────────────────────────
+    const firstName   = $("firstName");
+    const middleName  = $("middleName");
+    const lastName    = $("lastName");
+    const usernameEl  = $("username");
+    const emailEl     = $("email");
+    const passwordEl  = $("password");
+    const signupBtn   = $("signupBtn");
+    const pwToggle    = $("pwToggle");
+
+    // ── Password show/hide ───────────────────────────────────
+    pwToggle.addEventListener("click", () => {
+      const hidden = passwordEl.type === "password";
+      passwordEl.type = hidden ? "text" : "password";
+      $("eyeShow").style.display = hidden ? "none" : "";
+      $("eyeHide").style.display = hidden ? ""     : "none";
+    });
+
+    // ── Validation state ─────────────────────────────────────
+    const valid = {
+      firstName: false,
+      lastName:  false,
+      username:  false,
+      email:     false,
+      gender:    false,
+      password:  false,
+    };
+
+    function updateSignupBtn() {
+      signupBtn.disabled = !Object.values(valid).every(Boolean);
+    }
+
+    // ── First name ───────────────────────────────────────────
+    firstName.addEventListener("input", () => {
+      const v = firstName.value.trim();
+      if (!v) {
+        setField("fieldFirstName", "error", "Required");
+        valid.firstName = false;
+      } else {
+        setField("fieldFirstName", "ok", "");
+        valid.firstName = true;
+      }
+      updateSignupBtn();
+    });
+
+    // ── Last name ────────────────────────────────────────────
+    lastName.addEventListener("input", () => {
+      const v = lastName.value.trim();
+      if (!v) {
+        setField("fieldLastName", "error", "Required");
+        valid.lastName = false;
+      } else {
+        setField("fieldLastName", "ok", "");
+        valid.lastName = true;
+      }
+      updateSignupBtn();
+    });
+
+    // ── Username — live availability check ───────────────────
+    let usernameTimer = null;
+    const usernameStatus = $("usernameStatus");
+
+    const SPINNER_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="#aaa" stroke-width="2.5" stroke-linecap="round">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
+               M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+    </svg>`;
+
+    const CHECK_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>`;
+
+    const X_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="#e63950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>`;
+
+    usernameEl.addEventListener("input", () => {
+      clearTimeout(usernameTimer);
+      const raw = usernameEl.value.trim().toLowerCase();
+
+      // basic format check
+      if (!raw) {
+        setField("fieldUsername", "", "");
+        usernameStatus.innerHTML = "";
+        valid.username = false;
+        updateSignupBtn();
+        return;
+      }
+
+      if (raw.length < 3) {
+        setField("fieldUsername", "error", "At least 3 characters");
+        usernameStatus.innerHTML = X_SVG;
+        valid.username = false;
+        updateSignupBtn();
+        return;
+      }
+
+      if (!/^[a-z0-9_\.]+$/.test(raw)) {
+        setField("fieldUsername", "error", "Only letters, numbers, _ and . allowed");
+        usernameStatus.innerHTML = X_SVG;
+        valid.username = false;
+        updateSignupBtn();
+        return;
+      }
+
+      // debounce Firebase check
+      setField("fieldUsername", "checking", "Checking…");
+      usernameStatus.innerHTML = SPINNER_SVG;
+      valid.username = false;
+      updateSignupBtn();
+
+      usernameTimer = setTimeout(async () => {
+        try {
+          const snap = await get(ref(db, `usernames/${raw}`));
+          if (snap.exists()) {
+            setField("fieldUsername", "error", "@" + raw + " is already taken");
+            usernameStatus.innerHTML = X_SVG;
+            valid.username = false;
+          } else {
+            setField("fieldUsername", "ok", "@" + raw + " is available");
+            usernameStatus.innerHTML = CHECK_SVG;
+            valid.username = true;
+          }
+        } catch {
+          setField("fieldUsername", "", "Could not check — try again");
+          usernameStatus.innerHTML = "";
+          valid.username = false;
+        }
+        updateSignupBtn();
+      }, 600);
+    });
+
+    // ── Email ────────────────────────────────────────────────
+    emailEl.addEventListener("input", () => {
+      const v = emailEl.value.trim();
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if (!v) {
+        setField("fieldEmail", "", "");
+        valid.email = false;
+      } else if (!ok) {
+        setField("fieldEmail", "error", "Enter a valid email");
+        valid.email = false;
+      } else {
+        setField("fieldEmail", "ok", "");
+        valid.email = true;
+      }
+      updateSignupBtn();
+    });
+
+    // ── Gender ───────────────────────────────────────────────
+    document.querySelectorAll('input[name="gender"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        valid.gender = true;
+        $("msgGender").textContent = "";
+        updateSignupBtn();
+      });
+    });
+
+    // ── Password ─────────────────────────────────────────────
+    passwordEl.addEventListener("input", () => {
+      const v = passwordEl.value;
+      if (!v) {
+        setField("fieldPassword", "", "");
+        valid.password = false;
+      } else if (v.length < 8) {
+        setField("fieldPassword", "error", "At least 8 characters");
+        valid.password = false;
+      } else {
+        setField("fieldPassword", "ok", "");
+        valid.password = true;
+      }
+      updateSignupBtn();
+    });
+
+    // ── Submit ───────────────────────────────────────────────
+    signupBtn.addEventListener("click", async () => {
+      // final guard
+      if (!Object.values(valid).every(Boolean)) return;
+
+      const fnVal  = firstName.value.trim();
+      const mnVal  = middleName.value.trim();
+      const lnVal  = lastName.value.trim();
+      const unVal  = usernameEl.value.trim().toLowerCase();
+      const emVal  = emailEl.value.trim();
+      const pwVal  = passwordEl.value;
+      const gVal   = document.querySelector('input[name="gender"]:checked')?.value || "";
+
+      // Full display name: First [Middle] Last
+      const displayName = [fnVal, mnVal, lnVal].filter(Boolean).join(" ");
+
+      signupBtn.disabled = true;
+      signupBtn.classList.add("loading");
+
+      try {
+        // 1️⃣  Create Firebase Auth user
+        const cred = await createUserWithEmailAndPassword(auth, emVal, pwVal);
+        const uid  = cred.user.uid;
+
+        // 2️⃣  Update Auth display name
+        await updateProfile(cred.user, { displayName });
+
+        // 3️⃣  Write user profile to RTDB  →  users/<uid>
+        //      Structure designed for future VPS/PostgreSQL export
+        await set(ref(db, `users/${uid}`), {
+          uid,
+          // ── Identity ──────────────────────────────────────
+          firstName:   fnVal,
+          middleName:  mnVal || null,
+          lastName:    lnVal,
+          displayName,
+          username:    unVal,
+          // ── Contact ───────────────────────────────────────
+          email:       emVal,
+          // ── Profile ───────────────────────────────────────
+          gender:      gVal,
+          bio:         null,
+          profilePhotoUrl: null,
+          coverPhotoUrl:   null,
+          address:     null,
+          dateOfBirth: null,
+          // ── Stats ─────────────────────────────────────────
+          postsCount:     0,
+          friendsCount:   0,
+          followersCount: 0,
+          // ── Timestamps ────────────────────────────────────
+          createdAt:  Date.now(),
+          updatedAt:  Date.now(),
+          // ── Settings ──────────────────────────────────────
+          isPrivate:  false,
+          isVerified: false,
+        });
+
+        // 4️⃣  Write username index  →  usernames/<username>: uid
+        //      This enables O(1) lookup: /profile/sara_wilson → uid
+        await set(ref(db, `usernames/${unVal}`), uid);
+
+        // 5️⃣  Redirect to own profile
+        window.location.href = `/profile/${unVal}`;
+
+      } catch (err) {
+        signupBtn.classList.remove("loading");
+        signupBtn.disabled = false;
+
+        const code = err.code || "";
+        if (code === "auth/email-already-in-use") {
+          setField("fieldEmail", "error", "This email is already registered");
+        } else if (code === "auth/invalid-email") {
+          setField("fieldEmail", "error", "Invalid email address");
+        } else if (code === "auth/weak-password") {
+          setField("fieldPassword", "error", "Password is too weak");
+        } else {
+          showToast("Something went wrong. Please try again.");
+          console.error(err);
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
