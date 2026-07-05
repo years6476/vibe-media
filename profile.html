@@ -809,11 +809,9 @@
       width: 100%;
       visibility: visible;
       opacity: 1;
-    }
-    .post-card {
       background: #fff;
       margin-bottom: 0;
-      border-bottom: 1px solid rgba(224,224,224,0.4);
+      border-bottom: 1px solid #e8e8e8;
     }
     .post-header {
       display: flex;
@@ -1507,6 +1505,7 @@
     let photoItems = [];
     let reelItems  = [];
     let savedItems = [];
+    let postsUnsubscribe = null;  // Store onValue unsubscribe function
 
     let activeMediaList   = [];
     let activeMediaSource = null;
@@ -1967,16 +1966,38 @@
     }
 
     // ── Load highlights ───────────────────────────────────────
+    let highlightsUnsubscribe = null;
     async function loadHighlights(uid) {
-      const snap = await get(ref(db, `users/${uid}/highlights`));
-      highlightsRow.querySelectorAll(".hl-existing").forEach(el => el.remove());
-      if (!snap.exists()) return;
-      const items = [];
-      snap.forEach(child => items.push({ id: child.key, ...child.val() }));
-      items.sort((a, b) => a.timestamp - b.timestamp);
-      items.forEach(item => {
-        const el = buildHighlightItem(item);
-        highlightsRow.appendChild(el);
+      // Unsubscribe previous listener
+      if (highlightsUnsubscribe) {
+        highlightsUnsubscribe();
+        highlightsUnsubscribe = null;
+      }
+
+      const hlRef = ref(db, `users/${uid}/highlights`);
+
+      highlightsUnsubscribe = onValue(hlRef, (snap) => {
+        // Clear existing highlights (keep the "New" button)
+        highlightsRow.querySelectorAll(".hl-existing").forEach(el => el.remove());
+
+        if (!snap.exists()) return;
+
+        const items = [];
+        const data = snap.val();
+
+        if (data && typeof data === 'object') {
+          Object.entries(data).forEach(([key, value]) => {
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+              items.push({ id: key, ...value });
+            }
+          });
+        }
+
+        items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        items.forEach(item => {
+          const el = buildHighlightItem(item);
+          highlightsRow.appendChild(el);
+        });
       });
     }
 
@@ -2467,30 +2488,93 @@ document.getElementById("postOptionsSheet").addEventListener("click", function(e
 
     // ── Load posts ────────────────────────────────────────────
     async function loadPosts(uid) {
-      const snap = await get(ref(db, `posts/${uid}`));
-      const items = [];
-      snap.forEach(child => items.push({ id: child.key, ownerUid: uid, ...child.val() }));
-      items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      // Unsubscribe previous listener to avoid duplicates
+      if (postsUnsubscribe) {
+        postsUnsubscribe();
+        postsUnsubscribe = null;
+      }
 
-      // Enrich with author info for list view
-      items.forEach(post => {
-        post.authorName     = post.authorName     || profileName.textContent     || "User";
-        post.authorUsername = post.authorUsername || (profileUsername.textContent?.replace("@", "") || "user");
-        post.authorAvatar   = post.authorAvatar   || (profilePic.querySelector("img")?.src || "https://i.pravatar.cc/150?img=11");
+      // Try multiple possible paths where posts might be stored
+      const possiblePaths = [
+        `posts/${uid}`,
+        `userPosts/${uid}`,
+        `users/${uid}/posts`
+      ];
+
+      let foundPath = null;
+
+      // Try each path and use the first one that has data
+      for (const path of possiblePaths) {
+        const testRef = ref(db, path);
+        const testSnap = await get(testRef);
+        if (testSnap.exists()) {
+          foundPath = path;
+          break;
+        }
+      }
+
+      // Default to posts/${uid} if none found
+      const postsPath = foundPath || `posts/${uid}`;
+      const postsRef = ref(db, postsPath);
+
+      postsUnsubscribe = onValue(postsRef, (snap) => {
+        const items = [];
+
+        if (snap.exists()) {
+          // Handle both object and array-like structures
+          const data = snap.val();
+
+          if (typeof data === 'object' && data !== null) {
+            // If data is an object with keys, iterate through them
+            Object.entries(data).forEach(([key, value]) => {
+              if (value && typeof value === 'object' && !Array.isArray(value)) {
+                items.push({ 
+                  id: key, 
+                  ownerUid: uid, 
+                  ...value 
+                });
+              }
+            });
+          }
+        }
+
+        items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        // Enrich with author info for list view
+        items.forEach(post => {
+          post.authorName     = post.authorName     || profileName.textContent     || "User";
+          post.authorUsername = post.authorUsername || (profileUsername.textContent?.replace("@", "") || "user");
+          post.authorAvatar   = post.authorAvatar   || (profilePic.querySelector("img")?.src || "https://i.pravatar.cc/150?img=11");
+        });
+
+        allItems   = items;
+        photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
+        reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
+
+        // Render to list view
+        const postsListView = document.getElementById("postsListView");
+        if (postsListView) {
+          renderPostsList(allItems, postsListView);
+        }
+        renderGrid(photosGrid, photoItems, "photos");
+        renderGrid(reelsGrid, reelItems, "reels");
+
+        // Update posts count display
+        if (postsCount) {
+          postsCount.textContent = items.length;
+        }
       });
-
-      allItems   = items;
-      photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
-      reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
-
-      renderPostsList(allItems, document.getElementById("postsListView"));
-      renderGrid(photosGrid, photoItems, "photos");
-      renderGrid(reelsGrid, reelItems, "reels");
     }
 
     // ── Load saved posts ──────────────────────────────────────
+    let savedUnsubscribe = null;
     function loadSavedPosts(viewerUid) {
-      onValue(ref(db, `savedPosts/${viewerUid}`), async (snap) => {
+      if (savedUnsubscribe) {
+        savedUnsubscribe();
+        savedUnsubscribe = null;
+      }
+
+      savedUnsubscribe = onValue(ref(db, `savedPosts/${viewerUid}`), async (snap) => {
         if (!snap.exists()) {
           savedItems = [];
           renderGrid(savedGrid, savedItems, "saved");
