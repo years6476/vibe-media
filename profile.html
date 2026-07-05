@@ -138,7 +138,7 @@
       margin-top: -50px;
       padding: 0 4px 20px;
       position: relative;
-      z-index: 10;
+      overflow: visible;
     }
 
     /* ── Profile Pic ── */
@@ -164,10 +164,11 @@
     .profile-info {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 0;
       opacity: 0;
       transition: opacity 0.22s ease;
+      width: 100%;
     }
     .profile-info.loaded { opacity: 1; }
 
@@ -372,14 +373,46 @@
     .highlights-section {
       margin-top: 18px;
       padding-bottom: 4px;
+      width: 100%;
     }
 
     .highlights-scroll {
       display: flex;
       gap: 10px;
       overflow-x: auto;
+      overflow-y: hidden;
       padding-bottom: 2px;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      min-width: 0;
+    }
+    .highlights-scroll .hl-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      visibility: visible;
+    }
+    .highlights-scroll .hl-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      visibility: visible;
+    }
+    .highlights-scroll .hl-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      visibility: visible;
     }
     .highlights-scroll::-webkit-scrollbar { display: none; }
 
@@ -621,10 +654,11 @@
       align-items: center;
       justify-content: center;
       gap: 0;
-      border-top: 1.5px solid var(--border);
       margin: 0 calc(-1 * var(--pad));
-      padding-top: 4px;
+      padding-top: 8px;
+      padding-bottom: 4px;
       margin-top: 6px;
+      border-top: none;
     }
 
     .posts-tab-btn {
@@ -632,7 +666,7 @@
       align-items: center;
       justify-content: center;
       flex: 1;
-      padding: 12px 0 10px;
+      padding: 8px 0 12px;
       border: none;
       background: none;
       color: var(--text-muted);
@@ -658,6 +692,11 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 2px;
       padding: 2px 0 80px;
+      width: 100%;
+      min-height: 0;
+    }
+    .grid-view:not(.hidden) {
+      display: grid !important;
     }
 
     .grid-cell {
@@ -752,7 +791,184 @@
        POST CARDS LIST (legacy — unused, kept out of flow)
     ══════════════════════════════════════ */
     .posts-list { display: none; }
-  </style>
+  
+
+    /* ══════════════════════════════════════
+       POST CARDS (index.html style)
+       ══════════════════════════════════════ */
+    #postsListView {
+      display: block;
+      padding: 0;
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 0;
+    }
+    #postsListView .post-card {
+      display: block;
+      width: 100%;
+      visibility: visible;
+      opacity: 1;
+    }
+    .post-card {
+      background: #fff;
+      margin-bottom: 0;
+      border-bottom: 1px solid rgba(224,224,224,0.4);
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px 6px;
+      gap: 10px;
+    }
+    .post-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .post-info { flex: 1; }
+    .post-author {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1a1a1a;
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #888;
+      margin-top: 1px;
+    }
+    .post-username { color: #888; }
+    .post-dot {
+      width: 3px;
+      height: 3px;
+      background: #bbb;
+      border-radius: 50%;
+    }
+    .post-time { color: #888; }
+    .post-more {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #666;
+    }
+    .post-more:hover { background: #f0f0f0; }
+    .post-more i { font-size: 16px; }
+    .post-image {
+      width: calc(100% - 24px);
+      margin: 0 12px;
+      border-radius: 12px;
+      max-height: 500px;
+      height: auto;
+      object-fit: contain;
+    }
+    .post-content {
+      padding: 6px 12px 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .post-actions {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 20px;
+      border-top: none;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: #666;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 6px 0;
+      transition: color .2s;
+    }
+    .action-btn:hover { color: #1877f2; }
+    .action-btn i { font-size: 20px; }
+    .action-btn.liked { color: #ff3b30; }
+    .action-btn.liked i { font-weight: 900; }
+    .action-btn.saved { color: #1877f2; }
+    .action-btn.saved i { font-weight: 900; }
+    .save-btn { margin-left: auto; }
+
+    /* ══════════════════════════════════════
+       POST OPTIONS BOTTOM SHEET
+       ══════════════════════════════════════ */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 3000;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .sheet-overlay.active { display: flex; }
+    .sheet-modal {
+      background: #FAFAFA;
+      border-radius: 16px 16px 0 0;
+      width: 100%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUpSheet .3s ease;
+    }
+    @keyframes slideUpSheet {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: #ccc;
+      border-radius: 2px;
+      margin: 12px auto 8px;
+    }
+    .sheet-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: background .15s;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sheet-item:last-child { border-bottom: none; }
+    .sheet-item:hover { background: #f8f8f8; }
+    .sheet-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sheet-item-icon i { font-size: 18px; color: #333; }
+    .sheet-item-text { flex: 1; }
+    .sheet-item-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .sheet-item-desc {
+      font-size: 11px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body>
 
@@ -1006,24 +1222,48 @@
           </button>
         </div>
 
-        <!-- ══ Grid Views ══ -->
-        <div class="grid-view" id="allGrid"></div>
+        <!-- ══ Grid Views (hidden by default) ══ -->
+        <div class="grid-view hidden" id="allGrid"></div>
         <div class="grid-view hidden" id="photosGrid"></div>
         <div class="grid-view hidden" id="reelsGrid"></div>
         <div class="grid-view hidden" id="savedGrid"></div>
 
-        <!-- legacy container kept (unused) -->
-        <div class="posts-list" id="postsList">
-          <div class="posts-empty hidden" id="postsEmpty"></div>
-        </div>
-
       </div>
+
     </main>
+
+    <!-- ══ Posts List View — index.html এর মতো main এর বাইরে ══ -->
+    <div id="postsListView"></div>
 
   </div>
 
 
-  <!-- ══ Upload Modal ══ -->
+        <!-- ══ Post Options Bottom Sheet ══ -->
+  <div class="sheet-overlay" id="postOptionsSheet">
+    <div class="sheet-modal">
+      <div class="sheet-handle"></div>
+      <div class="sheet-item" onclick="sheetAction('save')">
+        <div class="sheet-item-icon"><i class="far fa-bookmark"></i></div>
+        <div class="sheet-item-text">
+          <div class="sheet-item-title">Save post</div>
+        </div>
+      </div>
+      <div class="sheet-item hidden" id="sheetEditPost" onclick="sheetAction('edit')">
+        <div class="sheet-item-icon"><i class="far fa-edit"></i></div>
+        <div class="sheet-item-text">
+          <div class="sheet-item-title">Edit post</div>
+        </div>
+      </div>
+      <div class="sheet-item hidden" id="sheetDeletePost" onclick="sheetAction('delete')">
+        <div class="sheet-item-icon" style="color:#ff3b30"><i class="far fa-trash-alt"></i></div>
+        <div class="sheet-item-text">
+          <div class="sheet-item-title" style="color:#ff3b30">Delete post</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ══ Upload Modal ══ -->
   <div class="modal-overlay hidden" id="uploadModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -1183,15 +1423,9 @@
   <!-- ══ Firebase ══ -->
   <script type="module">
     import { auth, db, app, uploadToCloudinary } from "./config.js";
-    import {
-      onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import {
-      ref, onValue, push, set, remove, get, update
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-    import {
-      getFunctions, httpsCallable
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-functions.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { ref, onValue, push, set, remove, get, update } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-functions.js";
 
     // ── Cloud Functions ───────────────────────────────────────
     const fns          = getFunctions(app);
@@ -1733,17 +1967,16 @@
     }
 
     // ── Load highlights ───────────────────────────────────────
-    function loadHighlights(uid) {
-      onValue(ref(db, `users/${uid}/highlights`), (snap) => {
-        highlightsRow.querySelectorAll(".hl-existing").forEach(el => el.remove());
-        if (!snap.exists()) return;
-        const items = [];
-        snap.forEach(child => items.push({ id: child.key, ...child.val() }));
-        items.sort((a, b) => a.timestamp - b.timestamp);
-        items.forEach(item => {
-          const el = buildHighlightItem(item);
-          highlightsRow.appendChild(el);
-        });
+    async function loadHighlights(uid) {
+      const snap = await get(ref(db, `users/${uid}/highlights`));
+      highlightsRow.querySelectorAll(".hl-existing").forEach(el => el.remove());
+      if (!snap.exists()) return;
+      const items = [];
+      snap.forEach(child => items.push({ id: child.key, ...child.val() }));
+      items.sort((a, b) => a.timestamp - b.timestamp);
+      items.forEach(item => {
+        const el = buildHighlightItem(item);
+        highlightsRow.appendChild(el);
       });
     }
 
@@ -1816,7 +2049,7 @@
       modalPostBtn.disabled = true;
 
       try {
-        const { url, resourceType } = await uploadToCloudinary(selectedFile, "highlights");
+        const { url, resourceType } = await uploadToCloudinary(selectedFile);
         const hlRef = push(ref(db, `users/${currentUser.uid}/highlights`));
         await set(hlRef, {
           mediaUrl:  url,
@@ -1826,6 +2059,7 @@
         });
         uploadModal.classList.add("hidden");
         selectedFile = null;
+        await loadHighlights(currentUser.uid);
       } catch (err) {
         console.error("Upload error:", err);
         alert("Upload failed. Please try again.");
@@ -1877,6 +2111,7 @@
         hlViewer.classList.add("hidden");
         hlViewerMedia.innerHTML = "";
         currentHlId = null;
+        await loadHighlights(currentUser.uid);
       } catch (err) {
         console.error("Delete error:", err);
         alert("Delete failed. Please try again.");
@@ -1892,15 +2127,240 @@
     // ══════════════════════════════════════
     //  TABS: All / Photos / Reels / Saved
     // ══════════════════════════════════════
+    // ── Post Card Helpers ───────────────────────────────────
+    function renderPostsList(items, container) {
+      container.innerHTML = "";
+      if (!items.length) {
+        container.innerHTML = `
+          <div class="post-card" style="padding:48px 20px;text-align:center;color:#888">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.35;margin-bottom:12px">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            <p style="font-size:14px;font-weight:500">No posts yet</p>
+          </div>
+        `;
+        return;
+      }
+      items.forEach(post => {
+        const postEl = createPostElement(post);
+        container.appendChild(postEl);
+      });
+    }
+
+    function createPostElement(post) {
+      const div = document.createElement("div");
+      div.className = "post-card";
+      div.dataset.postId = post.id;
+      div.dataset.ownerUid = post.ownerUid;
+
+      const timeAgo = getTimeAgo(post.timestamp);
+      const isLiked = post.likes && post.likes[currentUser?.uid];
+      const isSaved = post.saves && post.saves[currentUser?.uid];
+      const likeCount = post.likes ? Object.keys(post.likes).length : 0;
+      const commentCount = post.comments ? Object.keys(post.comments).length : 0;
+      const shareCount = post.shares || 0;
+
+      const mediaHtml = post.mediaUrl ?
+        (post.mediaType === "video" ?
+          `<video src="${esc(post.mediaUrl)}" class="post-image" controls playsinline></video>` :
+          `<img src="${esc(post.mediaUrl)}" alt="Post Image" class="post-image" loading="lazy">`)
+        : "";
+
+      div.innerHTML = `
+        <div class="post-header">
+          <img src="${esc(post.authorAvatar || "https://i.pravatar.cc/150?img=11")}" alt="${esc(post.authorName)}" class="post-avatar">
+          <div class="post-info">
+            <div class="post-author">${esc(post.authorName)}</div>
+            <div class="post-meta">
+              <span class="post-username">@${esc(post.authorUsername || "user")}</span>
+              <span class="post-dot"></span>
+              <span class="post-time">${timeAgo}</span>
+            </div>
+          </div>
+          <div class="post-more" onclick="openPostOptions('${post.id}', '${post.ownerUid}')"><i class="fas fa-ellipsis-v"></i></div>
+        </div>
+        ${post.caption ? `<div class="post-content">${esc(post.caption)}</div>` : ""}
+        ${mediaHtml}
+        <div class="post-actions">
+          <div class="action-btn ${isLiked ? "liked" : ""}" onclick="toggleLike('${post.id}', '${post.ownerUid}', this)">
+            <i class="${isLiked ? "fas" : "far"} fa-heart"></i>
+            <span>${likeCount}</span>
+          </div>
+          <div class="action-btn" onclick="openComments('${post.id}', '${post.ownerUid}')">
+            <i class="far fa-comment"></i>
+            <span>${commentCount}</span>
+          </div>
+          <div class="action-btn" onclick="sharePost('${post.id}', '${post.ownerUid}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5v10"/><path d="M5 5l-3 3"/><path d="M5 5l3 3"/><path d="M19 19V9"/><path d="M19 19l-3-3"/><path d="M19 19l3-3"/><path d="M5 15c0 2.4 1.8 4 4.5 4H11"/><path d="M19 9c0-2.4-1.8-4-4.5-4H13"/></svg>
+            <span>${shareCount}</span>
+          </div>
+          <div class="action-btn"><i class="far fa-paper-plane"></i></div>
+          <div class="action-btn save-btn ${isSaved ? "saved" : ""}" onclick="toggleSave('${post.id}', '${post.ownerUid}', this)">
+            <i class="${isSaved ? "fas" : "far"} fa-bookmark"></i>
+          </div>
+        </div>
+      `;
+
+      return div;
+    }
+
+    function getTimeAgo(timestamp) {
+      if (!timestamp) return "now";
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+      if (seconds < 60) return "just now";
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d`;
+      const weeks = Math.floor(days / 7);
+      return `${weeks}w`;
+    }
+
+    // ── Post Interactions ────────────────────────────────────
+    window.toggleLike = async function(postId, ownerUid, btn) {
+      if (!currentUser) return;
+      const likeRef = ref(db, `posts/${ownerUid}/${postId}/likes/${currentUser.uid}`);
+      const snap = await get(likeRef);
+      if (snap.exists()) {
+        await remove(likeRef);
+        btn.classList.remove("liked");
+        btn.querySelector("i").classList.remove("fas");
+        btn.querySelector("i").classList.add("far");
+        const count = parseInt(btn.querySelector("span").textContent) - 1;
+        btn.querySelector("span").textContent = Math.max(0, count);
+      } else {
+        await set(likeRef, true);
+        btn.classList.add("liked");
+        btn.querySelector("i").classList.remove("far");
+        btn.querySelector("i").classList.add("fas");
+        const count = parseInt(btn.querySelector("span").textContent) + 1;
+        btn.querySelector("span").textContent = count;
+      }
+    };
+
+    window.toggleSave = async function(postId, ownerUid, btn) {
+      if (!currentUser) return;
+      const saveRef = ref(db, `savedPosts/${currentUser.uid}/${postId}`);
+      const snap = await get(saveRef);
+      if (snap.exists()) {
+        await remove(saveRef);
+        btn.classList.remove("saved");
+        btn.querySelector("i").classList.remove("fas");
+        btn.querySelector("i").classList.add("far");
+      } else {
+        await set(saveRef, { postId, ownerUid, savedAt: Date.now() });
+        btn.classList.add("saved");
+        btn.querySelector("i").classList.remove("far");
+        btn.querySelector("i").classList.add("fas");
+      }
+    };
+
+    window.sharePost = async function(postId, ownerUid) {
+      if (!currentUser) return;
+      try {
+        const shareRef = ref(db, `posts/${ownerUid}/${postId}/shares`);
+        const snap = await get(shareRef);
+        const currentShares = snap.exists() ? (snap.val() || 0) : 0;
+        await set(shareRef, currentShares + 1);
+        showToast("Post shared!");
+      } catch (err) {
+        console.error(err);
+        showToast("Share failed");
+      }
+    };
+
+    window.openComments = function(postId, ownerUid) {
+      showToast("Comments - coming soon");
+    };
+
+    // ── Post Options Sheet ───────────────────────────────────
+    let currentPostId = null;
+    let currentPostOwner = null;
+
+    window.openPostOptions = function(postId, ownerUid) {
+      currentPostId = postId;
+      currentPostOwner = ownerUid;
+      // Show/hide edit/delete based on ownership
+      const isOwner = currentUser && currentUser.uid === ownerUid;
+      const editBtn = document.getElementById("sheetEditPost");
+      const deleteBtn = document.getElementById("sheetDeletePost");
+      if (editBtn) editBtn.classList.toggle("hidden", !isOwner);
+      if (deleteBtn) deleteBtn.classList.toggle("hidden", !isOwner);
+      document.getElementById("postOptionsSheet").classList.add("active");
+      document.body.style.overflow = "hidden";
+    };
+
+window.closePostOptions = function() {
+      document.getElementById("postOptionsSheet").classList.remove("active");
+      document.body.style.overflow = "";
+      currentPostId = null;
+      currentPostOwner = null;
+    };
+
+    window.sheetAction = async function(action) {
+      const postId   = currentPostId;
+      const ownerUid = currentPostOwner;
+      closePostOptions();
+      if (!postId || !ownerUid) return;
+      switch(action) {
+        case "save": {
+          const saveBtn = document.querySelector(`[data-post-id="${postId}"] .save-btn`);
+          if (saveBtn) toggleSave(postId, ownerUid, saveBtn);
+          break;
+        }
+        case "edit":
+          showToast("Edit post - coming soon");
+          break;
+        case "delete": {
+          if (!confirm("Delete this post?")) return;
+          try {
+            await remove(ref(db, `posts/${ownerUid}/${postId}`));
+            // postsCount decrement
+            const countRef  = ref(db, `users/${ownerUid}/postsCount`);
+            const countSnap = await get(countRef);
+            const cur = countSnap.exists() ? (countSnap.val() || 0) : 0;
+            await update(ref(db, `users/${ownerUid}`), { postsCount: Math.max(0, cur - 1) });
+            showToast("Post deleted");
+            // Reload posts list
+            await loadPosts(ownerUid);
+          } catch (err) {
+            console.error("Delete error:", err);
+            showToast("Delete failed: " + err.message);
+          }
+          break;
+        }
+      }
+    };
+
+document.getElementById("postOptionsSheet").addEventListener("click", function(e) {
+      if (e.target === this) closePostOptions();
+    });
+
+    // ══════════════════════════════════════
+    //  TABS: All / Photos / Reels / Saved
+    // ══════════════════════════════════════
     function setActiveTab(name) {
       allTab.classList.toggle("active", name === "all");
       photosTab.classList.toggle("active", name === "photos");
       reelsTab.classList.toggle("active", name === "reels");
       savedTab.classList.toggle("active", name === "saved");
+
+      const postsListView = document.getElementById("postsListView");
       allGrid.classList.toggle("hidden", name !== "all");
       photosGrid.classList.toggle("hidden", name !== "photos");
       reelsGrid.classList.toggle("hidden", name !== "reels");
       savedGrid.classList.toggle("hidden", name !== "saved");
+
+      if (name === "all") {
+        postsListView.style.display = "block";
+        allGrid.classList.add("hidden");
+      } else {
+        postsListView.style.display = "none";
+      }
     }
     allTab.addEventListener("click",    () => setActiveTab("all"));
     photosTab.addEventListener("click", () => setActiveTab("photos"));
@@ -1989,33 +2449,43 @@
       if (!item) return;
       if (!confirm("Delete this post?")) return;
       try {
-        await remove(ref(db, `posts/${currentUser.uid}/${item.id}`));
-        const countSnap = await get(ref(db, `users/${currentUser.uid}/postsCount`));
+        const postRef = ref(db, `posts/${currentUser.uid}/${item.id}`);
+        await remove(postRef);
+        const countRef = ref(db, `users/${currentUser.uid}/postsCount`);
+        const countSnap = await get(countRef);
         const cur = countSnap.exists() ? (countSnap.val() || 0) : 0;
         await update(ref(db, `users/${currentUser.uid}`), { postsCount: Math.max(0, cur - 1) });
         mediaViewer.classList.add("hidden");
         mediaViewerScroll.innerHTML = "";
+        showToast("Post deleted");
+        await loadPosts(currentUser.uid);
       } catch (err) {
         console.error("Delete post error:", err);
-        alert("Delete failed. Please try again.");
+        showToast("Delete failed: " + err.message);
       }
     });
 
     // ── Load posts ────────────────────────────────────────────
-    function loadPosts(uid) {
-      onValue(ref(db, `posts/${uid}`), (snap) => {
-        const items = [];
-        snap.forEach(child => items.push({ id: child.key, ownerUid: uid, ...child.val() }));
-        items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    async function loadPosts(uid) {
+      const snap = await get(ref(db, `posts/${uid}`));
+      const items = [];
+      snap.forEach(child => items.push({ id: child.key, ownerUid: uid, ...child.val() }));
+      items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        allItems   = items;
-        photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
-        reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
-
-        renderGrid(allGrid, allItems, "all");
-        renderGrid(photosGrid, photoItems, "photos");
-        renderGrid(reelsGrid, reelItems, "reels");
+      // Enrich with author info for list view
+      items.forEach(post => {
+        post.authorName     = post.authorName     || profileName.textContent     || "User";
+        post.authorUsername = post.authorUsername || (profileUsername.textContent?.replace("@", "") || "user");
+        post.authorAvatar   = post.authorAvatar   || (profilePic.querySelector("img")?.src || "https://i.pravatar.cc/150?img=11");
       });
+
+      allItems   = items;
+      photoItems = items.filter(p => p.mediaUrl && p.mediaType !== "video" && p.mediaType !== "audio");
+      reelItems  = items.filter(p => p.mediaUrl && p.mediaType === "video");
+
+      renderPostsList(allItems, document.getElementById("postsListView"));
+      renderGrid(photosGrid, photoItems, "photos");
+      renderGrid(reelsGrid, reelItems, "reels");
     }
 
     // ── Load saved posts ──────────────────────────────────────
@@ -2042,7 +2512,7 @@
         renderGrid(savedGrid, savedItems, "saved");
       });
     }
-  </script>
+</script>
 
 </body>
 </html>
