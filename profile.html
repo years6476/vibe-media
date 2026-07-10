@@ -396,34 +396,7 @@
       cursor: pointer;
       visibility: visible;
     }
-    .highlights-scroll .hl-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-      cursor: pointer;
-      visibility: visible;
-    }
-    .highlights-scroll .hl-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-      cursor: pointer;
-      visibility: visible;
-    }
     .highlights-scroll::-webkit-scrollbar { display: none; }
-
-    .hl-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
 
     .hl-media {
       width: 78px;
@@ -1423,13 +1396,6 @@
     import { auth, db, app, uploadToCloudinary } from "./config.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
     import { ref, onValue, push, set, remove, get, update } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-functions.js";
-
-    // ── Cloud Functions ───────────────────────────────────────
-    const fns          = getFunctions(app);
-    const fnAccept     = httpsCallable(fns, 'acceptFriendRequest');
-    const fnUnfriend   = httpsCallable(fns, 'unfriend');
-    const fnBlock      = httpsCallable(fns, 'blockUser');
 
     const $ = (id) => document.getElementById(id);
 
@@ -1650,7 +1616,12 @@
 
       if (!isOwnProfile) {
         // Load relationship state then render visitor buttons
-        loadVisitorState(profileUid);
+        loadVisitorState(profileUid).catch(err => {
+          console.error("loadVisitorState failed:", err);
+          friendState = "none";
+          isFollowing = false;
+          renderVisitorPrimaryBtn(parseInt(friendsCount.textContent) || 0);
+        });
       }
 
       loadProfile(profileUid);
@@ -1738,8 +1709,11 @@
       const me = currentUser.uid;
       const [friendSnap, sentSnap, recvSnap, followSnap] = await Promise.all([
         get(ref(db, `friends/${me}/${targetUid}`)),
-        get(ref(db, `friendRequests/${targetUid}/${me}`)),  // sent by me
-        get(ref(db, `friendRequests/${me}/${targetUid}`)),  // received from them
+        // NOTE: friendRequests/{targetUid}/{me} is NOT readable by me — rules only
+        // let $toUid read their own inbox (.read: auth.uid == $toUid, no OR).
+        // sentFriendRequests/{me}/{targetUid} is my own record instead, which I can read.
+        get(ref(db, `sentFriendRequests/${me}/${targetUid}`)),  // sent by me
+        get(ref(db, `friendRequests/${me}/${targetUid}`)),      // received from them (my own inbox — readable)
         get(ref(db, `following/${me}/${targetUid}`))
       ]);
 
@@ -1756,6 +1730,15 @@
       isFollowing = followSnap.exists();
       updateFollowLabel();
     }
+
+    /**
+     * NOTE: friendsCount দিয়ে "public figure" ধরে নেওয়াটা একটা fragile heuristic —
+     * সাধারণ কিন্তু জনপ্রিয় ইউজারও ভুলভাবে "Follow-only" হয়ে যেতে পারে।
+     * ভবিষ্যতে users/{uid}/isPublicFigure (বা অনুরূপ) ফ্ল্যাগ থাকলে সেটা দিয়েই
+     * এই সিদ্ধান্ত নেওয়া উচিত। এখানে শুধু magic number টাকে নামকরণ করা হলো,
+     * আসল বিজনেস-লজিক পরিবর্তন করা হয়নি (এটা প্রোডাক্ট সিদ্ধান্ত, কোড-বাগ না)।
+     */
+    const PUBLIC_FIGURE_FRIEND_THRESHOLD = 10000;
 
     /**
      * Primary button (Add Friend / Follow / state button) render.
@@ -1791,7 +1774,7 @@
       } else {
         // কোনো relationship নেই
         vsUnfriendBtn.classList.add("hidden");
-        if (friendCountVal > 10000) {
+        if (friendCountVal > PUBLIC_FIGURE_FRIEND_THRESHOLD) {
           // 10k+ friends → Follow
           followBtn.classList.remove("hidden");
         } else {
@@ -1812,8 +1795,11 @@
       const now = Date.now();
       try {
         // Request পাঠানো + auto-follow
+        // NOTE: friendRequests/{toUid}/{fromUid} স্কিমা friend.html-এর সাথে মিলিয়ে
+        // { fromUid, status: 'pending', timestamp } রাখা হচ্ছে, নাহলে এই request
+        // friend.html-এর Requests ট্যাবে (যা status === 'pending' ফিল্টার করে) দেখাবে না।
         await Promise.all([
-          set(ref(db, `friendRequests/${profileUid}/${me}`), { sentAt: now }),
+          set(ref(db, `friendRequests/${profileUid}/${me}`), { fromUid: me, status: "pending", timestamp: now }),
           set(ref(db, `sentFriendRequests/${me}/${profileUid}`), { sentAt: now }),
           set(ref(db, `following/${me}/${profileUid}`), { followedAt: now })
         ]);
@@ -1844,6 +1830,9 @@
         }
         // Update button label
         followBtn.textContent = isFollowing ? "Following" : "Follow";
+        // Client-side only: keep the visible count in sync immediately (no new DB write, no rules concern).
+        const curFollowers = parseInt(followersCount.textContent) || 0;
+        followersCount.textContent = Math.max(0, curFollowers + (isFollowing ? 1 : -1));
         showToast(isFollowing ? "Following!" : "Unfollowed");
       } catch (err) {
         console.error("Follow error:", err);
@@ -1855,12 +1844,27 @@
 
     // ── Friend State button click (Friend / Request Sent / Accept) ─
     friendStateBtn.addEventListener("click", async () => {
+      const me = currentUser.uid;
+
       if (friendState === "request_received") {
-        // Accept request
+        // Accept request — direct client writes (rules-compliant, no Cloud Function).
         friendStateBtn.disabled  = true;
         friendStateBtn.textContent = "...";
+        const now = Date.now();
         try {
-          await fnAccept({ senderUid: profileUid });
+          await Promise.all([
+            remove(ref(db, `friendRequests/${me}/${profileUid}`)),
+            remove(ref(db, `friendRequests/${profileUid}/${me}`)), // defensive: clears a mutual/simultaneous request too
+            remove(ref(db, `sentFriendRequests/${profileUid}/${me}`)), // their sent-record — now resolved
+            remove(ref(db, `sentFriendRequests/${me}/${profileUid}`)), // defensive, mutual-request edge case
+            set(ref(db, `friends/${me}/${profileUid}`), { timestamp: now }),
+            set(ref(db, `friends/${profileUid}/${me}`), { timestamp: now })
+          ]);
+          // NOTE: following/$uid rules only allow auth.uid == $uid (no OR),
+          // so I can only set MY OWN follow here. profileUid's follow-of-me
+          // already happened on their side when they originally sent the
+          // request (see addFriendBtn's auto-follow) — nothing lost.
+          await set(ref(db, `following/${me}/${profileUid}`), { followedAt: now });
           friendState = "friend";
           isFollowing = true;
           updateFollowLabel();
@@ -1872,8 +1876,33 @@
           friendStateBtn.disabled = false;
           friendStateBtn.textContent = "Accept Request";
         }
+
+      } else if (friendState === "request_sent") {
+        // Cancel a request I sent — new capability (A can withdraw a pending request to B).
+        friendStateBtn.disabled = true;
+        const prevText = friendStateBtn.textContent;
+        friendStateBtn.textContent = "...";
+        try {
+          await Promise.all([
+            remove(ref(db, `friendRequests/${profileUid}/${me}`)),
+            remove(ref(db, `sentFriendRequests/${me}/${profileUid}`))
+          ]);
+          // Undo the auto-follow that happened when the request was sent —
+          // it was a side-effect of the request, not an independent choice.
+          await remove(ref(db, `following/${me}/${profileUid}`));
+          friendState = "none";
+          isFollowing = false;
+          updateFollowLabel();
+          renderVisitorPrimaryBtn(parseInt(friendsCount.textContent) || 0);
+          showToast("Friend request cancelled.");
+        } catch (err) {
+          console.error("Cancel request error:", err);
+          showToast("Failed. Please try again.");
+          friendStateBtn.disabled = false;
+          friendStateBtn.textContent = prevText;
+        }
       }
-      // "friend" বা "request_sent" — button এ click করলে কিছু হবে না
+      // friendState === "friend" এ click করলে কিছু হয় না — unfriend করতে bottom sheet ব্যবহার হয়
     });
 
     // ══════════════════════════════════════════════════════════
@@ -1910,6 +1939,9 @@
           isFollowing = true;
           showToast("Following! Their posts will now appear in your feed.");
         }
+        // Client-side only: keep the visible count in sync immediately (no new DB write — see note above).
+        const curFollowers = parseInt(followersCount.textContent) || 0;
+        followersCount.textContent = Math.max(0, curFollowers + (isFollowing ? 1 : -1));
         updateFollowLabel();
       } catch (err) {
         console.error("Follow/Unfollow error:", err);
@@ -1920,8 +1952,22 @@
     // ── VS: Block ───────────────────────────────────────────
     vsBlockBtn.addEventListener("click", async () => {
       vsheetOverlay.classList.add("hidden");
+      const me = currentUser.uid;
       try {
-        await fnBlock({ targetUid: profileUid });
+        await Promise.all([
+          remove(ref(db, `friends/${me}/${profileUid}`)),
+          remove(ref(db, `friends/${profileUid}/${me}`)),
+          remove(ref(db, `friendRequests/${me}/${profileUid}`)),
+          remove(ref(db, `friendRequests/${profileUid}/${me}`)),
+          remove(ref(db, `sentFriendRequests/${me}/${profileUid}`)),
+          remove(ref(db, `sentFriendRequests/${profileUid}/${me}`)),
+          remove(ref(db, `following/${me}/${profileUid}`))
+          // NOTE: following/${profileUid}/${me} (their follow of me) can't be
+          // removed from here — following/$uid rules only allow auth.uid == $uid,
+          // no OR clause. There's also no blockedUsers node in the current rules,
+          // so this clears the relationship on my side but isn't a persisted,
+          // server-enforced block (same limitation as before, now just explicit).
+        ]);
         // Block করলে page থেকে সরে যাবে
         showToast("User blocked.");
         setTimeout(() => history.back(), 1500);
@@ -1934,8 +1980,16 @@
     // ── VS: Unfriend ────────────────────────────────────────
     vsUnfriendBtn.addEventListener("click", async () => {
       vsheetOverlay.classList.add("hidden");
+      const me = currentUser.uid;
       try {
-        await fnUnfriend({ targetUid: profileUid });
+        await Promise.all([
+          remove(ref(db, `friends/${me}/${profileUid}`)),
+          remove(ref(db, `friends/${profileUid}/${me}`)),
+          remove(ref(db, `following/${me}/${profileUid}`))
+          // friendRequests/ ছোঁয়া হয়নি — unfriend করলে আবার request পাঠানো যাবে।
+          // following/${profileUid}/${me} ছোঁয়া যায়নি — rules অনুযায়ী শুধু নিজের
+          // own node লেখা/মোছা যায় (auth.uid == $uid, কোনো OR নেই)।
+        ]);
         friendState = "none";
         isFollowing = false;
         updateFollowLabel();
@@ -2432,9 +2486,29 @@ document.getElementById("postOptionsSheet").addEventListener("click", function(e
     }
 
     // ── Fullscreen media viewer ───────────────────────────────
+    // mvCurrentIndex is kept up to date by a debounced scroll listener (see below)
+    // instead of being recomputed only once, at click time, from scrollLeft — which
+    // could momentarily be out of sync with what's on screen (e.g. mid-snap on touch
+    // devices), previously risking the wrong post being deleted.
+    let mvCurrentIndex   = 0;
+    let mvScrollSettleId = null;
+
+    function clampMvIndex(idx) {
+      return Math.max(0, Math.min(idx, activeMediaList.length - 1));
+    }
+
+    mediaViewerScroll.addEventListener("scroll", () => {
+      clearTimeout(mvScrollSettleId);
+      mvScrollSettleId = setTimeout(() => {
+        const w = mediaViewerScroll.clientWidth || 1;
+        mvCurrentIndex = clampMvIndex(Math.round(mediaViewerScroll.scrollLeft / w));
+      }, 100);
+    });
+
     function openMediaViewer(items, startIndex, source) {
       activeMediaList   = items;
       activeMediaSource = source;
+      mvCurrentIndex    = clampMvIndex(startIndex);
 
       mediaViewerScroll.innerHTML = "";
       items.forEach((item) => {
@@ -2465,7 +2539,12 @@ document.getElementById("postOptionsSheet").addEventListener("click", function(e
 
     mediaViewerDeleteBtn.addEventListener("click", async () => {
       if (!isOwnProfile) return;
-      const idx = Math.round(mediaViewerScroll.scrollLeft / mediaViewerScroll.clientWidth);
+      // Compute live (scroll-snap has normally settled by the time a tap registers),
+      // but guard against NaN/0-width edge cases by falling back to the last
+      // debounce-tracked, known-good index, and always clamp into range.
+      const w = mediaViewerScroll.clientWidth;
+      const rawIdx = w ? Math.round(mediaViewerScroll.scrollLeft / w) : NaN;
+      const idx = clampMvIndex(Number.isFinite(rawIdx) ? rawIdx : mvCurrentIndex);
       const item = activeMediaList[idx];
       if (!item) return;
       if (!confirm("Delete this post?")) return;
@@ -2494,28 +2573,11 @@ document.getElementById("postOptionsSheet").addEventListener("click", function(e
         postsUnsubscribe = null;
       }
 
-      // Try multiple possible paths where posts might be stored
-      const possiblePaths = [
-        `posts/${uid}`,
-        `userPosts/${uid}`,
-        `users/${uid}/posts`
-      ];
-
-      let foundPath = null;
-
-      // Try each path and use the first one that has data
-      for (const path of possiblePaths) {
-        const testRef = ref(db, path);
-        const testSnap = await get(testRef);
-        if (testSnap.exists()) {
-          foundPath = path;
-          break;
-        }
-      }
-
-      // Default to posts/${uid} if none found
-      const postsPath = foundPath || `posts/${uid}`;
-      const postsRef = ref(db, postsPath);
+      // posts/{uid} is the one canonical path — every other post operation in this
+      // file (like, save, delete, comment placeholder) already reads/writes it
+      // directly, so probing alternate paths here only risked picking up stale
+      // data from an unrelated/legacy location.
+      const postsRef = ref(db, `posts/${uid}`);
 
       postsUnsubscribe = onValue(postsRef, (snap) => {
         const items = [];
