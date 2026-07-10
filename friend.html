@@ -1252,7 +1252,7 @@
 import { auth, db } from "./config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import {
-  ref, get, set, remove, serverTimestamp
+  ref, get, set, remove, onValue, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
 // ─── Toast ───────────────────────────────────────────────────
@@ -1297,6 +1297,8 @@ let currentMoreRow   = null;
 let friendsData      = [];
 let sentRequests     = new Set();
 let blockedSet       = new Set(); // client-side block tracking (rules এ নেই)
+let friendsUnsubscribe  = null; // fixes bug #10: loadFriends is now realtime (onValue), not a one-time get()
+let requestsUnsubscribe = null; // fixes bug #10: loadRequests is now realtime (onValue), not a one-time get()
 
 // ─── Helpers ─────────────────────────────────────────────────
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=5B5FEF&color=fff&size=80&bold=true&name=";
@@ -1341,6 +1343,8 @@ function profileUrl(p) {
 // ─── Auth gate ────────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
   if (!user) {
+    if (friendsUnsubscribe)  { friendsUnsubscribe();  friendsUnsubscribe  = null; }
+    if (requestsUnsubscribe) { requestsUnsubscribe(); requestsUnsubscribe = null; }
     allFriendsList.innerHTML = '<div class="auth-gate"><p>বন্ধু দেখতে <a href="/login">লগইন</a> করুন।</p></div>';
     requestList.innerHTML = '';
     blockedList.innerHTML = '';
@@ -1349,61 +1353,69 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
   currentUid = user.uid;
-  Promise.all([loadFriends(), loadRequests(), loadBlocked(), loadSuggestions()]);
+  // loadFriends/loadRequests এখন realtime (onValue) — data promise না, তাই আলাদাভাবে কল করা হচ্ছে
+  loadFriends();
+  loadRequests();
+  Promise.all([loadBlocked(), loadSuggestions()]);
 });
 
 // ─────────────────────────────────────────────────────────────
 // 1. FRIENDS
-// Firebase rules এ আলাদা friends/ node নেই।
-// Friendship = friendRequests/{me}/{fromUid} যেখানে status === "accepted"
-//            + friendRequests/{fromUid}/{me} যেখানে status === "accepted"
-// আমরা friendRequests/{currentUid} পড়ে accepted গুলো বের করব।
+// friends/{currentUid}/{otherUid} — bidirectional friendship node.
+// Realtime (onValue) so accept/unfriend/block — from this page OR from
+// profile.html — shows up here immediately, without a manual reload.
 // ─────────────────────────────────────────────────────────────
-async function loadFriends() {
-  // friendRequests/{currentUid}/{fromUid} — others who sent me requests
-  const snap = await get(ref(db, `friendRequests/${currentUid}`));
-  allFriendsList.innerHTML = '';
-  friendsData = [];
+function loadFriends() {
+  if (friendsUnsubscribe) { friendsUnsubscribe(); friendsUnsubscribe = null; }
 
-  if (!snap.exists()) {
-    noFriendResults.style.display = '';
-    allFriendsCountEl.textContent = '0';
-    return;
-  }
+  friendsUnsubscribe = onValue(ref(db, `friends/${currentUid}`), async (snap) => {
+    friendsData = [];
 
-  // শুধু accepted গুলো নিই
-  const entries = Object.entries(snap.val()).filter(([, meta]) => meta.status === 'accepted');
+    if (!snap.exists()) {
+      allFriendsList.innerHTML = '';
+      noFriendResults.style.display = '';
+      allFriendsCountEl.textContent = '0';
+      return;
+    }
 
-  if (entries.length === 0) {
-    noFriendResults.style.display = '';
-    allFriendsCountEl.textContent = '0';
-    return;
-  }
+    const entries = Object.entries(snap.val());
 
-  const profiles = await Promise.all(entries.map(([uid]) => fetchProfile(uid)));
+    if (entries.length === 0) {
+      allFriendsList.innerHTML = '';
+      noFriendResults.style.display = '';
+      allFriendsCountEl.textContent = '0';
+      return;
+    }
 
-  entries.forEach(([uid, meta], i) => {
-    const p = profiles[i];
-    if (!p) return;
-    const isOnline = !!p.online;
-    friendsData.push({
-      uid,
-      name:         p._name,
-      username:     p.username || '',
-      avatar:       avatarFor(p._name, p._photo),
-      online:       isOnline,
-      active:       isOnline || (Date.now() - (p.lastSeen || 0) < 86400000),
-      addedAt:      meta.timestamp || 0,
-      interactions: p.interactions || 0,
-      mutual:       p.mutual || 0,
-      lastSeen:     p.lastSeen || 0,
-      _rawProfile:  p
+    const profiles = await Promise.all(entries.map(([uid]) => fetchProfile(uid)));
+
+    entries.forEach(([uid, meta], i) => {
+      const p = profiles[i];
+      if (!p) return;
+      const isOnline = !!p.online;
+      friendsData.push({
+        uid,
+        name:         p._name,
+        username:     p.username || '',
+        avatar:       avatarFor(p._name, p._photo),
+        online:       isOnline,
+        active:       isOnline || (Date.now() - (p.lastSeen || 0) < 86400000),
+        addedAt:      meta.timestamp || 0,
+        interactions: p.interactions || 0,
+        mutual:       p.mutual || 0,
+        lastSeen:     p.lastSeen || 0,
+        _rawProfile:  p
+      });
     });
-  });
 
-  renderFriends(friendsData);
-  allFriendsCountEl.textContent = friendsData.length;
-  noFriendResults.style.display = friendsData.length === 0 ? '' : 'none';
+    renderFriends(friendsData);
+    allFriendsCountEl.textContent = friendsData.length;
+    noFriendResults.style.display = friendsData.length === 0 ? '' : 'none';
+    // একটা active search/filter থাকলে সেটা realtime rebuild-এর পরও বজায় রাখা
+    if (document.querySelector('.tab-item.active')?.dataset.tab === 'all') {
+      refreshAllFriendsVisibility();
+    }
+  }, (err) => console.error('loadFriends listener error:', err));
 }
 
 function renderFriends(list) {
@@ -1468,94 +1480,133 @@ function renderFriends(list) {
 // 2. REQUESTS
 // friendRequests/{currentUid}/{fromUid} — pending মানে তারা আমাকে request পাঠিয়েছে
 // ─────────────────────────────────────────────────────────────
-async function loadRequests() {
-  const snap = await get(ref(db, `friendRequests/${currentUid}`));
-  requestList.innerHTML = '';
+function loadRequests() {
+  if (requestsUnsubscribe) { requestsUnsubscribe(); requestsUnsubscribe = null; }
 
-  if (!snap.exists()) {
-    noRequestResults.style.display = '';
-    requestCountEl.textContent = '0';
-    return;
-  }
+  requestsUnsubscribe = onValue(ref(db, `friendRequests/${currentUid}`), async (snap) => {
+    requestList.innerHTML = '';
 
-  // শুধু pending গুলো দেখাব
-  const allEntries = Object.entries(snap.val());
-  const entries    = allEntries.filter(([, meta]) => meta.status === 'pending');
-  const profiles   = await Promise.all(entries.map(([uid]) => fetchProfile(uid)));
-  let count = 0;
+    if (!snap.exists()) {
+      noRequestResults.style.display = '';
+      requestCountEl.textContent = '0';
+      return;
+    }
 
-  entries.forEach(([senderUid, meta], i) => {
-    const p = profiles[i];
-    if (!p) return;
+    // শুধু pending গুলো দেখাব
+    const allEntries = Object.entries(snap.val());
+    const entries    = allEntries.filter(([, meta]) => meta.status === 'pending');
+    const profiles   = await Promise.all(entries.map(([uid]) => fetchProfile(uid)));
+    let count = 0;
 
-    const name   = p._name;
-    const avatar = avatarFor(name, p._photo);
-    const when   = relTime(meta.timestamp);
+    entries.forEach(([senderUid, meta], i) => {
+      const p = profiles[i];
+      if (!p) return;
 
-    const row = document.createElement('div');
-    row.className        = 'friend-row';
-    row.dataset.uid      = senderUid;
-    row.dataset.name     = name.toLowerCase();
-    row.dataset.username = (p.username || '').toLowerCase();
+      const name   = p._name;
+      const avatar = avatarFor(name, p._photo);
+      const when   = relTime(meta.timestamp);
 
-    row.innerHTML = `
-      <img class="friend-avatar" src="${avatar}" alt="${name}" style="cursor:pointer;">
-      <div class="friend-info" style="cursor:pointer;">
-        <p class="friend-name">${name}</p>
-        <p class="friend-status">Requested ${when}</p>
-      </div>
-      <button class="btn-accept-request">Accept</button>
-      <button class="btn-remove-request">Remove</button>`;
+      const row = document.createElement('div');
+      row.className        = 'friend-row';
+      row.dataset.uid      = senderUid;
+      row.dataset.name     = name.toLowerCase();
+      row.dataset.username = (p.username || '').toLowerCase();
 
-    // Avatar + name → profile
-    const goReqProfile = () => window.location.href = p.username
-      ? `/profile?username=${encodeURIComponent(p.username)}`
-      : `/profile?uid=${senderUid}`;
-    row.querySelector('.friend-avatar').addEventListener('click', goReqProfile);
-    row.querySelector('.friend-info').addEventListener('click', goReqProfile);
+      row.innerHTML = `
+        <img class="friend-avatar" src="${avatar}" alt="${name}" style="cursor:pointer;">
+        <div class="friend-info" style="cursor:pointer;">
+          <p class="friend-name">${name}</p>
+          <p class="friend-status">Requested ${when}</p>
+        </div>
+        <button class="btn-accept-request">Accept</button>
+        <button class="btn-remove-request">Remove</button>`;
 
-    row.querySelector('.btn-accept-request').addEventListener('click', async () => {
-      await acceptRequest(senderUid, name, avatar, row);
+      // Avatar + name → profile
+      const goReqProfile = () => window.location.href = p.username
+        ? `/profile?username=${encodeURIComponent(p.username)}`
+        : `/profile?uid=${senderUid}`;
+      row.querySelector('.friend-avatar').addEventListener('click', goReqProfile);
+      row.querySelector('.friend-info').addEventListener('click', goReqProfile);
+
+      row.querySelector('.btn-accept-request').addEventListener('click', async () => {
+        await acceptRequest(senderUid, name, avatar, row);
+      });
+
+      row.querySelector('.btn-remove-request').addEventListener('click', async () => {
+        try {
+          // friendRequests/{me}/{fromUid} মুছে দিই (rules: $toUid বা $fromUid লিখতে পারে)
+          // sentFriendRequests/{fromUid}/{me} — তাদের sent-record, cleanup করা দরকার
+          // যাতে ওদের প্রোফাইল-ভিউ (loadVisitorState) স্টেল "Request Sent" না দেখায়
+          await Promise.all([
+            remove(ref(db, `friendRequests/${currentUid}/${senderUid}`)),
+            remove(ref(db, `sentFriendRequests/${senderUid}/${currentUid}`))
+          ]);
+        } catch (err) {
+          console.error('Remove request error:', err);
+          showToast('ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+          return;
+        }
+        row.remove();
+        updateRequestCount();
+        showToast('রিকোয়েস্ট বাতিল করা হয়েছে');
+      });
+
+      requestList.appendChild(row);
+      count++;
     });
 
-    row.querySelector('.btn-remove-request').addEventListener('click', async () => {
-      // friendRequests/{me}/{fromUid} মুছে দিই (rules: $toUid বা $fromUid লিখতে পারে)
-      await remove(ref(db, `friendRequests/${currentUid}/${senderUid}`));
-      row.remove();
-      updateRequestCount();
-      showToast('রিকোয়েস্ট বাতিল করা হয়েছে');
-    });
-
-    requestList.appendChild(row);
-    count++;
-  });
-
-  requestCountEl.textContent = count;
-  noRequestResults.style.display = count === 0 ? '' : 'none';
+    requestCountEl.textContent = count;
+    noRequestResults.style.display = count === 0 ? '' : 'none';
+    if (document.querySelector('.tab-item.active')?.dataset.tab === 'request') {
+      refreshListVisibility(requestList, searchInput.value, noRequestResults, requestCountEl);
+    }
+  }, (err) => console.error('loadRequests listener error:', err));
 }
 
 async function acceptRequest(senderUid, name, avatar, row) {
+  const acceptBtn = row.querySelector('.btn-accept-request');
+  if (acceptBtn) { acceptBtn.disabled = true; acceptBtn.textContent = '...'; }
+
   const now = Date.now();
-  // friendRequests/{me}/{fromUid} — status "accepted" করি
-  // Firebase rules: auth.uid === $toUid OR auth.uid === $fromUid
-  // এখানে currentUid === $toUid, senderUid === $fromUid
-  await set(ref(db, `friendRequests/${currentUid}/${senderUid}`), {
-    fromUid:   senderUid,
-    status:    'accepted',
-    timestamp: now
-  });
-  // Auto-follow দুদিকেই
-  await Promise.all([
-    set(ref(db, `following/${currentUid}/${senderUid}`), true),
-    set(ref(db, `following/${senderUid}/${currentUid}`), true)
-  ]);
+  try {
+    // 1. friendRequests: fromUid বা toUid যেকেউ লিখতে/মুছতে পারে (rules)
+    await Promise.all([
+      remove(ref(db, `friendRequests/${currentUid}/${senderUid}`)),
+      remove(ref(db, `friendRequests/${senderUid}/${currentUid}`)) // defensive: mutual/simultaneous request edge-case
+    ]);
+
+    // 1b. sentFriendRequests: এখন resolved, তাই দুই দিকেরই মুছে ফেলা হচ্ছে
+    //     (senderUid এর own sent-record, এবং defensive হিসেবে আমারটাও)
+    await Promise.all([
+      remove(ref(db, `sentFriendRequests/${senderUid}/${currentUid}`)),
+      remove(ref(db, `sentFriendRequests/${currentUid}/${senderUid}`))
+    ]);
+
+    // 2. friends: uid বা friendUid যেকেউ দুই দিকেই লিখতে পারে (rules)
+    await Promise.all([
+      set(ref(db, `friends/${currentUid}/${senderUid}`), { timestamp: now }),
+      set(ref(db, `friends/${senderUid}/${currentUid}`), { timestamp: now })
+    ]);
+
+    // 3. following: rules অনুযায়ী শুধু নিজের own node লেখা যায় (auth.uid == $uid, কোনো OR নেই),
+    //    তাই শুধু নিজেরটাই সেট করা হচ্ছে। senderUid-এর following/{senderUid}/{currentUid}
+    //    এমনিতেই সেট হয়ে গেছে যখন সে request পাঠিয়েছিল (auto-follow on send)।
+    await set(ref(db, `following/${currentUid}/${senderUid}`), { followedAt: now });
+  } catch (err) {
+    console.error('Accept request error:', err);
+    showToast('রিকোয়েস্ট গ্রহণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+    if (acceptBtn) { acceptBtn.disabled = false; acceptBtn.textContent = 'Accept'; }
+    return;
+  }
 
   row.remove();
   updateRequestCount();
 
+  // Optimistic local update — loadFriends()-এর realtime listener এমনিতেও
+  // friends/ node থেকে authoritative তালিকা দিয়ে এটা রিফ্রেশ করে দেবে।
   const newFriend = {
     uid: senderUid, name, username: '', avatar,
-    online: false, active: true, addedAt: now,
+    online: false, active: true, addedAt: Date.now(),
     interactions: 0, mutual: 0, lastSeen: 0
   };
   friendsData.unshift(newFriend);
@@ -1630,9 +1681,10 @@ async function loadBlocked() {
 // blockedUsers নেই rules এ → blockedSet ব্যবহার
 // ─────────────────────────────────────────────────────────────
 async function loadSuggestions() {
-  const [myRequestsSnap, allUsersSnap] = await Promise.all([
+  const [myRequestsSnap, allUsersSnap, myFriendsSnap] = await Promise.all([
     get(ref(db, `friendRequests/${currentUid}`)),   // others sent me requests
-    get(ref(db, 'users'))
+    get(ref(db, 'users')),
+    get(ref(db, `friends/${currentUid}`))           // already friends
   ]);
 
   // friendRequests এ আমার সাথে যাদের কোনো relation আছে তাদের exclude করব
@@ -1640,8 +1692,14 @@ async function loadSuggestions() {
     myRequestsSnap.exists() ? Object.keys(myRequestsSnap.val()) : []
   );
 
+  // already friends
+  const excludedFromFriends = new Set(
+    myFriendsSnap.exists() ? Object.keys(myFriendsSnap.val()) : []
+  );
+
   const excluded = new Set([
     ...excludedFromRequests,
+    ...excludedFromFriends,
     ...blockedSet,
     currentUid
   ]);
@@ -1700,6 +1758,16 @@ function renderSuggestions(list, container, isCarousel) {
     const addBtn = card.querySelector('.btn-add-friend');
     addBtn.addEventListener('click', async () => {
       if (sentRequests.has(p.uid)) return;
+
+      // Check if already friends
+      const friendSnap = await get(ref(db, `friends/${currentUid}/${p.uid}`));
+      if (friendSnap.exists()) {
+        showToast(`${name} ইতিমধ্যে তোমার বন্ধু!`);
+        addBtn.textContent = 'Friend';
+        addBtn.disabled = true;
+        return;
+      }
+
       sentRequests.add(p.uid);
       const now = Date.now();
       try {
@@ -1709,8 +1777,12 @@ function renderSuggestions(list, container, isCarousel) {
           status:    'pending',
           timestamp: now
         });
-        // auto-follow
-        await set(ref(db, `following/${currentUid}/${p.uid}`), true);
+        // sentFriendRequests/{fromUid}/{toUid} — my OWN readable mirror of the request.
+        // profile.html's loadVisitorState reads this (it can't read friendRequests/{p.uid}/*
+        // directly — only p.uid can read their own inbox under the current rules).
+        await set(ref(db, `sentFriendRequests/${currentUid}/${p.uid}`), { sentAt: now });
+        // auto-follow — {followedAt} object shape, same as profile.html
+        await set(ref(db, `following/${currentUid}/${p.uid}`), { followedAt: now });
         addBtn.textContent = 'Request Sent';
         addBtn.disabled = true;
         showToast(`${name}-কে ফ্রেন্ড রিকোয়েস্ট পাঠানো হয়েছে`);
@@ -1753,47 +1825,68 @@ document.getElementById('blockMenuItem').addEventListener('click', async () => {
   if (!currentMoreRow) return;
   const uid  = currentMoreRow.dataset.uid;
   const name = currentMoreRow.querySelector('.friend-name').textContent;
+  const rowToRemove = currentMoreRow;
+  moreMenu.classList.remove('show');
+  currentMoreRow = null;
 
-  // Friendship মুছি — friendRequests দুদিক থেকেই
-  await Promise.all([
-    remove(ref(db, `friendRequests/${currentUid}/${uid}`)),
-    remove(ref(db, `friendRequests/${uid}/${currentUid}`)),
-    remove(ref(db, `following/${currentUid}/${uid}`)),
-    remove(ref(db, `following/${uid}/${currentUid}`))
-  ]);
-  // blockedUsers rules এ নেই, client-side ট্র্যাকিং করি
+  try {
+    await Promise.all([
+      remove(ref(db, `friends/${currentUid}/${uid}`)),
+      remove(ref(db, `friends/${uid}/${currentUid}`)),
+      remove(ref(db, `friendRequests/${currentUid}/${uid}`)),
+      remove(ref(db, `friendRequests/${uid}/${currentUid}`)),
+      remove(ref(db, `sentFriendRequests/${currentUid}/${uid}`)),
+      remove(ref(db, `sentFriendRequests/${uid}/${currentUid}`)),
+      remove(ref(db, `following/${currentUid}/${uid}`))
+      // following/${uid}/${currentUid} (তাদের আমাকে ফলো করা) এখান থেকে মোছা
+      // যায় না — following/$uid rules-এ শুধু auth.uid == $uid অনুমোদিত, কোনো
+      // OR নেই। rules-এ blockedUsers node-ও নেই, তাই এটা persisted, সার্ভার-
+      // এনফোর্সড ব্লক না — session-based ট্র্যাকিং (blockedSet) আগের মতোই রইলো।
+    ]);
+  } catch (err) {
+    console.error('Block error:', err);
+    showToast('ব্লক করা যায়নি। আবার চেষ্টা করুন।');
+    return;
+  }
+
   blockedSet.add(uid);
 
-  currentMoreRow.remove();
+  rowToRemove.remove();
   friendsData = friendsData.filter(f => f.uid !== uid);
   allFriendsCountEl.textContent = friendsData.length;
 
-  moreMenu.classList.remove('show');
   showToast(`${name} কে ব্লক করা হয়েছে`);
-  currentMoreRow = null;
 });
 
 document.getElementById('unfriendMenuItem').addEventListener('click', async () => {
   if (!currentMoreRow) return;
   const uid  = currentMoreRow.dataset.uid;
   const name = currentMoreRow.querySelector('.friend-name').textContent;
+  const rowToRemove = currentMoreRow;
+  moreMenu.classList.remove('show');
+  currentMoreRow = null;
 
-  // friendRequests দুদিক থেকেই মুছি + following
-  await Promise.all([
-    remove(ref(db, `friendRequests/${currentUid}/${uid}`)),
-    remove(ref(db, `friendRequests/${uid}/${currentUid}`)),
-    remove(ref(db, `following/${currentUid}/${uid}`)),
-    remove(ref(db, `following/${uid}/${currentUid}`))
-  ]);
+  try {
+    await Promise.all([
+      remove(ref(db, `friends/${currentUid}/${uid}`)),
+      remove(ref(db, `friends/${uid}/${currentUid}`)),
+      remove(ref(db, `following/${currentUid}/${uid}`))
+      // friendRequests/ ছোঁয়া হয়নি — unfriend করলে আবার request পাঠানো যাবে।
+      // following/${uid}/${currentUid} ছোঁয়া যায়নি — rules অনুযায়ী শুধু নিজের
+      // own node লেখা/মোছা যায় (auth.uid == $uid, কোনো OR নেই)।
+    ]);
+  } catch (err) {
+    console.error('Unfriend error:', err);
+    showToast('বন্ধু তালিকা থেকে সরানো যায়নি। আবার চেষ্টা করুন।');
+    return;
+  }
 
-  currentMoreRow.remove();
+  rowToRemove.remove();
   friendsData = friendsData.filter(f => f.uid !== uid);
   allFriendsCountEl.textContent = friendsData.length;
   noFriendResults.style.display = friendsData.length === 0 ? '' : 'none';
 
-  moreMenu.classList.remove('show');
   showToast(`${name}-কে বন্ধু তালিকা থেকে সরানো হয়েছে`);
-  currentMoreRow = null;
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -1817,9 +1910,10 @@ tabs.forEach(tab => {
 // ─────────────────────────────────────────────────────────────
 function applySearch(q) {
   const activeTab = document.querySelector('.tab-item.active').dataset.tab;
-  if (activeTab === 'all')        refreshAllFriendsVisibility();
+  if (activeTab === 'all')            refreshAllFriendsVisibility();
   else if (activeTab === 'request')   refreshListVisibility(requestList, q, noRequestResults, requestCountEl);
   else if (activeTab === 'suggested') refreshCardVisibility(suggestionGridWrap, q, noSuggestionResults);
+  else if (activeTab === 'blocked')   refreshListVisibility(blockedList, q, noBlockedResults, blockedCountEl);
 }
 
 searchInput.addEventListener('input', () => applySearch(searchInput.value));
